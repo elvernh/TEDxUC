@@ -1,5 +1,28 @@
 <script setup lang="ts">
 import logo from "@/components/icons/logo-white.svg";
+
+const navigationPath = [
+  {
+    name: "Homepage",
+    path: "/",
+  },
+  {
+    name: "Buy Ticket",
+    path: "/buy-ticket",
+  },
+  {
+    name: "Gallery",
+    path: "/gallery",
+  },
+  {
+    name: "Mini Game",
+    path: "/mini-game",
+  },
+  {
+    name: "Login",
+    path: "/login",
+  },
+];
 </script>
 
 <template>
@@ -10,20 +33,10 @@ import logo from "@/components/icons/logo-white.svg";
       </div>
       <div class="right-side">
         <ul>
-          <li>
-            <a href="#">Home</a>
-          </li>
-          <li>
-            <a href="#">Buy Ticket</a>
-          </li>
-          <li>
-            <a href="#">Gallery</a>
-          </li>
-          <li>
-            <a href="#">Mini Game</a>
-          </li>
-          <li>
-            <a href="#" class="login-button">Login</a>
+          <li v-for="(item, index) in navigationPath" :key="index">
+            <router-link :to="item.path" :class="{ 'login-button': item.name === 'Login' }">
+              {{ item.name }}
+            </router-link>
           </li>
         </ul>
       </div>
@@ -32,24 +45,21 @@ import logo from "@/components/icons/logo-white.svg";
 </template>
 
 <style scoped>
-/* Full-width nav with background */
+/* Same CSS as before */
 nav {
   width: 100%;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.81) 13%, rgba(0, 0, 0, 0) 100%);
-  position: fixed;
+  position: relative;
   font-weight: 900;
   font-size: 19px;
+  top: 0;
 }
-
-
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 2rem 2rem;
+  margin: 2rem 3rem;
 }
-
-/* Right side list styling */
 .right-side ul {
   display: flex;
   list-style: none;
@@ -57,29 +67,22 @@ nav {
   padding: 0;
   margin: 0;
 }
-
-/* Apply the same transition to all links, including the login button */
-.right-side ul li a {
+.right-side ul li a, .right-side ul li .login-button {
   text-decoration: none;
   color: white;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
-
 .right-side ul li a:hover {
-  color: #EB0028;
+  color: #eb0028;
 }
-
-/* Login button inherits the same animation */
 .login-button {
-  background-color: #EB0028;
+  background-color: #eb0028;
   color: white;
   padding: 8px 50px;
   border-radius: 8px;
 }
 .login-button:hover {
   background-color: white;
-  color: #EB0028;
+  color: #eb0028;
 }
-
-
 </style>

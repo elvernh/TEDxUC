@@ -9,6 +9,10 @@ const router = createRouter({
       name: 'home',
       component: Homepage,
     },
+    // { path: '/buy-ticket', name: 'buy-ticket', component: BuyTicket },
+    // { path: '/gallery', name: 'gallery', component: Gallery },
+    // { path: '/mini-game', name: 'mini-game', component: MiniGame },
+    // { path: '/login', name: 'login', component: Login },
   ],
 })
 
