@@ -38,6 +38,21 @@ export default {
   background-position: center;
   padding: 0 50px;
 }
+
+.hero-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px; /* Sesuaikan tinggi shadow */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 100%);
+  z-index: 1; /* Harus lebih rendah dari navbar */
+}
+
+
+
+
 .text-container {
   display: flex;
   flex-direction: column;

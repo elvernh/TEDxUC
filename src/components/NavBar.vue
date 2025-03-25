@@ -63,7 +63,9 @@ nav {
   font-weight: 900;
   font-size: 19px;
   top: 0;
+  z-index: 100; 
 }
+
 
 .nav-container {
   display: flex;

@@ -92,6 +92,29 @@ onUnmounted(() => {
   background-position: center;
   color: white;
   padding: 0 50px;
+  position: relative;
+
+}
+.maze-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px; /* Sesuaikan tinggi shadow */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 100%);
+  z-index: 1; /* Harus lebih rendah dari navbar */
+}
+
+.maze-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px; /* Sesuaikan tinggi shadow */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%);
+  pointer-events: none; /* Supaya tidak mengganggu interaksi */
 }
 
 .time-container h1 {
