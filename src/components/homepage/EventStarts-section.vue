@@ -115,12 +115,11 @@ onUnmounted(() => {
 }
 
 /* Each Time Box */
+/* Each Time Box */
 .time-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-
 }
 
 /* Time Number */
@@ -128,13 +127,14 @@ onUnmounted(() => {
   background: linear-gradient(to bottom, #eb0028 23%, #1b1b1b 100%);
   border-radius: 12px;
   padding: 20px 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Shadow only here */
   min-width: 100px;
   font-family: "Axia Stencil";
   font-size: 100px;
   font-weight: 900;
   color: white;
 }
+
 
 /* Label */
 .label {
