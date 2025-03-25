@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <div class="logoContainer">
-        <img :src="tedxLogo" alt="TEDx Logo" class="logo" draggable="false"/>
+        <img :src="tedxLogo" alt="TEDx Logo" class="logo" draggable="false" />
       </div>
       <h1 class="login-title">Login</h1>
       <p class="login-subtitle">Hi, you need to Login to Enter!</p>
@@ -27,9 +27,13 @@
               placeholder="Enter your Password"
               required
             />
-            <span class="eye-icon" @click="togglePassword">{{
-              showPassword ? "🙈" : "👁️"
-            }}</span>
+            <span class="eye-icon" @click="togglePassword">
+              <img
+                :src="showPassword ? eyeOff : eye"
+                alt="Toggle Password Visibility"
+                draggable="false"
+              />
+            </span>
           </div>
         </div>
         <button type="submit" class="login-button">Login</button>
@@ -42,6 +46,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import tedxLogo from "@/components/icons/logo-white.svg";
+import eyeOff from "@/components/icons/eye-off.svg";
+import eye from "@/components/icons/eye.svg";
 
 const email = ref("");
 const password = ref("");
@@ -84,9 +90,9 @@ const togglePassword = () => {
   margin-bottom: 1rem;
 }
 
-.logoContainer{
-    display: flex;
-    align-items: self-start;
+.logoContainer {
+  display: flex;
+  align-items: self-start;
 }
 
 .login-title {
@@ -128,10 +134,10 @@ input {
 }
 
 .eye-icon {
-  margin-left: -30px;
+  margin-left: -40px;
+  size: 10px;
   cursor: pointer;
 }
-
 
 .login-button {
   background: #d47c7c;
