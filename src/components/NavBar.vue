@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import logo from "@/components/icons/logo-white.svg";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const navigationPath = [
   {
-    name: "Homepage",
+    name: "Home",
     path: "/",
   },
   {
@@ -23,6 +25,14 @@ const navigationPath = [
     path: "/login",
   },
 ];
+
+// const navigationPath = router.getRoutes()
+//   .filter((route) => route.name) 
+//   .map((route) => ({
+//     name: route.name,
+//     path: route.path,
+//   }));
+// pake ini pas udah ada router2 jadi
 </script>
 
 <template>

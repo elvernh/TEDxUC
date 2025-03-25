@@ -26,9 +26,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-size: cover;
-  background-position: center;
-  background-image: url('@/assets/images/hero-section.png');
+  background: url('@/assets/images/hero-section.png') no-repeat center center fixed;
 }
 
 </style>
