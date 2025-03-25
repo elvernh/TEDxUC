@@ -86,7 +86,7 @@ const togglePassword = () => {
 }
 
 .logo {
-  width: 60px;
+  width: 90px;
   margin-bottom: 1rem;
 }
 

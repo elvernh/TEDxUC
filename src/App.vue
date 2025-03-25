@@ -9,6 +9,5 @@ const route = useRoute();
 <template>
 
   <Nav v-if="route.path !== '/login'" />
-  <Homepage v-if="route.path === '/'" />
   <router-view></router-view>
 </template>

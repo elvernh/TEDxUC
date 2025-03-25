@@ -37,9 +37,9 @@ const navigationPath = [
 
 <template>
   <nav>
-    <div class="container">
+    <div class="nav-container">
       <div class="left-side">
-        <img :src="logo" alt="logo" />
+        <img class="logo" :src="logo" alt="logo" />
       </div>
       <div class="right-side">
         <ul>
@@ -59,12 +59,13 @@ const navigationPath = [
 nav {
   width: 100%;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.81) 13%, rgba(0, 0, 0, 0) 100%);
-  position: relative;
+  position: fixed;
   font-weight: 900;
   font-size: 19px;
   top: 0;
 }
-.container {
+
+.nav-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -95,4 +96,34 @@ nav {
   background-color: white;
   color: #eb0028;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  nav {
+    font-size: 14px;
+  }
+
+  .logo{
+    width: 120px;
+  }
+
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem;
+  }
+
+  .right-side ul {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .login-button {
+    padding: 6px 20px;
+    border-radius: 6px;
+  }
+}
+
+
 </style>
