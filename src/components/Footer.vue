@@ -1,3 +1,5 @@
+import logo from "@/components/icons/logo-white.svg";
+
 <template>
   <div class="tedx-container">
     <!-- Take the Risk Section -->
@@ -13,13 +15,16 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <footer class="tedx-footer">
       <div class="footer-content">
         <div class="footer-column">
           <div class="footer-logo">
-            <span class="tedx-text">TEDx</span>
-            <span class="university-text">Universitas Ciputra Surabaya</span>
+           <span class="tedx-logo">
+  TED<span class="tedx-small">x</span>
+</span>
+
+            <span class="university-text">Universitas Ciputra</span>
+                <span class="university-text">Surabaya</span>
           </div>
         </div>
         <div class="footer-column">
@@ -65,7 +70,6 @@ html, body, #app {
   max-width: 100%; 
   display: flex;
   flex-direction: column;
-  font-family: Arial, sans-serif;
   background-color: black;
   color: white;
   overflow-x: hidden; 
@@ -82,7 +86,7 @@ html, body, #app {
 
 .take-risk-title {
   color: red;
-  font-size: 2.5rem;
+  font-size: 3.2rem;
   font-weight: bold;
   margin-bottom: 1rem;
 }
@@ -90,8 +94,8 @@ html, body, #app {
 .take-risk-description {
   color: white;
   max-width: 800px;
+  font-size: 1.3rem;
   margin: 0 auto 2rem;
-  opacity: 0.7;
 }
 
 .buy-ticket-btn {
@@ -99,9 +103,12 @@ html, body, #app {
   color: white;
   border: none;
   padding: 12px 24px;
-  font-size: 1rem;
+  font-size: 2rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Axia Stencil", sans-serif;
+  font-wight: bold
+  
 }
 
 .buy-ticket-btn:hover {
@@ -149,13 +156,12 @@ html, body, #app {
 
 .footer-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .footer-copyright {
   color: white;
-  opacity: 0.6;
   margin-bottom: 1rem;
 }
 
@@ -163,4 +169,21 @@ html, body, #app {
   color: white;
   text-decoration: none;
 }
+.sup {
+  font-size: 0.6em; /* Ukuran lebih kecil */
+  vertical-align: super; /* Superscript */
+}
+.tedx-logo {
+  font-size: 1.6rem; /* Ukuran TED */
+  font-weight: bold;
+  color: red;
+  font-family: sans-serif;
+}
+
+.tedx-small {
+  font-size: 1rem; /* Ukuran lebih kecil */
+  vertical-align: top; /* Menyesuaikan posisi */
+}
+
+
 </style>

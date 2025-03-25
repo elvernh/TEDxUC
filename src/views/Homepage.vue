@@ -11,7 +11,9 @@ const route = useRoute();
 <template>
   <div class="homepage-container">
     <HeroSection />
+    <Footer/>
   </div>
+
 </template>
 
 <style scoped>
