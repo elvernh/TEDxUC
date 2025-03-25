@@ -9,16 +9,18 @@ const route = useRoute();
 </script>
 
 <template>
-  <div class="container">
-    <!-- <HeroSection /> -->
+  <div class="homepage-container">
+    <HeroSection />
   </div>
 </template>
 
 <style scoped>
-.container {
+.homepage-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
+
+
 </style>
