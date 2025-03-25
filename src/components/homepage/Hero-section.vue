@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template>
-  <div class="container" :style="{ backgroundImage: `url('${imagePath}')` }">
+  <div class="hero-container" :style="{ backgroundImage: `url('${imagePath}')` }">
     <div class="text-container">
       <h1 class="title">
         Do you see the maze as a challenge to conquer or a journey to navigate?
@@ -27,7 +27,7 @@ export default {
 </template>
 
 <style scoped>
-.container {
+.hero-container {
   width: 100vw;
   height: 100vh;
   display: flex;
