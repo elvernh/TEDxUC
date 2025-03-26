@@ -91,6 +91,7 @@ export default defineComponent({
   font-size: 22px;
   font-weight: 400;
   will-change: transform;
+  padding: 0 10px;
 }
 
 /* Responsive Design */
