@@ -64,7 +64,7 @@ const navigationPath = [
 
             <router-link
               v-else
-              :to="item.path"
+              :to='item.path as string'
               :class="{ 'login-button': item.name === 'Login' }"
             >
               {{ item.name }}
@@ -84,6 +84,10 @@ const navigationPath = [
   </nav>
 </template>
 
+<!-- 
+const fetchdata = try('nplc.com/api/registration'){
+
+} -->
 <style scoped>
 nav {
   width: 100%;
@@ -157,6 +161,7 @@ nav {
   flex-direction: column;
   position: absolute;
   align-items: start;
+  vertical-align: bottom;
   left: 0;
   min-width: 150px;
   background: rgba(0, 0, 0, 0.9);
@@ -164,7 +169,7 @@ nav {
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 200;
-  padding: 0.5rem 0
+  padding: 0.2rem 0
 }
 
 .dropdown-menu ul {
