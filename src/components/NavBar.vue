@@ -198,20 +198,23 @@ nav {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    margin: 1rem;
+  }
+
+  .right-side ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
   nav {
     font-size: 14px;
   }
 
   .logo {
     width: 120px;
-  }
-
-  .nav-container {
-    margin: 1rem;
-  }
-
-  .right-side ul {
-    gap: 1rem;
   }
 
   .login-button {

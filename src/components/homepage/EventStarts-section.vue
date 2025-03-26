@@ -58,21 +58,9 @@ onUnmounted(() => {
     <div class="time-container">
       <h1>EVENT STARTS IN</h1>
       <div class="timer">
-        <div class="time-box">
-          <div class="time">{{ days }}</div>
-          <div class="label">Days</div>
-        </div>
-        <div class="time-box">
-          <div class="time">{{ hours }}</div>
-          <div class="label">Hours</div>
-        </div>
-        <div class="time-box">
-          <div class="time">{{ minutes }}</div>
-          <div class="label">Minutes</div>
-        </div>
-        <div class="time-box">
-          <div class="time">{{ seconds }}</div>
-          <div class="label">Seconds</div>
+        <div class="time-box" v-for="(value, label) in { days, hours, minutes, seconds }" :key="label">
+          <div class="time">{{ value }}</div>
+          <div class="label">{{ label.charAt(0).toUpperCase() + label.slice(1) }}</div>
         </div>
       </div>
     </div>
@@ -80,7 +68,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Container */
 .maze-container {
   width: 100vw;
   height: 100vh;
@@ -91,20 +78,9 @@ onUnmounted(() => {
   background-repeat: no-repeat;
   background-position: center;
   color: white;
-  padding: 0 50px;
   position: relative;
+}
 
-}
-.maze-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 120px; /* Sesuaikan tinggi shadow */
-  background: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 100%);
-  z-index: 1; /* Harus lebih rendah dari navbar */
-}
 
 .maze-container::after {
   content: "";
@@ -117,11 +93,6 @@ onUnmounted(() => {
   pointer-events: none; /* Supaya tidak mengganggu interaksi */
 }
 
-.time-container h1 {
-  margin-bottom: 10px;
-}
-
-
 .time-container {
   display: flex;
   flex-direction: column;
@@ -129,37 +100,33 @@ onUnmounted(() => {
   font-size: 40px;
 }
 
-/* Timer Container */
 .timer {
   display: flex;
   gap: 10px;
   padding: 0 10px;
   border-radius: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-/* Each Time Box */
-/* Each Time Box */
 .time-box {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Time Number */
 .time {
   background: linear-gradient(to bottom, #eb0028 23%, #1b1b1b 100%);
   border-radius: 12px;
   padding: 20px 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Shadow only here */
-  min-width: 100px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  min-width: 80px;
   font-family: "Axia Stencil";
   font-size: 100px;
   font-weight: 900;
   color: white;
 }
 
-
-/* Label */
 .label {
   font-size: 30px;
   font-weight: bold;
@@ -169,14 +136,19 @@ onUnmounted(() => {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .time-container {
+    font-size: 24px;
+  }
+
   .timer {
-    flex-direction: column;
+    max-width: 100%;
+    gap: 5px;
   }
 
   .time {
     font-size: 48px;
-    padding: 20px 30px;
-    min-width: 80px;
+    padding: 15px 20px;
+    min-width: 60px;
   }
 
   .label {

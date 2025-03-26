@@ -27,7 +27,7 @@ const route = useRoute();
 }
 
 .fade-in {
-  animation: fadeIn 3s ease-out;
+  animation: fadeIn 2.5s ease-out;
 }
 
 @keyframes fadeIn {

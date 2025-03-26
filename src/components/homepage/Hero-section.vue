@@ -37,6 +37,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   padding: 0 50px;
+  box-sizing: border-box;
 }
 
 .hero-container::after {
@@ -50,9 +51,6 @@ export default {
   z-index: 1; /* Harus lebih rendah dari navbar */
 }
 
-
-
-
 .text-container {
   display: flex;
   flex-direction: column;
@@ -61,14 +59,40 @@ export default {
   text-align: center; 
 }
 
-
 .title {
   color: white;
   font-size: 80px;
 }
+
 .subtitle{
+  margin-top: -10px;
   color: white;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-container {
+    padding: 0 20px;
+  }
+  .title {
+    font-size: 40px;
+  }
+  .subtitle {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-container {
+    padding: 0 10px;
+  }
+  .title {
+    font-size: 30px;
+  }
+  .subtitle {
+    font-size: 14px;
+  }
 }
 </style>
