@@ -81,7 +81,6 @@ onUnmounted(() => {
   position: relative;
 }
 
-
 .maze-container::after {
   content: "";
   position: absolute;
@@ -141,13 +140,13 @@ onUnmounted(() => {
   }
 
   .timer {
-    max-width: 100%;
+    max-width: 80%;
     gap: 5px;
   }
 
   .time {
     font-size: 48px;
-    padding: 15px 20px;
+    /* padding: 15px 20px; */
     min-width: 60px;
   }
 

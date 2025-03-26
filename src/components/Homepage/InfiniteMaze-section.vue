@@ -12,7 +12,7 @@ export default {
 <template>
   <div class="layout-container">
     <div class="side-image">
-      <img :src="sideImagePath" class="image" />
+      <img :src="sideImagePath" class="image" draggable="false"/>
     </div>
     <div class="text-container">
       <h1 class="title">THE INFINITE MAZE</h1>
@@ -83,7 +83,7 @@ export default {
 .subtitle {
   color: white;
   font-size: 28px;
-  font-weight: bold;
+  font-weight: 200;
   text-align-last: left;
   margin-top: 10px;
 }
