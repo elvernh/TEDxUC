@@ -7,9 +7,7 @@ import logo from "@/components/icons/logo-white.svg";
       <div class="take-risk-content">
         <h2 class="take-risk-title">TAKE THE RISK?</h2>
         <p class="take-risk-description">
-          Ready to join us blablablabla??djnksfbvnsjbdvknz dsnvklfnklbndkszzvlkdnvm dm .
-          jaw fjwajfowkafk awmf iadikjnlozknilyhnhd dksng d nsanklvcnklacnsnlnclle
-          jdlfkmsdfm dm dMCDLDFSL NF LKMFDL EFSLLJN LijLljef sje fc
+          Mark your path.
         </p>
         <button class="buy-ticket-btn">BUY TICKET</button>
       </div>
