@@ -80,7 +80,16 @@ onUnmounted(() => {
   color: white;
   position: relative;
 }
-
+.maze-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px; /* Sesuaikan tinggi shadow */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 100%);
+  z-index: 1; /* Harus lebih rendah dari navbar */
+}
 
 .maze-container::after {
   content: "";
@@ -120,13 +129,15 @@ onUnmounted(() => {
   border-radius: 12px;
   padding: 20px 30px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  min-width: 80px;
+  min-width: 100px;
   font-family: "Axia Stencil";
   font-size: 100px;
   font-weight: 900;
   color: white;
 }
-
+.time-container h1 {
+  margin-bottom: 10px;
+}
 .label {
   font-size: 30px;
   font-weight: bold;
