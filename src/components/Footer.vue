@@ -9,7 +9,7 @@ import logo from "@/components/icons/logo-white.svg";
         <p class="take-risk-description">
           Mark your path.
         </p>
-        <button class="buy-ticket-btn">BUY TICKET</button>
+        <button class="buy-ticket-btn">BUY<span class="random-spacing">&nbsp;</span>TICKET</button>
       </div>
     </div>
 
@@ -55,7 +55,7 @@ import logo from "@/components/icons/logo-white.svg";
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'TEDxFooter'
 }
@@ -124,14 +124,15 @@ html, body, #app {
   padding: 12px 24px;
   font-size: 2rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.4s ease;
   font-family: "Axia Stencil", sans-serif;
   font-weight: bold;
   border-radius: 8px;
 }
 
 .buy-ticket-btn:hover {
-  background-color: darkred;
+  background-color: white;
+  color: red;
 }
 
 .tedx-footer {
