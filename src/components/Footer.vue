@@ -126,8 +126,8 @@ html, body, #app {
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-family: "Axia Stencil", sans-serif;
-  font-wight: bold
-  
+  font-weight: bold;
+  border-radius: 8px;
 }
 
 .buy-ticket-btn:hover {
