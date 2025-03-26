@@ -1,27 +1,48 @@
 <script lang="ts">
+import { defineComponent } from 'vue';
 import heroSection from "@/assets/images/background-1.png";
-export default {
+import SilhouetteOverlay from '@/components/SilhouetteOverlay.vue';
+
+export default defineComponent({
+  components: {
+    SilhouetteOverlay
+  },
   data() {
     return {
       imagePath: heroSection,
     };
   },
-};
+});
 </script>
 
 <template>
-  <div class="hero-container" :style="{ backgroundImage: `url('${imagePath}')` }">
-    <div class="text-container">
-      <h1 class="title">
-        Do you see the maze as a challenge to conquer or a journey to navigate?
-      </h1>
-      <h2 class="subtitle">
-        Every step shapes who we become, every turn unlocks new potential. At
-        TEDxUniversitasCiputraSurabaya, we believe that life itself is an
-        infinite maze—one that isn’t just about reaching the finish line, but
-        about growing through every twist and turn. But where does the journey
-        truly begin?
-      </h2>
+  <div 
+    class="hero-container" 
+    :style="{ backgroundImage: `url('${imagePath}')` }"
+  >
+    <div 
+      class="parallax-container" 
+      v-parallax="0.3"
+    >
+      <SilhouetteOverlay />
+      <div class="text-container">
+        <h1 
+          class="title" 
+          v-parallax="0.2"
+        >
+          Do you see the maze as a challenge to conquer or a journey to navigate?
+        </h1>
+        <h2 
+          class="subtitle" 
+          v-parallax="0.1"
+        >
+          Every step shapes who we become, every turn unlocks new potential. At
+          TEDxUniversitasCiputraSurabaya, we believe that life itself is an
+          infinite maze—one that isn't just about reaching the finish line, but
+          about growing through every twist and turn. But where does the journey
+          truly begin?
+        </h2>
+      </div>
     </div>
   </div>
 </template>
@@ -36,19 +57,17 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  padding: 0 50px;
-  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
-.hero-container::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.parallax-container {
   width: 100%;
-  height: 120px; /* Sesuaikan tinggi shadow */
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 100%);
-  z-index: 1; /* Harus lebih rendah dari navbar */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .text-container {
@@ -57,42 +76,31 @@ export default {
   align-items: center; 
   max-width: 900px;
   text-align: center; 
+  z-index: 2;
 }
 
 .title {
   color: white;
   font-size: 80px;
+  will-change: transform;
 }
 
-.subtitle{
+.subtitle {
   margin-top: -10px;
   color: white;
   font-size: 22px;
   font-weight: 400;
+  will-change: transform;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .hero-container {
-    padding: 0 20px;
-  }
-  .title {
-    font-size: 40px;
-  }
-  .subtitle {
-    font-size: 16px;
-  }
+  .title { font-size: 40px; }
+  .subtitle { font-size: 16px; }
 }
 
 @media (max-width: 480px) {
-  .hero-container {
-    padding: 0 10px;
-  }
-  .title {
-    font-size: 30px;
-  }
-  .subtitle {
-    font-size: 14px;
-  }
+  .title { font-size: 30px; }
+  .subtitle { font-size: 14px; }
 }
 </style>
