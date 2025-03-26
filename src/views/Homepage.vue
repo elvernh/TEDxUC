@@ -10,7 +10,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <div class="homepage-container">
+  <div class="homepage-container fade-in">
     <HeroSection />
     <EventStarts/>
     <Footer/>
@@ -24,6 +24,19 @@ const route = useRoute();
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.fade-in {
+  animation: fadeIn 3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 
