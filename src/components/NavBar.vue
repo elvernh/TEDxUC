@@ -116,6 +116,12 @@ nav {
   z-index: 99;
 }
 
+.login-button{
+  background-color: #EB0028;
+  padding: 0.5rem 3rem;
+  border-radius: 8px;
+}
+
 .bar {
   background-color: white;
   height: 4px;
@@ -219,6 +225,10 @@ nav {
     text-align: center;
     padding: 5.5rem 0 2rem 0;
     flex-direction: column;
+  }
+
+  .login-button{
+    background-color: transparent;
   }
 
   .right-side.open {
