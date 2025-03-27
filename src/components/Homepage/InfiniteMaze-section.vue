@@ -111,7 +111,7 @@ export default {
 @media (max-width: 768px) {
   .layout-container {
     flex-direction: column;
-    padding: 40px 20px;
+    padding: 100px 50px;
     gap: 30px;
   }
   .text-container {
@@ -128,8 +128,13 @@ export default {
     font-size: 20px;
     text-align: lefy;
   }
+}
 
-  @media (max-width: 576px) {
+  @media (max-width: 590px) {
+    .layout-container {
+      padding: 100px 35px;
+      gap: 20px;
+    }
     .title {
       font-size: 40px;
     }
@@ -140,7 +145,7 @@ export default {
 
   @media (max-width: 480px) {
     .layout-container {
-      padding: 100px 15px;
+      padding: 100px 35px;
       gap: 20px;
     }
     .title {
@@ -151,5 +156,5 @@ export default {
       text-align-last: center;
     }
   }
-}
+
 </style>
