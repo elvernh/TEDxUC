@@ -17,15 +17,15 @@ export default defineComponent({
     <div class="doors-container">
       <div class="door">
         <h2>TED</h2>
-        <img :src="pintuClose" alt="Closed Door" />
+        <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
       <div class="door">
         <h2>TEDX</h2>
-        <img :src="pintuClose" alt="Closed Door" />
+        <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
       <div class="door">
         <h2>TEDXUCS</h2>
-        <img :src="pintuClose" alt="Closed Door" />
+        <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
     </div>
   </div>
