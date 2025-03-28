@@ -9,7 +9,11 @@
     font-weight: 900;
     src: url('fonts/AxiaStencilBlack-Regular.woff') format("woff"), url('fonts/AxiaStencilBlack-Regular.woff2') formt("woff2");
   }
-
+@font-face {
+  font-family: "Panoptica Doesburg";
+  font-weight: 400;
+  src: url('fonts/PanopticaDoesburg-Regular.woff') format("woff"), url('fonts/PanopticaDoesburg-Regular.woff2') formt("woff2");
+}
 html,
 body,
 #app {
