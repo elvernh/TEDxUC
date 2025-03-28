@@ -16,15 +16,15 @@ export default defineComponent({
     <h1>Learn the Difference!</h1>
     <div class="doors-container">
       <div class="door">
-        <h2>TED</h2>
+        <h2 class="door-title">TED</h2>
         <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
       <div class="door">
-        <h2>TEDX</h2>
+        <h2 class="door-title">TEDX</h2>
         <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
       <div class="door">
-        <h2>TEDXUCS</h2>
+        <h2 class="door-title">TEDXUCS</h2>
         <img :src="pintuClose" alt="Closed Door" draggable="false"/>
       </div>
     </div>
@@ -48,7 +48,7 @@ h1 {
   text-align: center;
 }
 
-h2 {
+.door-title{
   color: white;
   font-size: 60px;
   text-align: center;
