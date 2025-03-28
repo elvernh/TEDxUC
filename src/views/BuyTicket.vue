@@ -120,8 +120,6 @@ const submitForm = () => {
   pointer-events: none; 
 }
 
-
-
 .form-wrapper {
   width: 100%;
   max-width: 800px;
@@ -225,7 +223,8 @@ label {
   }
 
   .title {
-    font-size: 32px;
+    margin-top: 90px;
+    font-size: 40px;
   }
 
   .form-row {
@@ -234,7 +233,54 @@ label {
   }
 
   .form-row .form-group {
-    width: 100% !important;
+    width: 100% 
   }
+  
+  label {
+    font-size: 22px;
+  }
+  
+.form-group-gender {
+  flex: 0 0 170px;
+  margin-top: -25px;
+}
+  
+.form-group-alergi {
+  flex: 1;
+  margin-top: -90px;
+}
+
+}
+
+
+@media (max-width: 590px) {
+  .form-wrapper {
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-row .form-group {
+    width: 100% 
+  }
+
+  label {
+    font-size: 20px;
+  }
+
+  
+.form-wrapper {
+  width: 100%;
+  padding: 40px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+
 }
 </style>
