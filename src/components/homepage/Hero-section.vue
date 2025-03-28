@@ -108,11 +108,18 @@ export default defineComponent({
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .maze-text{
+    font-size: 30px;
+  }
   .title { font-size: 40px; }
   .subtitle { font-size: 16px; }
 }
 
 @media (max-width: 480px) {
+
+  .maze-text{
+    font-size: 25px;
+  }
   .title { font-size: 30px; }
   .subtitle { font-size: 14px; }
 }
