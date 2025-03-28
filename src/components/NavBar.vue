@@ -18,7 +18,6 @@ const closeMobileDropdown = () => {
 };
 
 const navigationPath = [
-  { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   {
     name: "Event",
@@ -39,7 +38,10 @@ const navigationPath = [
   <nav>
     <div class="nav-container">
       <div class="left-side">
-        <img class="logo" :src="logo" alt="logo" />
+        <router-link to="/">
+          <img class="logo" :src="logo" alt="logo" />
+        </router-link>
+
       </div>
       <div class="hamburger" @click="toggleMobileMenu">
         <div class="bar" :class="{ 'bar1': isMobileMenuOpen }"></div>
