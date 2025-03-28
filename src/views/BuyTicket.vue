@@ -21,21 +21,21 @@ const submitForm = () => {
 </script>
 
 <template>
-  <div class="layout-container" :style="{ backgroundImage: `url(${bgImage})` }">
+  <div class="layout-container" style="background-image: url('/src/assets/images/background-1.png')">
     <div class="form-wrapper">
       <div class="logo-container">
-        <img class="logo" :src="logo" alt="logo" />
+        <img class="logo" src="/src/components/icons/logo-white.svg" alt="logo" />
       </div>
       <h1 class="title">Ticket Order Form</h1>
       <form>
         <div class="form-norm">
           <div class="form-group">
             <label for="fullName">Nama Lengkap</label>
-            <input v-model="fullName" class="form-input" type="text" required />
+            <input v-model="fullName" class="form-input" type="text" required placeholder="Nama"/>
           </div>
           <div class="form-group">
             <label>No. Telp</label>
-            <input v-model="phone" type="text" required class="form-input" />
+            <input v-model="phone" type="text" required class="form-input" placeholder="Nomor Telepon"/>
           </div>
 
           <div class="form-group">
@@ -91,7 +91,6 @@ const submitForm = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url("/src/assets/images/background-1.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -101,12 +100,27 @@ const submitForm = () => {
   box-sizing: border-box;
 }
 
-.logo-container img {
-  max-width: 200px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
+.layout-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  z-index: 0;
 }
+
+.logo {
+  position: fixed;
+  top: 2rem; 
+  left: 3rem; 
+  size: 200%;
+  z-index: 100;
+  pointer-events: none; 
+}
+
+
 
 .form-wrapper {
   width: 100%;
@@ -115,6 +129,7 @@ const submitForm = () => {
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  z-index: 1;
 }
 
 .title {
