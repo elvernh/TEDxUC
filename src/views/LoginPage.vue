@@ -37,7 +37,11 @@
           </div>
         </div>
         <button type="submit" class="login-button">Login</button>
-        <!-- <a href="#" class="forgot-password">Forgot Password?</a> -->
+        yah menurutmu 
+<router-link to="/qr-scanner" class="qr-scanner-btn">
+  Go to QR Scanner
+</router-link>
+
       </form>
     </div>
   </div>
@@ -48,16 +52,39 @@ import { ref } from "vue";
 import tedxLogo from "@/components/icons/logo-white.svg";
 import eyeOff from "@/components/icons/eye-off.svg";
 import eye from "@/components/icons/eye.svg";
+import { useRouter } from "vue-router";
 
+
+const router = useRouter();
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
-const login = () => {
-  console.log("Email:", email.value);
-  console.log("Password:", password.value);
-  // Add authentication logic here
+const login = async () => {
+  try {
+    // Mock authentication: check if email and password match hardcoded values
+    if (email.value === "admin@tedx.com" && password.value === "password123") {
+      localStorage.setItem("token", "mockToken123"); // Simulate a JWT token
+      alert("Login successful!");
+      router.push("/qr-scanner");
+    } else {
+      alert("Invalid email or password.");
+    }
+  } catch (error) {
+    alert("Login failed.");
+  }
+  // try {
+  //   const response = await axios.post("http://localhost:5000/api/admin/login", {
+  //     email: email.value,
+  //     password: password.value,
+  //   });
+  //   localStorage.setItem("token", response.data.token);
+  //   router.push("/qr-scanner");
+  // } catch (error) {
+  //   alert("Login failed. Please check your credentials.");
+  // }
 };
+
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
@@ -164,3 +191,5 @@ input {
   font-weight: bold;
 }
 </style>
+
+
