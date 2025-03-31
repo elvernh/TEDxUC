@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const imagePath = backgroundImage;
-const imageIcon = pintu;
+
 </script>
 
 <template>
