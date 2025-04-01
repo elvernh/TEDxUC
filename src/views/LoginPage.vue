@@ -62,9 +62,8 @@ const showPassword = ref(false);
 
 const login = async () => {
   try {
-    // Mock authentication: check if email and password match hardcoded values
     if (email.value === "admin@tedx.com" && password.value === "password123") {
-      localStorage.setItem("token", "mockToken123"); // Simulate a JWT token
+      localStorage.setItem("token", "mockToken123"); 
       alert("Login successful!");
       router.push("/qr-scanner");
     } else {
