@@ -1,5 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import BuyTicket from "../views/BuyTicket.vue";
+import { createRouter, createWebHistory } from 'vue-router';
 import QRScanner from "../views/QRScanner.vue"; 
 import testing from "../views/testing.vue"; 
 import { createRouter, createWebHistory } from 'vue-router';
