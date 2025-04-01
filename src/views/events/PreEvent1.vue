@@ -9,6 +9,7 @@ import foottrail from "@/assets/images/foottrail.png";
   eventName="PRE-EVENT 1"
   title="The First Step Awaits!"
   description="Every journey begins with a single step. Our first pre-event will spark your curiosity and prepare you to navigate The Infinite Maze. Are you ready?"
+  registerLink="preevent1"
   />
 </template>
 

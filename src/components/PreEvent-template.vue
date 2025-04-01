@@ -9,10 +9,10 @@ const props = defineProps({
   eventName: String,
   title: String,
   description: String,
+  registerLink: String,
 });
 
 const imagePath = backgroundImage;
-
 </script>
 
 <template>
@@ -20,7 +20,12 @@ const imagePath = backgroundImage;
     class="preevent-container fade-in"
     :style="{ backgroundImage: `url('${imagePath}')` }"
   >
-    <img :src="props.imageIcon" alt="Image Icon" class="image-icon" draggable="false"/>
+    <img
+      :src="props.imageIcon"
+      alt="Image Icon"
+      class="image-icon"
+      draggable="false"
+    />
     <h1 class="title-text">
       <span class="event-name">{{ props.eventName }}</span
       >{{ props.title }}
@@ -28,7 +33,14 @@ const imagePath = backgroundImage;
     <p class="desc-text">
       {{ props.description }}
     </p>
-    <router-link class="register-btn" to="/register">REGISTER NOW</router-link>
+
+    <router-link
+      v-if="props.eventName !== 'PRE-EVENT 2'"
+      class="register-btn"
+      :to="`/register/${props.registerLink}`"
+    >
+      REGISTER NOW
+    </router-link>
   </div>
 </template>
 
@@ -125,7 +137,7 @@ h1 {
   .image-icon {
     width: 200px;
   }
-  .event-name{
+  .event-name {
     font-size: 20px;
   }
 
@@ -137,7 +149,6 @@ h1 {
     font-size: 13px;
     max-width: 70%;
     margin-top: -10px;
-
   }
 
   .register-btn {
@@ -147,11 +158,10 @@ h1 {
 }
 
 @media screen and (max-width: 480px) {
-
   .image-icon {
     width: 150px;
   }
-  .event-name{
+  .event-name {
     font-size: 20px;
   }
 
