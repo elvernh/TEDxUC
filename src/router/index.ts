@@ -1,3 +1,7 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import BuyTicket from "../views/BuyTicket.vue";
+import QRScanner from "../views/QRScanner.vue"; 
+import testing from "../views/testing.vue"; 
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Core Pages
@@ -22,6 +26,8 @@ const router = createRouter({
     // General Routes
     { path: '/', name: 'Home', component: Homepage },
     { path: '/login', name: 'Login', component: Login },
+    { path: "/qr-scanner", name: 'QRScan', component: QRScanner },
+    { path: "/testing", name: 'test', component: testing },
     { path: '/mini-game', name: 'Mini Game', component: MiniGame },
 
     // Event Routes
@@ -35,6 +41,7 @@ const router = createRouter({
     { path: '/register/preevent3', name: 'Pre Event 3 Register', component: PreEvent3Regist },
     { path: '/register/mainevent', name: 'Main Event Register', component: MainEventRegist },
   ],
-});
+})
+  
 
 export default router;
