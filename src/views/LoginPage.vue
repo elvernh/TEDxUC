@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import tedxLogo from "@/components/icons/logo-white.svg";
+import tedxLogo from "@/components/icons/logo-black.png";
 import eyeOff from "@/components/icons/eye-off.svg";
 import eye from "@/components/icons/eye.svg";
 import { useRouter } from "vue-router";

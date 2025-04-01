@@ -26,11 +26,14 @@ export default defineComponent({
     >
       <SilhouetteOverlay />
       <div class="text-container">
+        <h1>
+          <span class="maze-text">Do you see the maze </span> 
+        </h1>
         <h1 
           class="title" 
           v-parallax="0.2"
         >
-          Do you see the maze as a challenge to conquer or a journey to navigate?
+          as a challenge to conquer or a journey to navigate?
         </h1>
         <h2 
           class="subtitle" 
@@ -79,10 +82,19 @@ export default defineComponent({
   z-index: 2;
 }
 
+.maze-text{
+  font-family: "Panoptica Doesburg";
+  font-family: 400;
+  font-size: 50px;
+  color: white;
+}
+
 .title {
   color: white;
   font-size: 80px;
   will-change: transform;
+  margin-top: -20px;
+  margin-bottom: 10;
 }
 
 .subtitle {
@@ -96,11 +108,18 @@ export default defineComponent({
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .maze-text{
+    font-size: 30px;
+  }
   .title { font-size: 40px; }
   .subtitle { font-size: 16px; }
 }
 
 @media (max-width: 480px) {
+
+  .maze-text{
+    font-size: 25px;
+  }
   .title { font-size: 30px; }
   .subtitle { font-size: 14px; }
 }
