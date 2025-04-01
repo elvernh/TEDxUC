@@ -134,6 +134,7 @@ onUnmounted(() => {
   font-size: 100px;
   font-weight: 900;
   color: white;
+  text-align: center;
 }
 .time-container h1 {
   margin-bottom: 10px;
