@@ -47,7 +47,7 @@ export default {
           <label for="bca" class="payment-method bcaMethod">
             <div class="imgName">
               <div class="imgContainer">
-                <img src="/src/assets/images/bcaLogo.png" alt="bca" />
+                <!-- <img src="/src/assets/images/bcaLogo.png" alt="bca" /> -->
               </div>
               <span class="name">BCA Virtual Account</span>
             </div>
@@ -56,7 +56,7 @@ export default {
           <label for="qris" class="payment-method qrisMethod">
             <div class="imgName">
               <div class="imgContainer">
-                <img src="/src/assets/images/qrisLogo.png" alt="qris" />
+                <!-- <img src="/src/assets/images/qrisLogo.png" alt="qris" /> -->
               </div>
               <span class="name">QRIS</span>
             </div>
