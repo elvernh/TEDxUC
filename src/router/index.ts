@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BuyTicket from "../views/BuyTicket.vue";
+import PaymentMethod from "../views/PaymentMethod.vue"
+import ConfirmationPage from '../views/ConfirmationPage.vue'
 import QRScanner from "../views/QRScanner.vue"; 
 import testing from "../views/testing.vue"; 
 import { createRouter, createWebHistory } from 'vue-router';
