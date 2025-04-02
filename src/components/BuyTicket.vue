@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
 
@@ -16,24 +15,12 @@ const gender = ref("");
 const foodAllergy = ref("");
 
 const submitForm = () => {
-  try {
-    console.log("Nama Lengkap:", fullName.value);
-    console.log("Email:", email.value);
-    console.log("No. Telp:", phone.value);
-    console.log("Usia:", age.value);
-    console.log("Gender:", gender.value);
-    console.log("Alergi Makanan:", foodAllergy.value);
-
-    const currentPath = router.currentRoute.value.path;
-
-    if (currentPath === "/register/preevent3" || currentPath === "/register/mainevent") {
-      router.push(`${currentPath}/transaction`);
-    } else {
-      router.push("/confirmation-page"); // ✅ Fixed route
-    }
-  } catch (e) {
-    console.error("Error submitting form:", e);
-  }
+  console.log("Nama Lengkap:", fullName.value);
+  console.log("Email:", email.value);
+  console.log("No. Telp:", phone.value);
+  console.log("Usia:", age.value);
+  console.log("Gender:", gender.value);
+  console.log("Alergi Makanan:", foodAllergy.value);
 };
 </script>
 
@@ -68,8 +55,7 @@ const submitForm = () => {
 
           <div class="form-group-gender">
             <label>Gender</label>
-            <select v-model="gender" class="form-input-short" required>
-              <option value="" disabled selected>Pilih Gender</option>
+            <select v-model="gender" class="form-input-short">
               <option value="male">Laki-laki</option>
               <option value="female">Perempuan</option>
             </select>
