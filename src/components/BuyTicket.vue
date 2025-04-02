@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
+import axios from "axios"; 
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
 
@@ -14,13 +15,32 @@ const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
 
-const submitForm = () => {
-  console.log("Nama Lengkap:", fullName.value);
-  console.log("Email:", email.value);
-  console.log("No. Telp:", phone.value);
-  console.log("Usia:", age.value);
-  console.log("Gender:", gender.value);
-  console.log("Alergi Makanan:", foodAllergy.value);
+const submitForm = async() => {
+  const formData = {
+    fullName: fullName.value,
+    email: email.value,
+    phoneNumber: phone.value,
+    gender: gender.value,
+    age: age.value,
+    foodAllergy: 'abra',
+    eventId: '67ed433f1c5603fcb0d2d014',
+  };
+  console.log(formData);
+
+  try {
+    // Make POST request to backend
+    const response = await axios.post(
+      "http://localhost:5000/api/registrations/", // URL of your Express.js backend
+      formData
+    );
+
+    if (response.status === 201) {
+      console.log("Registration successful", response.data);
+      // Optionally, redirect user to another page or show a success message
+    }
+  } catch (error) {
+    console.error("Error during registration:");
+  }
 };
 </script>
 
@@ -68,8 +88,8 @@ const submitForm = () => {
           <div class="form-group-gender">
             <label>Gender</label>
             <select v-model="gender" class="form-input-short">
-              <option value="male">Laki-laki</option>
-              <option value="female">Perempuan</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
             </select>
           </div>
 
