@@ -2,8 +2,8 @@
 import { ref } from "vue";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
-import { useRouter } from "vue-router"
-import axios from 'axios'
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 const router = useRouter();
 
@@ -30,20 +30,30 @@ const submitForm = async () => {
     phoneNumber: phone.value,
     gender: gender.value,
     age: age.value,
-    foodAllergy: 'abra',
-    eventId: '67ed433f1c5603fcb0d2d014',
+    foodAllergy: "abra",
+    eventId: "67ed433f1c5603fcb0d2d014",
   };
   console.log(formData);
 
   try {
     // Make POST request to backend
     const response = await axios.post(
-      "http://localhost:5000/api/registrations/", // URL of your Express.js backend
+      "http://localhost:5001/api/registrations/", // URL of your Express.js backend
       formData
     );
 
     if (response.status === 201) {
       console.log("Registration successful", response.data);
+      const currentPath = router.currentRoute.value.path;
+
+      if (
+        currentPath === "/register/preevent3" ||
+        currentPath === "/register/mainevent"
+      ) {
+        router.push(`${currentPath}/transaction`);
+      } else {
+        router.push("/confirmation-page"); // ✅ Fixed route
+      }
       // Optionally, redirect user to another page or show a success message
     }
   } catch (error) {
@@ -63,22 +73,45 @@ const submitForm = async () => {
         <div class="form-norm">
           <div class="form-group">
             <label for="fullName">Nama Lengkap</label>
-            <input v-model="fullName" class="form-input" type="text" required placeholder="Nama" />
+            <input
+              v-model="fullName"
+              class="form-input"
+              type="text"
+              required
+              placeholder="Nama"
+            />
           </div>
           <div class="form-group">
             <label>No. Telp</label>
-            <input v-model="phone" type="text" required class="form-input" placeholder="Nomor Telepon" />
+            <input
+              v-model="phone"
+              type="text"
+              required
+              class="form-input"
+              placeholder="Nomor Telepon"
+            />
           </div>
           <div class="form-group">
             <label>Email</label>
-            <input v-model="email" type="email" required class="form-input" placeholder="Email address" />
+            <input
+              v-model="email"
+              type="email"
+              required
+              class="form-input"
+              placeholder="Email address"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group-usia">
             <label>Usia</label>
-            <input v-model="age" type="number" required class="form-input-short" />
+            <input
+              v-model="age"
+              type="number"
+              required
+              class="form-input-short"
+            />
           </div>
 
           <div class="form-group-gender">
@@ -89,7 +122,10 @@ const submitForm = async () => {
             </select>
           </div>
 
-          <div v-if="props.eventName === 'Main Event'" class="form-group-alergi">
+          <div
+            v-if="props.eventName === 'Main Event'"
+            class="form-group-alergi"
+          >
             <label>Alergi Makanan</label>
             <input v-model="foodAllergy" type="text" class="form-input-short" />
           </div>
