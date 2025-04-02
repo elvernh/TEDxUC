@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import BuyTicket from "../views/BuyTicket.vue";
 import PaymentMethod from "../views/PaymentMethod.vue"
 import ConfirmationPage from '../views/ConfirmationPage.vue'
 import QRScanner from "../views/QRScanner.vue"; 
@@ -42,6 +41,8 @@ const router = createRouter({
     { path: '/register/preevent1', name: 'Pre Event 1 Register', component: PreEvent1Regist },
     { path: '/register/preevent3', name: 'Pre Event 3 Register', component: PreEvent3Regist },
     { path: '/register/mainevent', name: 'Main Event Register', component: MainEventRegist },
+    { path: '/payment-method', name: 'Payment Method', component: PaymentMethod,  meta: { keepAlive: true }   },
+    { path: '/confirmation-page', name: 'Confirmation Page', component: ConfirmationPage },
   ],
 })
   
