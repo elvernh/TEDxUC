@@ -7,6 +7,7 @@ import Testing from "../views/Testing.vue";
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
 import MiniGame from '../views/MiniGamePage.vue';
+import SpeakerPage from '../views/SpeakerAndSchedulePage.vue'
 
 // Event Pages
 import PreEvent1 from '../views/events/PreEvent1.vue';
@@ -32,6 +33,7 @@ const router = createRouter({
     { path: "/qr-scanner", name: 'QR Scanner', component: QRScanner },
     { path: "/testing", name: 'Testing', component: Testing },
     { path: '/mini-game', name: 'Mini Game', component: MiniGame },
+    { path: '/speaker-schedule', name: 'Speaker & Schdule', component: SpeakerPage},
 
     // Event Pages
     { path: '/event/preevent1', name: 'PreEvent1', component: PreEvent1 },
