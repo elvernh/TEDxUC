@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 export default {
   setup() {
     const router = useRouter();
-    const countdown = ref(7);
+    const countdown = ref(8);
 
     onMounted(() => {
       const timer = setInterval(() => {

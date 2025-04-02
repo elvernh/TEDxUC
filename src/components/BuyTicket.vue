@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
 
-const props = defineProps({
-  eventName: String,
-});
+const router = useRouter();
+
+const props = defineProps<{ eventName: string }>();
 
 const fullName = ref("");
 const email = ref("");
@@ -15,12 +16,24 @@ const gender = ref("");
 const foodAllergy = ref("");
 
 const submitForm = () => {
-  console.log("Nama Lengkap:", fullName.value);
-  console.log("Email:", email.value);
-  console.log("No. Telp:", phone.value);
-  console.log("Usia:", age.value);
-  console.log("Gender:", gender.value);
-  console.log("Alergi Makanan:", foodAllergy.value);
+  try {
+    console.log("Nama Lengkap:", fullName.value);
+    console.log("Email:", email.value);
+    console.log("No. Telp:", phone.value);
+    console.log("Usia:", age.value);
+    console.log("Gender:", gender.value);
+    console.log("Alergi Makanan:", foodAllergy.value);
+
+    const currentPath = router.currentRoute.value.path;
+
+    if (currentPath === "/register/preevent3" || currentPath === "/register/mainevent") {
+      router.push(`${currentPath}/transaction`);
+    } else {
+      router.push("/confirmation-page"); // ✅ Fixed route
+    }
+  } catch (e) {
+    console.error("Error submitting form:", e);
+  }
 };
 </script>
 
@@ -35,45 +48,34 @@ const submitForm = () => {
         <div class="form-norm">
           <div class="form-group">
             <label for="fullName">Nama Lengkap</label>
-            <input v-model="fullName" class="form-input" type="text" required placeholder="Nama"/>
+            <input v-model="fullName" class="form-input" type="text" required placeholder="Nama" />
           </div>
           <div class="form-group">
             <label>No. Telp</label>
-            <input v-model="phone" type="text" required class="form-input" placeholder="Nomor Telepon"/>
+            <input v-model="phone" type="text" required class="form-input" placeholder="Nomor Telepon" />
           </div>
-
           <div class="form-group">
             <label>Email</label>
-            <input
-              v-model="email"
-              type="email"
-              required
-              class="form-input"
-              placeholder="Email address"
-            />
+            <input v-model="email" type="email" required class="form-input" placeholder="Email address" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group-usia">
             <label>Usia</label>
-            <input
-              v-model="age"
-              type="number"
-              required
-              class="form-input-short"
-            />
+            <input v-model="age" type="number" required class="form-input-short" />
           </div>
 
           <div class="form-group-gender">
             <label>Gender</label>
-            <select v-model="gender" class="form-input-short">
+            <select v-model="gender" class="form-input-short" required>
+              <option value="" disabled selected>Pilih Gender</option>
               <option value="male">Laki-laki</option>
               <option value="female">Perempuan</option>
             </select>
           </div>
 
-          <div v-if="eventName === 'Main Event'" class="form-group-alergi">
+          <div v-if="props.eventName === 'Main Event'" class="form-group-alergi">
             <label>Alergi Makanan</label>
             <input v-model="foodAllergy" type="text" class="form-input-short" />
           </div>
@@ -110,17 +112,17 @@ const submitForm = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); 
+  background: rgba(0, 0, 0, 0.5);
   z-index: 0;
 }
 
 .logo {
   position: fixed;
-  top: 2rem; 
-  left: 3rem; 
+  top: 2rem;
+  left: 3rem;
   size: 200%;
   z-index: 100;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .form-wrapper {
@@ -238,16 +240,16 @@ label {
   .form-row .form-group {
     width: 100%;
   }
-  
+
   label {
     font-size: 22px;
   }
-  
+
   .form-group-gender {
     flex: 0 0 170px;
     margin-top: -25px;
   }
-  
+
   .form-group-alergi {
     flex: 1;
     margin-top: -90px;
