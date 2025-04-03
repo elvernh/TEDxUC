@@ -37,13 +37,14 @@ import { StreamBarcodeReader } from 'vue-barcode-reader';
 import axios from 'axios';
 
 // API base URL - use environment variable or default to localhost
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const scannedData = ref(null);
 const hasCamera = ref(true);
 const statusMessage = ref('');
 const router = useRouter();
 
+const eventId = ref('');
 const onDecode = (result) => {
   scannedData.value = result;
 };
@@ -64,9 +65,27 @@ const generateQr = async () => {
       return;
     }
 
+    const response1 = await axios.get("http://localhost:5001/api/events");
+    const events = response1.data.data;
+    console.log("Fetched Events:", events);
+
+    // Find the event based on the provided event name (case-insensitive)
+    const selectedEvent = events.find(e =>
+      e.name.trim().toLowerCase() === eventName.value.trim().toLowerCase()
+    );
+    console.log("Selected Event:", selectedEvent);
+
+    if (!selectedEvent) { 
+      console.error("❌ Event not found:", eventName.value);
+      return;
+    }
+
+    const eventIdValue = selectedEvent._id;
+    console.log("Selected Event ID:", eventIdValue);
+
     const response = await axios.post(
       `${API_URL}/api/admin/export/generate-qr-batch`,
-      { eventId: "67ee3307e3a2613a33e6e735" },
+      { eventId: eventIdValue },
       {
         headers: {
           "Content-Type": "application/json",
