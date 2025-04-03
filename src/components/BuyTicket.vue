@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import axios from "axios"; 
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
-const props = defineProps({
-  eventName: String,
-  eventId: String,  
-});
+const router = useRouter();
+
+const props = defineProps<{ eventName: string }>();
 
 const fullName = ref("");
 const email = ref("");
@@ -18,32 +18,47 @@ const foodAllergy = ref("");
 const eventDetails = ref<any>(null); // To store event details
 
 
-const submitForm = async() => {
-
-  const eventResponse = await axios.get(`http://localhost:5000/api/events/67ed433f1c5603fcb0d2d014`);
-  eventDetails.value = eventResponse.data;
-  console.log("Event details fetched successfully", eventDetails.value);
-
+const submitForm = async () => {
+  console.log("Nama Lengkap:", fullName.value);
+  console.log("Email:", email.value);
+  console.log("No. Telp:", phone.value);
+  console.log("Usia:", age.value);
+  console.log("Gender:", gender.value);
+  console.log("Alergi Makanan:", foodAllergy.value);
+  const getEvent = {
+    name: props.eventName,
+    type: props.eventName,
+  };
   const formData = {
     fullName: fullName.value,
     email: email.value,
     phoneNumber: phone.value,
     gender: gender.value,
     age: age.value,
-    foodAllergy: 'abra',
-    eventId: "ObjectID('67ed433f1c5603fcb0d2d014')",
+    foodAllergy: foodAllergy.value || "None",
+    eventId: getEvent
   };
   console.log(formData);
 
   try {
     // Make POST request to backend
     const response = await axios.post(
-      "http://localhost:5000/api/registrations/", // URL of your Express.js backend
+      "http://localhost:5001/api/registrations/", // URL of your Express.js backend
       formData
     );
 
     if (response.status === 201) {
       console.log("Registration successful", response.data);
+      const currentPath = router.currentRoute.value.path;
+
+      if (
+        currentPath === "/register/preevent3" ||
+        currentPath === "/register/mainevent"
+      ) {
+        router.push(`${currentPath}/transaction`);
+      } else {
+        router.push("/confirmation-page"); // ✅ Fixed route
+      }
       // Optionally, redirect user to another page or show a success message
     }
   } catch (error) {
@@ -63,13 +78,24 @@ const submitForm = async() => {
         <div class="form-norm">
           <div class="form-group">
             <label for="fullName">Nama Lengkap</label>
-            <input v-model="fullName" class="form-input" type="text" required placeholder="Nama"/>
+            <input
+              v-model="fullName"
+              class="form-input"
+              type="text"
+              required
+              placeholder="Nama"
+            />
           </div>
           <div class="form-group">
             <label>No. Telp</label>
-            <input v-model="phone" type="text" required class="form-input" placeholder="Nomor Telepon"/>
+            <input
+              v-model="phone"
+              type="text"
+              required
+              class="form-input"
+              placeholder="Nomor Telepon"
+            />
           </div>
-
           <div class="form-group">
             <label>Email</label>
             <input
@@ -101,7 +127,10 @@ const submitForm = async() => {
             </select>
           </div>
 
-          <div v-if="eventName === 'Main Event'" class="form-group-alergi">
+          <div
+            v-if="props.eventName === 'Main Event'"
+            class="form-group-alergi"
+          >
             <label>Alergi Makanan</label>
             <input v-model="foodAllergy" type="text" class="form-input-short" />
           </div>
@@ -138,17 +167,17 @@ const submitForm = async() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); 
+  background: rgba(0, 0, 0, 0.5);
   z-index: 0;
 }
 
 .logo {
   position: fixed;
-  top: 2rem; 
-  left: 3rem; 
+  top: 2rem;
+  left: 3rem;
   size: 200%;
   z-index: 100;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .form-wrapper {
@@ -266,16 +295,16 @@ label {
   .form-row .form-group {
     width: 100%;
   }
-  
+
   label {
     font-size: 22px;
   }
-  
+
   .form-group-gender {
     flex: 0 0 170px;
     margin-top: -25px;
   }
-  
+
   .form-group-alergi {
     flex: 1;
     margin-top: -90px;

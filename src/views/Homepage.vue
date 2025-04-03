@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Nav from "@/components/NavBar.vue";
 import HeroSection from "@/components/homepage/Hero-section.vue";
+import AboutPage from "@/components/homepage/AboutTED-section.vue";
 import EventStarts from "@/components/homepage/EventStarts-section.vue"
 import InfiniteMaze from "@/components/homepage/InfiniteMaze-section.vue";
 import Footer from "@/components/Footer.vue";
@@ -13,6 +14,7 @@ const route = useRoute();
 <template>
   <div class="homepage-container fade-in">
     <HeroSection />
+    <AboutPage />
     <EventStarts/>
     <InfiniteMaze/>
     <Footer/>
