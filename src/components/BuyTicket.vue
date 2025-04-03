@@ -6,6 +6,7 @@ import logo from "@/components/icons/logo-white.svg";
 
 const props = defineProps({
   eventName: String,
+  eventId: String,  
 });
 
 const fullName = ref("");
@@ -14,8 +15,15 @@ const phone = ref("");
 const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
+const eventDetails = ref<any>(null); // To store event details
+
 
 const submitForm = async() => {
+
+  const eventResponse = await axios.get(`http://localhost:5000/api/events/67ed433f1c5603fcb0d2d014`);
+  eventDetails.value = eventResponse.data;
+  console.log("Event details fetched successfully", eventDetails.value);
+
   const formData = {
     fullName: fullName.value,
     email: email.value,
@@ -23,7 +31,7 @@ const submitForm = async() => {
     gender: gender.value,
     age: age.value,
     foodAllergy: 'abra',
-    eventId: '67ed433f1c5603fcb0d2d014',
+    eventId: "ObjectID('67ed433f1c5603fcb0d2d014')",
   };
   console.log(formData);
 

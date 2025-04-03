@@ -33,6 +33,9 @@ import { useRouter } from 'vue-router';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import axios from 'axios';
 
+// API base URL - use environment variable or default to localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const scannedData = ref(null);
 const hasCamera = ref(true);
 const statusMessage = ref('');
@@ -50,6 +53,18 @@ const onLoaded = () => {
   }, 3000);
 };
 
+// Create API client with authorization header
+const getAuthClient = () => {
+  const token = localStorage.getItem('token');
+  return axios.create({
+    baseURL: API_URL,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  });
+};
+
 const verifyAndMarkAttendance = async () => {
   try {
     statusMessage.value = 'Verifying QR code...';
@@ -62,22 +77,23 @@ const verifyAndMarkAttendance = async () => {
       return;
     }
 
-    const verifyResponse = await axios.post(
-      'http://localhost:5000/api/verify-qr',
-      { qrData: scannedData.value },
-      { headers: { Authorization: `Bearer ${token}` } }
+    const apiClient = getAuthClient();
+    
+    // Use the correct endpoint from your registration routes
+    const verifyResponse = await apiClient.post(
+      '/api/registrations/verify-qr',
+      { qrData: scannedData.value }
     );
 
-    if (verifyResponse.data.valid) {
-      statusMessage.value = 'QR code valid. Marking attendance...';
+    if (verifyResponse.data.status === 'success') {
+      statusMessage.value = `${verifyResponse.data.message || 'Attendance marked successfully!'}`;
       
-      const markResponse = await axios.put(
-        `http://localhost:5000/api/registrations/${verifyResponse.data.id}/attend`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      statusMessage.value = markResponse.data.message || 'Attendance marked successfully!';
+      // Display registration details
+      const regData = verifyResponse.data.data.registration;
+      const eventData = verifyResponse.data.data.event;
+      
+      statusMessage.value = `Success! ${regData.fullName} checked in for ${eventData.name}`;
+      
       setTimeout(() => {
         scannedData.value = null;
         statusMessage.value = 'Ready for next scan.';
@@ -91,10 +107,20 @@ const verifyAndMarkAttendance = async () => {
     }
   } catch (error) {
     console.error('Error:', error);
-    statusMessage.value = `Error: ${error.response?.data?.message || 'Failed to process QR code'}`;
-    setTimeout(() => {
-      statusMessage.value = '';
-    }, 5000);
+    // Handle specific error cases
+    if (error.response?.status === 401) {
+      statusMessage.value = 'Your session has expired. Redirecting to login...';
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/login');
+      }, 2000);
+    } else {
+      statusMessage.value = `Error: ${error.response?.data?.message || 'Failed to process QR code'}`;
+      setTimeout(() => {
+        statusMessage.value = '';
+      }, 5000);
+    }
   }
 };
 
@@ -105,7 +131,22 @@ onMounted(() => {
     setTimeout(() => {
       router.push('/login');
     }, 2000);
+    return;
   }
+  
+  // Verify token validity
+  const apiClient = getAuthClient();
+  apiClient.get('/api/auth/me')
+    .catch((error) => {
+      if (error.response?.status === 401) {
+        statusMessage.value = 'Session expired. Please login again.';
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
+    });
 });
 </script>
 
