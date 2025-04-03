@@ -18,7 +18,7 @@ const closeMobileDropdown = () => {
 };
 
 const navigationPath = [
-  { name: "About", path: "/about" },
+  {name: "Home", path: "/"},
   {
     name: "Event",
     dropdown: [
@@ -28,7 +28,7 @@ const navigationPath = [
       { name: "Main Event", path: "/event/mainevent" },
     ],
   },
-  { name: "Mini Game", path: "/mini-game" },
+  // { name: "Mini Game", path: "/mini-game" },
   { name: "Speaker & Schedule", path: "/speaker-schedule" },
   { name: "Login", path: "/login" },
 ];

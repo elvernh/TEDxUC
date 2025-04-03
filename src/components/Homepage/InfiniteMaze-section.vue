@@ -87,6 +87,7 @@ export default {
   font-weight: 200;
   text-align-last: left;
   margin-top: 10px;
+  text-align: justify;
 }
 
 /* Responsive Design */
@@ -111,7 +112,7 @@ export default {
 @media (max-width: 768px) {
   .layout-container {
     flex-direction: column;
-    padding: 100px 50px;
+    padding: 500px 50px;
     gap: 30px;
   }
   .text-container {
@@ -132,7 +133,7 @@ export default {
 
   @media (max-width: 590px) {
     .layout-container {
-      padding: 100px 35px;
+      padding: 500px 35px;
       gap: 20px;
     }
     .title {
