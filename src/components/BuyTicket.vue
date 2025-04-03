@@ -17,12 +17,14 @@ const gender = ref("");
 const foodAllergy = ref("");
 const eventDetails = ref<any>(null); // To store event details
 
-
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
+const isLoading = ref(false);  // Add this line for the loading state
 
 const submitForm = async () => {
   try {
+    isLoading.value = true;  // Set loading state to true when submission starts
+    
     // Fetch events
     const response = await axios.get("http://localhost:5001/api/events");
     const events = response.data.data;
@@ -95,6 +97,8 @@ const submitForm = async () => {
         showErrorPopup.value = true; // Show the popup when errors are found
       }
     }
+  } finally {
+    isLoading.value = false;  // Set loading state to false when done
   }
 };
 </script>
@@ -169,7 +173,7 @@ const submitForm = async () => {
         </div>
 
         <div class="form-submit">
-          <button type="submit" class="submit-button">NEXT</button>
+          <button type="submit" class="submit-button" :disabled="isLoading">NEXT</button>
         </div>
       </form>
     </div>
@@ -183,6 +187,12 @@ const submitForm = async () => {
         </ul>
         <button @click="showErrorPopup = false">Close</button>
       </div>
+    </div>
+
+    <!-- Loader -->
+    <div v-if="isLoading" class="loader">
+      <div class="spinner"></div>
+      <p>Loading...</p>
     </div>
   </div>
 </template>
@@ -231,6 +241,7 @@ const submitForm = async () => {
   display: flex;
   flex-direction: column;
   z-index: 1;
+  background-color: transparent
 }
 
 .title {
@@ -371,5 +382,101 @@ label {
 
 .popup-content button:hover {
   background-color: hsla(0, 0%, 34%, 0.7);
+}
+
+/* Loader styles */
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Darken background when loader is visible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+  .form-wrapper {
+    padding: 30px 20px;
+  }
+
+  .title {
+    margin-top: 90px;
+    font-size: 40px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  label {
+    font-size: 22px;
+  }
+
+  .form-group-gender {
+    flex: 0 0 170px;
+    margin-top: -25px;
+  }
+
+  .form-group-alergi {
+    flex: 1;
+    margin-top: -90px;
+  }
+
+  .form-submit{
+    margin-top: -100px;
+  }
+}
+
+@media (max-width: 590px) {
+  .form-wrapper {
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  label {
+    font-size: 20px;
+  }
+
+  .form-wrapper {
+    width: 100%;
+    padding: 40px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+  .form-submit{
+    margin-top: -100px;
+  }
 }
 </style>
