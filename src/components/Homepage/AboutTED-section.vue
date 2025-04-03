@@ -206,7 +206,7 @@ h1 {
   text-align: center;
   padding: 20px;
   transform: translate(-160px, -150px);
-  background: linear-gradient(rgba(255, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 0, 0, 0.7));
   border-radius: 10px;
   z-index: 2;
 }
@@ -249,7 +249,7 @@ h1 {
     font-size: 16px;
     padding: 15px;
     
-  transform: translate(-150px, -70px);
+  transform: translate(-150px, -90px);
   }
 }
 </style>
