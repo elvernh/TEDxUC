@@ -93,7 +93,6 @@ onMounted(() => {
   if (router.currentRoute.value.path === "/confirmation-page") {
     const timer = setInterval(() => {
       countdown.value--;
-
       if (countdown.value <= 0) {
         clearInterval(timer);
         router.push("/");
@@ -192,6 +191,7 @@ onMounted(() => {
             id="bca"
             v-model="selectedPayment"
             value="bca"
+            class="radio-hid"
           />
           <input
             type="radio"
@@ -199,6 +199,7 @@ onMounted(() => {
             id="qris"
             v-model="selectedPayment"
             value="qris"
+            class="radio-hid"
           />
 
           <div class="category">
@@ -206,7 +207,7 @@ onMounted(() => {
               <div class="imgName">
                 <div class="imgContainer"></div>
                 <img src="/src/assets/images/bcaLogo.png" alt="bca" />
-                <span class="name">BCA Virtual Account</span>
+                <span class="Payment-name">BCA Virtual Account</span>
               </div>
             </label>
 
@@ -214,7 +215,7 @@ onMounted(() => {
               <div class="imgName">
                 <div class="imgContainer"></div>
                 <img src="/src/assets/images/qrisLogo.png" alt="qris" />
-                <span class="name">QRIS</span>
+                <span class="Payment-name">QRIS</span>
               </div>
             </label>
           </div>
@@ -292,6 +293,10 @@ onMounted(() => {
   z-index: 0;
 }
 
+.form-wrapper{
+  display: none
+}
+
 .logo {
   position: fixed;
   top: 2rem;
@@ -307,7 +312,7 @@ onMounted(() => {
   text-align: center;
 }
 
-/* BuyTicket Styles */
+
 .form-wrapper {
   width: 100%;
   max-width: 800px;
@@ -318,12 +323,21 @@ onMounted(() => {
   z-index: 1;
   background-color: transparent;
 }
+/* BuyTicket Styles */
+
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
   margin-bottom: 20px;
+}
+
+.radio-hid{
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 label {
@@ -390,16 +404,33 @@ label {
 }
 
 /* PaymentMethod Styles */
+.payment-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  z-index: 1;
+}
 .container {
   width: 600px;
   border-radius: 8px;
   padding: 40px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 5px 12px -2px rgba(0, 0, 0, 0.1),
+    0 18px 36px -6px rgba(0, 0, 0, 0.1);
   z-index: 2;
 }
+
+.container form input[type="radio"] {
+  display: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 
 .category {
   margin-top: 10px;
   padding-top: 20px;
+
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 15px;
@@ -420,6 +451,13 @@ label {
 
 .payment-method:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-method.bcaMethod.active,
+.payment-method.qrisMethod.active {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 #bca:checked ~ .category .bcaMethod,
@@ -446,8 +484,7 @@ label {
   color: #fff;
 }
 
-.bca-details,
-.qris-details {
+.bca-details {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -464,6 +501,17 @@ label {
   font-family: monospace;
 }
 
+.qris-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.qris-details p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 .qrcode-placeholder {
   width: 200px;
   height: 200px;
@@ -475,6 +523,10 @@ label {
   margin: 10px 0;
 }
 
+.Payment-name{
+  font-size: 20px;
+  margin-top: 10px;
+}
 .imgName {
   display: flex;
   justify-content: center;
@@ -484,6 +536,7 @@ label {
 }
 
 .imgName span {
+  /* margin-left: 20px; */
   position: absolute;
   font-weight: bold;
   margin-top: 80px;
@@ -494,9 +547,22 @@ label {
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 35%;
-  transform: translateY(-35%);
+  top: 15%;
+  transform: translateY(-25px);
 }
+
+img {
+  width: 100px;
+  height: auto;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
 
 /* ConfirmationPage Styles */
 .confirmation-details {
@@ -514,7 +580,6 @@ label {
   font-size: 18px;
 }
 
-/* Common Components Styles */
 .error-popup {
   position: fixed;
   top: 0;
