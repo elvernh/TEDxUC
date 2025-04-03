@@ -25,6 +25,9 @@
       {{ statusMessage }}
     </div>
   </div>
+  <h1>Generate QR Batch</h1>
+    <input v-model="eventId" type="text" placeholder="Enter Event ID" />
+    <button @click="generateQr">Generate QR Codes</button>
 </template>
 
 <script setup>
@@ -53,6 +56,33 @@ const onLoaded = () => {
   }, 3000);
 };
 
+const generateQr = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must be logged in!");
+      return;
+    }
+
+    const response = await axios.post(
+      `${API_URL}/api/admin/export/generate-qr-batch`,
+      { eventId: "67ee3307e3a2613a33e6e735" },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("QR Batch generated successfully:", response.data);
+    alert("QR batch successfully generated!");
+  } catch (error) {
+    console.error("Error generating QR batch:", error.response?.data || error.message);
+    alert(`Error: ${error.response?.data?.message || "Failed to generate QR batch"}`);
+  }
+};
+
 // Create API client with authorization header
 const getAuthClient = () => {
   const token = localStorage.getItem('token');
@@ -79,7 +109,6 @@ const verifyAndMarkAttendance = async () => {
 
     const apiClient = getAuthClient();
     
-    // Use the correct endpoint from your registration routes
     const verifyResponse = await apiClient.post(
       '/api/registrations/verify-qr',
       { qrData: scannedData.value }
@@ -88,7 +117,6 @@ const verifyAndMarkAttendance = async () => {
     if (verifyResponse.data.status === 'success') {
       statusMessage.value = `${verifyResponse.data.message || 'Attendance marked successfully!'}`;
       
-      // Display registration details
       const regData = verifyResponse.data.data.registration;
       const eventData = verifyResponse.data.data.event;
       
@@ -107,7 +135,6 @@ const verifyAndMarkAttendance = async () => {
     }
   } catch (error) {
     console.error('Error:', error);
-    // Handle specific error cases
     if (error.response?.status === 401) {
       statusMessage.value = 'Your session has expired. Redirecting to login...';
       setTimeout(() => {
@@ -134,7 +161,6 @@ onMounted(() => {
     return;
   }
   
-  // Verify token validity
   const apiClient = getAuthClient();
   apiClient.get('/api/auth/me')
     .catch((error) => {

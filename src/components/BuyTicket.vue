@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { ref } from "vue";
+import axios from 'axios';
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
 import { useRouter } from "vue-router";
-import axios from "axios";
 
 const router = useRouter();
 
@@ -36,14 +36,14 @@ const submitForm = async () => {
     gender: gender.value,
     age: age.value,
     foodAllergy: foodAllergy.value || "None",
-    eventId: getEvent
+    eventId: "67ee3307e3a2613a33e6e735"
   };
   console.log(formData);
 
   try {
     // Make POST request to backend
     const response = await axios.post(
-      "http://localhost:5001/api/registrations/", // URL of your Express.js backend
+      "http://localhost:5000/api/registrations/", // URL of your Express.js backend
       formData
     );
 
