@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import bgImage from "@/assets/images/background-1.png";
-import logo from "@/components/icons/logo-white.svg";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import bgImage from "@/assets/images/background-1.png";
+import logo from "@/components/icons/logo-white.svg";
 
 const router = useRouter();
 
-const props = defineProps<{ eventName: string }>();
+const isLoading = ref(false);
+const showErrorPopup = ref(false);
+const errorMessages = ref<string[]>([]);
 
+const props = defineProps<{ eventName: string }>();
 const fullName = ref("");
 const email = ref("");
 const phone = ref("");
@@ -20,6 +23,13 @@ const eventDetails = ref<any>(null); // To store event details
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
 const isLoading = ref(false);  // Add this line for the loading state
+const eventDetails = ref<any>(null);
+
+const selectedPayment = ref("");
+
+const countdown = ref(8);
+
+const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
 const submitForm = async () => {
   try {
@@ -75,10 +85,10 @@ const submitForm = async () => {
       console.log("✅ Registration successful:", registrationResponse.data);
       console.log("Registration data: ", registrationResponse.data.data._id)
       const currentPath = router.currentRoute.value.path;
-      if (["/register/preevent3", "/register/mainevent"].includes(currentPath)) {
-        router.push(`${currentPath}/transaction`);
+      if (["preevent3", "mainevent"].includes(props.eventName.toLowerCase())) {
+        currentStep.value = "payment";
       } else {
-        router.push("/confirmation-page");
+        currentStep.value = "confirmation";
       }
     }
   } catch (error) {
@@ -105,10 +115,11 @@ const submitForm = async () => {
 
 <template>
   <div class="layout-container" :style="{ backgroundImage: `url(${bgImage})` }">
-    <div class="form-wrapper">
-      <div class="logo-container">
-        <img class="logo" :src="logo" alt="logo" />
-      </div>
+    <div class="logo-container">
+      <img class="logo" :src="logo" alt="logo" />
+    </div>
+
+    <div v-if="currentStep === 'form'" class="form-wrapper">
       <h1 class="title">Ticket Order Form</h1>
       <form @submit.prevent="submitForm">
         <div class="form-norm">
@@ -173,27 +184,96 @@ const submitForm = async () => {
         </div>
 
         <div class="form-submit">
-          <button type="submit" class="submit-button" :disabled="isLoading">NEXT</button>
+          <button type="submit" class="submit-button" :disabled="isLoading">
+            NEXT
+          </button>
         </div>
       </form>
     </div>
 
-    <!-- Modal for Validation Errors -->
-    <div v-if="showErrorPopup" class="error-popup">
-      <div class="popup-content">
-        <h2>Validation Errors</h2>
-        <ul>
-          <li v-for="(message, index) in errorMessages" :key="index">{{ message }}</li>
-        </ul>
-        <button @click="showErrorPopup = false">Close</button>
+      <div v-else-if="currentStep === 'payment'" class="payment-wrapper">
+        <h1 class="title">Payment</h1>
+
+        <form @submit.prevent>
+          <div style="color: white; margin-bottom: 10px"></div>
+          <input
+            type="radio"
+            name="payment"
+            id="bca"
+            v-model="selectedPayment"
+            value="bca"
+            class="radio-hid"
+          />
+          <input
+            type="radio"
+            name="payment"
+            id="qris"
+            v-model="selectedPayment"
+            value="qris"
+            class="radio-hid"
+          />
+
+          <div class="category">
+            <label for="bca" class="payment-method bcaMethod">
+              <div class="imgName">
+                <div class="imgContainer"></div>
+                <img src="/src/assets/images/bcaLogo.png" alt="bca" />
+                <span class="Payment-name">BCA Virtual Account</span>
+              </div>
+            </label>
+
+            <label for="qris" class="payment-method qrisMethod">
+              <div class="imgName">
+                <div class="imgContainer"></div>
+                <img src="/src/assets/images/qrisLogo.png" alt="qris" />
+                <span class="Payment-name">QRIS</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="payment-details">
+            <div v-if="selectedPayment === 'bca'" class="bca-details">
+              <h3>BCA Virtual Account Payment</h3>
+              <div class="va-number">1111111111</div>
+            </div>
+
+            <div v-if="selectedPayment === 'qris'" class="qris-details">
+              <h3>QRIS Payment</h3>
+              <p>Scan this QR code below</p>
+              <div class="qrcode-placeholder">qr</div>
+            </div>
+          </div>
+        </form>
+      </div>
+    
+
+    <div v-else class="confirmation-wrapper">
+        <h1 class="title">Order Confirmed!</h1>
+
+        <div class="confirmation-details">
+          <p>Thank you for your order!</p>
+          <p>Your e-ticket will be sent to your email</p>
+          <p>You will be redirected to the home page now</p>
+        </div>
       </div>
     </div>
+  
 
-    <!-- Loader -->
-    <div v-if="isLoading" class="loader">
-      <div class="spinner"></div>
-      <p>Loading...</p>
+  <div v-if="showErrorPopup" class="error-popup">
+    <div class="popup-content">
+      <h2>Validation Errors</h2>
+      <ul>
+        <li v-for="(message, index) in errorMessages" :key="index">
+          {{ message }}
+        </li>
+      </ul>
+      <button @click="showErrorPopup = false">Close</button>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 </template>
 
@@ -224,24 +304,16 @@ const submitForm = async () => {
   z-index: 0;
 }
 
+.form-wrapper{
+  display: none
+}
+
 .logo {
   position: fixed;
   top: 2rem;
   left: 3rem;
-  size: 200%;
+  width: 177px;
   z-index: 100;
-  pointer-events: none;
-}
-
-.form-wrapper {
-  width: 100%;
-  max-width: 800px;
-  padding: 40px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  background-color: transparent
 }
 
 .title {
@@ -251,10 +323,19 @@ const submitForm = async () => {
   text-align: center;
 }
 
-form {
+
+.form-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
+  z-index: 1;
+  background-color: transparent;
 }
+/* BuyTicket Styles */
+
 
 .form-group {
   display: flex;
@@ -263,13 +344,21 @@ form {
   margin-bottom: 20px;
 }
 
+.radio-hid{
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 label {
   font-size: 30px;
   color: white;
   font-weight: normal;
 }
 
-.form-input {
+.form-input,
+.form-input-short {
   background: white;
   border: none;
   border-radius: 6px;
@@ -279,12 +368,6 @@ label {
 }
 
 .form-input-short {
-  background: white;
-  border: none;
-  border-radius: 6px;
-  padding: 15px;
-  font-size: 20px;
-  transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
 }
@@ -331,7 +414,183 @@ label {
   background-color: hsla(0, 0%, 34%, 0.699);
 }
 
-/* Error popup styles */
+/* PaymentMethod Styles */
+.payment-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  z-index: 1;
+}
+.container {
+  width: 600px;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 5px 12px -2px rgba(0, 0, 0, 0.1),
+    0 18px 36px -6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.container form input[type="radio"] {
+  display: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+
+.category {
+  margin-top: 10px;
+  padding-top: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+}
+
+.payment-method {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-method:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-method.bcaMethod.active,
+.payment-method.qrisMethod.active {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#bca:checked ~ .category .bcaMethod,
+#qris:checked ~ .category .qrisMethod {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.payment-details {
+  margin: 30px 0;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-height: 200px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.payment-details h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #fff;
+}
+
+.bca-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.va-number {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px 30px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.qris-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.qris-details p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.qrcode-placeholder {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.Payment-name{
+  font-size: 20px;
+  margin-top: 10px;
+}
+.imgName {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imgName span {
+  /* margin-left: 20px; */
+  position: absolute;
+  font-weight: bold;
+  margin-top: 80px;
+}
+
+.imgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 15%;
+  transform: translateY(-25px);
+}
+
+img {
+  width: 100px;
+  height: auto;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+
+/* ConfirmationPage Styles */
+.confirmation-details {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 25px 0;
+  text-align: center;
+}
+
+.confirmation-details p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: white;
+  font-size: 18px;
+}
+
 .error-popup {
   position: fixed;
   top: 0;
@@ -380,18 +639,13 @@ label {
   cursor: pointer;
 }
 
-.popup-content button:hover {
-  background-color: hsla(0, 0%, 34%, 0.7);
-}
-
-/* Loader styles */
 .loader {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7); /* Darken background when loader is visible */
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -399,8 +653,8 @@ label {
 }
 
 .spinner {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #3498db; /* Blue */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -408,12 +662,20 @@ label {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .form-wrapper {
+  .form-wrapper,
+  .container {
     padding: 30px 20px;
+    width: 90%;
   }
 
   .title {
@@ -421,9 +683,11 @@ label {
     font-size: 40px;
   }
 
-  .form-row {
+  .form-row,
+  .category {
     flex-direction: column;
     gap: 20px;
+    grid-template-columns: 1fr;
   }
 
   .form-row .form-group {
@@ -444,7 +708,7 @@ label {
     margin-top: -90px;
   }
 
-  .form-submit{
+  .form-submit {
     margin-top: -100px;
   }
 }
@@ -454,29 +718,8 @@ label {
     padding: 30px 20px;
   }
 
-  .form-row {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .form-row .form-group {
-    width: 100%;
-  }
-
   label {
     font-size: 20px;
-  }
-
-  .form-wrapper {
-    width: 100%;
-    padding: 40px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-  }
-  .form-submit{
-    margin-top: -100px;
   }
 }
 </style>
