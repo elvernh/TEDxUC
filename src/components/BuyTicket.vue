@@ -26,7 +26,7 @@ const submitForm = async () => {
     isLoading.value = true;  // Set loading state to true when submission starts
     
     // Fetch events
-    const response = await axios.get("http://localhost:5000/api/events");
+    const response = await axios.get("http://localhost:5001/api/events");
     const events = response.data.data;
 
     console.log("✅ Fetched Events:", events.map(e => e.name));
@@ -66,14 +66,14 @@ const submitForm = async () => {
 
     // Make POST request
     const registrationResponse = await axios.post(
-      "http://localhost:5000/api/registrations/",
+      "http://localhost:5001/api/registrations/",
       formData
     );
 
     // Check if registration was successful
     if (registrationResponse.status === 201) {
       console.log("✅ Registration successful:", registrationResponse.data);
-
+      console.log("Registration data: ", registrationResponse.data.data._id)
       const currentPath = router.currentRoute.value.path;
       if (["/register/preevent3", "/register/mainevent"].includes(currentPath)) {
         router.push(`${currentPath}/transaction`);
