@@ -7,10 +7,6 @@ import logo from "@/components/icons/logo-white.svg";
 
 const router = useRouter();
 
-const isLoading = ref(false);
-const showErrorPopup = ref(false);
-const errorMessages = ref<string[]>([]);
-
 const props = defineProps<{ eventName: string }>();
 const fullName = ref("");
 const email = ref("");
@@ -22,8 +18,7 @@ const eventDetails = ref<any>(null); // To store event details
 
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
-const isLoading = ref(false);  // Add this line for the loading state
-const eventDetails = ref<any>(null);
+const isLoading = ref(false); // Add this line for the loading state
 
 const selectedPayment = ref("");
 
@@ -33,13 +28,16 @@ const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
 const submitForm = async () => {
   try {
-    isLoading.value = true;  // Set loading state to true when submission starts
-    
+    isLoading.value = true; // Set loading state to true when submission starts
+
     // Fetch events
     const response = await axios.get("http://localhost:5001/api/events");
     const events = response.data.data;
 
-    console.log("✅ Fetched Events:", events.map(e => e.name));
+    console.log(
+      "✅ Fetched Events:",
+      events.map((e) => e.name)
+    );
 
     // Ensure props.eventName is defined
     if (!props.eventName) {
@@ -50,8 +48,9 @@ const submitForm = async () => {
     console.log("🎯 Searching for:", props.eventName);
 
     // Find selected event (case-insensitive & trimmed)
-    const selectedEvent = events.find(e =>
-      e.name.trim().toLowerCase() === props.eventName.trim().toLowerCase()
+    const selectedEvent = events.find(
+      (e) =>
+        e.name.trim().toLowerCase() === props.eventName.trim().toLowerCase()
     );
 
     if (!selectedEvent) {
@@ -69,7 +68,7 @@ const submitForm = async () => {
       gender: gender.value,
       age: parseInt(age.value, 10), // Ensure it's a number
       foodAllergy: foodAllergy.value?.trim() || "None",
-      eventId: eventIdValue
+      eventId: eventIdValue,
     };
 
     console.log("🚀 Sending Form Data:", formData);
@@ -83,12 +82,15 @@ const submitForm = async () => {
     // Check if registration was successful
     if (registrationResponse.status === 201) {
       console.log("✅ Registration successful:", registrationResponse.data);
-      console.log("Registration data: ", registrationResponse.data.data._id)
+      console.log("Registration data: ", registrationResponse.data.data._id);
+      console.log(props.eventName)
       const currentPath = router.currentRoute.value.path;
-      if (["preevent3", "mainevent"].includes(props.eventName.toLowerCase())) {
-        currentStep.value = "payment";
+
+      // Check if eventName matches "Pre-Event 3" or "Main Event"
+      if (props.eventName == "Pre-Event 3" || props.eventName == "Main Event") {
+        currentStep.value = "payment"; // Set currentStep to "payment" for these events
       } else {
-        currentStep.value = "confirmation";
+        currentStep.value = "confirmation"; // Set currentStep to "confirmation" for other events
       }
     }
   } catch (error) {
@@ -108,7 +110,7 @@ const submitForm = async () => {
       }
     }
   } finally {
-    isLoading.value = false;  // Set loading state to false when done
+    isLoading.value = false; // Set loading state to false when done
   }
 };
 </script>
@@ -191,73 +193,71 @@ const submitForm = async () => {
       </form>
     </div>
 
-      <div v-else-if="currentStep === 'payment'" class="payment-wrapper">
-        <h1 class="title">Payment</h1>
+    <div v-else-if="currentStep === 'payment'" class="payment-wrapper">
+      <h1 class="title">Payment</h1>
 
-        <form @submit.prevent>
-          <div style="color: white; margin-bottom: 10px"></div>
-          <input
-            type="radio"
-            name="payment"
-            id="bca"
-            v-model="selectedPayment"
-            value="bca"
-            class="radio-hid"
-          />
-          <input
-            type="radio"
-            name="payment"
-            id="qris"
-            v-model="selectedPayment"
-            value="qris"
-            class="radio-hid"
-          />
+      <form @submit.prevent>
+        <div style="color: white; margin-bottom: 10px"></div>
+        <input
+          type="radio"
+          name="payment"
+          id="bca"
+          v-model="selectedPayment"
+          value="bca"
+          class="radio-hid"
+        />
+        <input
+          type="radio"
+          name="payment"
+          id="qris"
+          v-model="selectedPayment"
+          value="qris"
+          class="radio-hid"
+        />
 
-          <div class="category">
-            <label for="bca" class="payment-method bcaMethod">
-              <div class="imgName">
-                <div class="imgContainer"></div>
-                <img src="/src/assets/images/bcaLogo.png" alt="bca" />
-                <span class="Payment-name">BCA Virtual Account</span>
-              </div>
-            </label>
+        <div class="category">
+          <label for="bca" class="payment-method bcaMethod">
+            <div class="imgName">
+              <div class="imgContainer"></div>
+              <img src="/src/assets/images/bcaLogo.png" alt="bca" />
+              <span class="Payment-name">BCA Virtual Account</span>
+            </div>
+          </label>
 
-            <label for="qris" class="payment-method qrisMethod">
-              <div class="imgName">
-                <div class="imgContainer"></div>
-                <img src="/src/assets/images/qrisLogo.png" alt="qris" />
-                <span class="Payment-name">QRIS</span>
-              </div>
-            </label>
+          <label for="qris" class="payment-method qrisMethod">
+            <div class="imgName">
+              <div class="imgContainer"></div>
+              <img src="/src/assets/images/qrisLogo.png" alt="qris" />
+              <span class="Payment-name">QRIS</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="payment-details">
+          <div v-if="selectedPayment === 'bca'" class="bca-details">
+            <h3>BCA Virtual Account Payment</h3>
+            <div class="va-number">1111111111</div>
           </div>
 
-          <div class="payment-details">
-            <div v-if="selectedPayment === 'bca'" class="bca-details">
-              <h3>BCA Virtual Account Payment</h3>
-              <div class="va-number">1111111111</div>
-            </div>
-
-            <div v-if="selectedPayment === 'qris'" class="qris-details">
-              <h3>QRIS Payment</h3>
-              <p>Scan this QR code below</p>
-              <div class="qrcode-placeholder">qr</div>
-            </div>
+          <div v-if="selectedPayment === 'qris'" class="qris-details">
+            <h3>QRIS Payment</h3>
+            <p>Scan this QR code below</p>
+            <div class="qrcode-placeholder">qr</div>
           </div>
-        </form>
-      </div>
-    
+        </div>
+      </form>
+    </div>
 
     <div v-else class="confirmation-wrapper">
-        <h1 class="title">Order Confirmed!</h1>
+      <h1 class="title">Order Confirmed!</h1>
 
-        <div class="confirmation-details">
-          <p>Thank you for your order!</p>
-          <p>Your e-ticket will be sent to your email</p>
-          <p>You will be redirected to the home page now</p>
-        </div>
+      <div class="confirmation-details">
+        <p>Thank you for your order!</p>
+        <p>Your e-ticket will be sent to your email</p>
+        <p>You will be redirected to the home page now</p>
       </div>
     </div>
-  
+  </div>
 
   <div v-if="showErrorPopup" class="error-popup">
     <div class="popup-content">
@@ -304,8 +304,8 @@ const submitForm = async () => {
   z-index: 0;
 }
 
-.form-wrapper{
-  display: none
+.form-wrapper {
+  display: none;
 }
 
 .logo {
@@ -323,7 +323,6 @@ const submitForm = async () => {
   text-align: center;
 }
 
-
 .form-wrapper {
   width: 100%;
   max-width: 800px;
@@ -336,7 +335,6 @@ const submitForm = async () => {
 }
 /* BuyTicket Styles */
 
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -344,7 +342,7 @@ const submitForm = async () => {
   margin-bottom: 20px;
 }
 
-.radio-hid{
+.radio-hid {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -436,7 +434,6 @@ label {
   width: 0;
   height: 0;
 }
-
 
 .category {
   margin-top: 10px;
@@ -534,7 +531,7 @@ label {
   margin: 10px 0;
 }
 
-.Payment-name{
+.Payment-name {
   font-size: 20px;
   margin-top: 10px;
 }
@@ -573,7 +570,6 @@ img {
   margin-top: 20px;
   width: 100%;
 }
-
 
 /* ConfirmationPage Styles */
 .confirmation-details {
