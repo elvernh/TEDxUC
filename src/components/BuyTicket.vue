@@ -15,6 +15,8 @@ const phone = ref("");
 const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
+const eventDetails = ref<any>(null); // To store event details
+
 
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
