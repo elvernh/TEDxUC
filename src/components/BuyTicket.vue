@@ -16,51 +16,83 @@ const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
 
-const submitForm = async () => {
-  console.log("Nama Lengkap:", fullName.value);
-  console.log("Email:", email.value);
-  console.log("No. Telp:", phone.value);
-  console.log("Usia:", age.value);
-  console.log("Gender:", gender.value);
-  console.log("Alergi Makanan:", foodAllergy.value);
-  const getEvent = {
-    name: props.eventName,
-    type: props.eventName,
-  };
-  const formData = {
-    fullName: fullName.value,
-    email: email.value,
-    phoneNumber: phone.value,
-    gender: gender.value,
-    age: age.value,
-    foodAllergy: foodAllergy.value || "None",
-    eventId: getEvent
-  };
-  console.log(formData);
+const errorMessages = ref<string[]>([]);
+const showErrorPopup = ref(false);
 
+const submitForm = async () => {
   try {
-    // Make POST request to backend
-    const response = await axios.post(
-      "http://localhost:5001/api/registrations/", // URL of your Express.js backend
+    // Fetch events
+    const response = await axios.get("http://localhost:5001/api/events");
+    const events = response.data.data;
+
+    console.log("✅ Fetched Events:", events.map(e => e.name));
+
+    // Ensure props.eventName is defined
+    if (!props.eventName) {
+      console.error("❌ props.eventName is undefined!");
+      return;
+    }
+
+    console.log("🎯 Searching for:", props.eventName);
+
+    // Find selected event (case-insensitive & trimmed)
+    const selectedEvent = events.find(e =>
+      e.name.trim().toLowerCase() === props.eventName.trim().toLowerCase()
+    );
+
+    if (!selectedEvent) {
+      console.error("❌ Event not found:", props.eventName);
+      return;
+    }
+
+    const eventIdValue = selectedEvent._id;
+
+    // Construct form data
+    const formData = {
+      fullName: fullName.value.trim(),
+      email: email.value.trim(),
+      phoneNumber: phone.value.trim(),
+      gender: gender.value,
+      age: parseInt(age.value, 10), // Ensure it's a number
+      foodAllergy: foodAllergy.value?.trim() || "None",
+      eventId: eventIdValue
+    };
+
+    console.log("🚀 Sending Form Data:", formData);
+
+    // Make POST request
+    const registrationResponse = await axios.post(
+      "http://localhost:5001/api/registrations/",
       formData
     );
 
-    if (response.status === 201) {
-      console.log("Registration successful", response.data);
-      const currentPath = router.currentRoute.value.path;
+    // Check if registration was successful
+    if (registrationResponse.status === 201) {
+      console.log("✅ Registration successful:", registrationResponse.data);
 
-      if (
-        currentPath === "/register/preevent3" ||
-        currentPath === "/register/mainevent"
-      ) {
+      const currentPath = router.currentRoute.value.path;
+      if (["/register/preevent3", "/register/mainevent"].includes(currentPath)) {
         router.push(`${currentPath}/transaction`);
       } else {
-        router.push("/confirmation-page"); // ✅ Fixed route
+        router.push("/confirmation-page");
       }
-      // Optionally, redirect user to another page or show a success message
     }
   } catch (error) {
-    console.error("Error during registration:");
+    console.error("❌ Error during registration:", error);
+
+    if (error.response && error.response.data) {
+      console.error("❌ Server Response Status:", error.response.status);
+      console.error("❌ Server Response Data:", error.response.data);
+
+      // Check if there are validation errors in the 'data' array
+      if (Array.isArray(error.response.data.data)) {
+        // Collect error messages
+        errorMessages.value = error.response.data.data.map(
+          (errorDetail: any) => `${errorDetail.field}: ${errorDetail.message}`
+        );
+        showErrorPopup.value = true; // Show the popup when errors are found
+      }
+    }
   }
 };
 </script>
@@ -138,6 +170,17 @@ const submitForm = async () => {
           <button type="submit" class="submit-button">NEXT</button>
         </div>
       </form>
+    </div>
+
+    <!-- Modal for Validation Errors -->
+    <div v-if="showErrorPopup" class="error-popup">
+      <div class="popup-content">
+        <h2>Validation Errors</h2>
+        <ul>
+          <li v-for="(message, index) in errorMessages" :key="index">{{ message }}</li>
+        </ul>
+        <button @click="showErrorPopup = false">Close</button>
+      </div>
     </div>
   </div>
 </template>
@@ -275,65 +318,56 @@ label {
   background-color: hsla(0, 0%, 34%, 0.699);
 }
 
-@media (max-width: 768px) {
-  .form-wrapper {
-    padding: 30px 20px;
-  }
-
-  .title {
-    margin-top: 90px;
-    font-size: 40px;
-  }
-
-  .form-row {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .form-row .form-group {
-    width: 100%;
-  }
-
-  label {
-    font-size: 22px;
-  }
-
-  .form-group-gender {
-    flex: 0 0 170px;
-    margin-top: -25px;
-  }
-
-  .form-group-alergi {
-    flex: 1;
-    margin-top: -90px;
-  }
+/* Error popup styles */
+.error-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-@media (max-width: 590px) {
-  .form-wrapper {
-    padding: 30px 20px;
-  }
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  color: black;
+}
 
-  .form-row {
-    flex-direction: column;
-    gap: 20px;
-  }
+.popup-content h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
 
-  .form-row .form-group {
-    width: 100%;
-  }
+.popup-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
 
-  label {
-    font-size: 20px;
-  }
+.popup-content li {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
 
-  .form-wrapper {
-    width: 100%;
-    padding: 40px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-  }
+.popup-content button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background-color: hsla(0, 0%, 34%, 0.7);
 }
 </style>
