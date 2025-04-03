@@ -26,7 +26,7 @@ const submitForm = async () => {
     isLoading.value = true;  // Set loading state to true when submission starts
     
     // Fetch events
-    const response = await axios.get("http://localhost:5001/api/events");
+    const response = await axios.get("http://localhost:5000/api/events");
     const events = response.data.data;
 
     console.log("✅ Fetched Events:", events.map(e => e.name));
@@ -66,7 +66,7 @@ const submitForm = async () => {
 
     // Make POST request
     const registrationResponse = await axios.post(
-      "http://localhost:5001/api/registrations/",
+      "http://localhost:5000/api/registrations/",
       formData
     );
 
