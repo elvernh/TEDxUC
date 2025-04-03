@@ -83,7 +83,7 @@ const submitForm = async () => {
     if (registrationResponse.status === 201) {
       console.log("✅ Registration successful:", registrationResponse.data);
       console.log("Registration data: ", registrationResponse.data.data._id);
-      console.log(props.eventName)
+      console.log(props.eventName);
       const currentPath = router.currentRoute.value.path;
 
       // Check if eventName matches "Pre-Event 3" or "Main Event"
@@ -198,12 +198,14 @@ const submitForm = async () => {
 
       <form @submit.prevent>
         <div style="color: white; margin-bottom: 10px"></div>
+
+        <!-- Radio buttons to select payment method -->
         <input
           type="radio"
           name="payment"
           id="bca"
           v-model="selectedPayment"
-          value="bca"
+          value="bca_va"
           class="radio-hid"
         />
         <input
@@ -215,6 +217,7 @@ const submitForm = async () => {
           class="radio-hid"
         />
 
+        <!-- Payment methods selection -->
         <div class="category">
           <label for="bca" class="payment-method bcaMethod">
             <div class="imgName">
@@ -233,13 +236,16 @@ const submitForm = async () => {
           </label>
         </div>
 
+        <!-- Payment details section -->
         <div class="payment-details">
-          <div v-if="selectedPayment === 'bca'" class="bca-details">
+          <!-- Display BCA details only when selectedPayment is 'bca_va' -->
+          <div v-show="selectedPayment === 'bca_va'" class="bca-details">
             <h3>BCA Virtual Account Payment</h3>
             <div class="va-number">1111111111</div>
           </div>
 
-          <div v-if="selectedPayment === 'qris'" class="qris-details">
+          <!-- Display QRIS details only when selectedPayment is 'qris' -->
+          <div v-show="selectedPayment === 'qris'" class="qris-details">
             <h3>QRIS Payment</h3>
             <p>Scan this QR code below</p>
             <div class="qrcode-placeholder">qr</div>
@@ -491,6 +497,7 @@ label {
   text-align: center;
   color: #fff;
 }
+
 
 .bca-details {
   display: flex;
