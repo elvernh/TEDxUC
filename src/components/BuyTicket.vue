@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import axios from 'axios';
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 const router = useRouter();
 
@@ -18,42 +18,13 @@ const foodAllergy = ref("");
 const eventDetails = ref<any>(null); // To store event details
 
 
-<<<<<<< HEAD
-const submitForm = async () => {
-  console.log("Nama Lengkap:", fullName.value);
-  console.log("Email:", email.value);
-  console.log("No. Telp:", phone.value);
-  console.log("Usia:", age.value);
-  console.log("Gender:", gender.value);
-  console.log("Alergi Makanan:", foodAllergy.value);
-  const getEvent = {
-    name: props.eventName,
-    type: props.eventName,
-  };
-  const formData = {
-    fullName: fullName.value,
-    email: email.value,
-    phoneNumber: phone.value,
-    gender: gender.value,
-    age: age.value,
-    foodAllergy: foodAllergy.value || "None",
-    eventId: "67ee3307e3a2613a33e6e735"
-  };
-  console.log(formData);
-=======
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
->>>>>>> Elvern
 
 const submitForm = async () => {
   try {
-<<<<<<< HEAD
-    // Make POST request to backend
-    const response = await axios.post(
-      "http://localhost:5000/api/registrations/", // URL of your Express.js backend
-=======
     // Fetch events
-    const response = await axios.get("http://localhost:5001/api/events");
+    const response = await axios.get("http://localhost:5000/api/events");
     const events = response.data.data;
 
     console.log("✅ Fetched Events:", events.map(e => e.name));
@@ -93,8 +64,7 @@ const submitForm = async () => {
 
     // Make POST request
     const registrationResponse = await axios.post(
-      "http://localhost:5001/api/registrations/",
->>>>>>> Elvern
+      "http://localhost:5000/api/registrations/",
       formData
     );
 
