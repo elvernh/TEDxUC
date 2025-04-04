@@ -4,4 +4,4 @@ import buyTicket from "@/components/BuyTicket.vue";
 
 <template>
   <buyTicket eventName="Main Event" />
-  </template>
+</template>
