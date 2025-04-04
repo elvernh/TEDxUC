@@ -1,33 +1,17 @@
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import pintuClose from "@/assets/images/PINTU 1.png";
 import pintuOpenDikit from "@/assets/images/PINTU 2.png";
 import pintuOpen from "@/assets/images/PINTU 3.png";
 
-export default defineComponent({
-  setup() {
-    const tedOpen = ref(false);
-    const tedHover = ref(false);
+const tedOpen = ref(false);
+const tedHover = ref(false);
 
-    const tedxOpen = ref(false);
-    const tedxHover = ref(false);
+const tedxOpen = ref(false);
+const tedxHover = ref(false);
 
-    const tedxucsOpen = ref(false);
-    const tedxucsHover = ref(false);
-
-    return {
-      tedOpen,
-      tedHover,
-      tedxOpen,
-      tedxHover,
-      tedxucsOpen,
-      tedxucsHover,
-      pintuClose,
-      pintuOpenDikit,
-      pintuOpen,
-    };
-  },
-});
+const tedxucsOpen = ref(false);
+const tedxucsHover = ref(false);
 </script>
 
 <template>
@@ -58,14 +42,15 @@ export default defineComponent({
             :src="pintuClose"
             @click="tedOpen = true"
             class="door-img"
-          />  <transition name="fade">
-          <div class="door-content" v-if="tedOpen">
-            <div class="content-inner">
-              <p>It all started with a simple yet powerful mission: ideas worth spreading.</p>
-              <p>TED (Technology, Entertainment, Design) began as a conference in 1984, bringing together visionaries to share groundbreaking ideas.</p>
-              <p>Over time, it evolved into a global platform, hosting talks that challenge perspectives and ignite change in fields like science, business, education, and beyond.</p>
+          />
+          <transition name="pop-up">
+            <div v-if="tedOpen" class="door-content">
+              <div class="content-inner">
+                <p>It all started with a simple yet powerful mission: ideas worth spreading.</p>
+                <p>TED (Technology, Entertainment, Design) began as a conference in 1984, bringing together visionaries to share groundbreaking ideas.</p>
+                <p>Over time, it evolved into a global platform, hosting talks that challenge perspectives and ignite change in fields like science, business, education, and beyond.</p>
+              </div>
             </div>
-          </div>
           </transition>
         </div>
       </div>
@@ -95,14 +80,14 @@ export default defineComponent({
             @click="tedxOpen = true"
             class="door-img"
           />
-          <transition name="fade">
-          <div class="door-content" v-if="tedxOpen">
-            <div class="content-inner">
-              <p>TED's influence didn't stop there.</p>
-              <p>To bring its spirit of innovation to local communities, TEDx was born—independently organized events that foster dialogue, curiosity, and action.</p>
-              <p>Through TEDx, people worldwide can experience the power of ideas in a setting that sparks connection and inspiration.</p>
+          <transition name="pop-up">
+            <div v-if="tedxOpen" class="door-content">
+              <div class="content-inner">
+                <p>TED's influence didn't stop there.</p>
+                <p>To bring its spirit of innovation to local communities, TEDx was born—independently organized events that foster dialogue, curiosity, and action.</p>
+                <p>Through TEDx, people worldwide can experience the power of ideas in a setting that sparks connection and inspiration.</p>
+              </div>
             </div>
-          </div>
           </transition>
         </div>
       </div>
@@ -131,25 +116,26 @@ export default defineComponent({
             :src="pintuClose"
             @click="tedxucsOpen = true"
             class="door-img"
-          /><transition name="fade">
-          <div class="door-content" v-if="tedxucsOpen">
-            <div class="content-inner">
-              <p>TEDxUniversitasCiputraSurabaya is our way of bringing this movement to our community.</p>
-              <p>Hosted by Universitas Ciputra Surabaya, we unite forward-thinkers, innovators, and changemakers to explore, discuss, and shape the future.</p>
-              <p>With "The Infinite Maze" as this year's theme, we invite you to navigate the twists and turns of knowledge, discovery, and endless possibilities.</p>
+          />
+          <transition name="pop-up">
+            <div v-if="tedxucsOpen" class="door-content">
+              <div class="content-inner">
+                <p>TEDxUniversitasCiputraSurabaya is our way of bringing this movement to our community.</p>
+                <p>Hosted by Universitas Ciputra Surabaya, we unite forward-thinkers, innovators, and changemakers to explore, discuss, and shape the future.</p>
+                <p>With "The Infinite Maze" as this year's theme, we invite you to navigate the twists and turns of knowledge, discovery, and endless possibilities.</p>
+              </div>
             </div>
-          </div>
-        </transition>
+          </transition>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .container {
   width: 100vw;
-  height: 150vh;
+  height: 130vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -205,17 +191,44 @@ h1 {
   display: block;
 }
 
-.door-img:hover {
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+.pop-up-enter-active {
+  animation: popIn 0.4s;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.pop-up-leave-active {
+  animation: popOut 0.3s;
 }
+
+@keyframes popIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes popOut {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+}
+
 .door-content {
   position: absolute;
   top: 50%;
@@ -226,8 +239,8 @@ h1 {
   align-content: center;
   padding: 20px;
   border-radius: 8px;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 0, 0, 0.7));
-  border: 1px solid white;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+  border: 1px solid rgb(255, 0, 0);
   width: 280px;
   height: 300px;
   backdrop-filter: blur(5px);
@@ -248,11 +261,6 @@ h1 {
   width: 350px;
   height: 500px;
   object-fit: contain;
-}
-
-
-.door-content.show {
-  opacity: 1;
 }
 
 @media (max-width: 800px) {
@@ -282,6 +290,9 @@ h1 {
     gap: 60px;
   }
 
+  p{
+    font-size: 18px;
+  }
   .door-image-container {
     width: 350px;
   }
