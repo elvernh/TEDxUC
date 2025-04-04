@@ -144,6 +144,7 @@ export default defineComponent({
   </div>
 </template>
 
+
 <style>
 .container {
   width: 100vw;
@@ -172,7 +173,10 @@ h1 {
 
 .doors-container {
   display: flex;
-  gap: 150px;
+  gap: 100px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .door {
@@ -185,15 +189,15 @@ h1 {
 .door-image-container {
   position: relative;
   width: 350px;
-  height: 500px;
+  height: auto;
 }
 
 .door-img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: all 0.3s ease;
+  position: relative;
+  width: 350px;
+  height: auto;
+  display: block;
+  
 }
 
 .door-content {
@@ -208,6 +212,11 @@ h1 {
   transform: translate(-160px, -150px);
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 0, 0, 0.7));
   border-radius: 10px;
+  opacity: 0; 
+  transform: translate(-160px, -150px) scale(0.95); 
+  transition: 
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out;
   z-index: 2;
 }
 
@@ -217,39 +226,46 @@ h1 {
   object-fit: contain;
 }
 
-@media (max-width: 768px) {
+.door-content.v-if-active {
+  opacity: 1;
+  transform: translate(-160px, -150px) scale(1);
+}
+
+@media (max-width: 800px) {
   .container {
     height: auto;
     padding: 20px 0;
   }
 
   h1 {
-    font-size: 40px;
-    margin-bottom: 20px;
-    margin-top: 50px;
+    font-size: 50px;
+    margin-bottom: -100px;
+    margin-top: 150px;
+  }
+
+  .door {
+    margin-top: -30px;
   }
 
   .door-title {
-    font-size: 30px;
+    font-size: 50px;
+    margin-bottom: 30px;
   }
 
   .doors-container {
     flex-direction: column;
-    gap: 150px;
     transform: scale(0.8);
-    
   }
 
   .door-image-container {
-    width: 280px;
-    height: 400px;
+    width: 350px;
   }
 
   .door-content {
     font-size: 16px;
     padding: 15px;
-    
-  transform: translate(-150px, -90px);
+
+    transform: translate(-150px, -90px);
   }
 }
 </style>
