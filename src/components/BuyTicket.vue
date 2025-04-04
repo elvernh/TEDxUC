@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
@@ -83,10 +83,15 @@ const submitForm = async () => {
       registrationId.value = registrationResponse.data.data._id; // ✅ Store registration ID
       console.log("Registration ID: ", registrationId.value);
 
-      currentStep.value =
-        props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
-          ? "payment"
-          : "confirmation";
+      if (
+        props.eventName === "Pre-Event 3" ||
+        props.eventName === "Main Event"
+      ) {
+        currentStep.value = "payment";
+      } else {
+        currentStep.value = "confirmation";
+        setTimeout(() => router.push("/"), 5000);
+      }
     }
   } catch (error: any) {
     console.error("❌ Error during registration:", error);
@@ -106,6 +111,7 @@ const submitForm = async () => {
   } finally {
     isLoading.value = false;
   }
+
 };
 
 const confirmPayment = async () => {
@@ -139,15 +145,10 @@ const confirmPayment = async () => {
   } catch (e) {
     console.error("❌ Error at submitting transaction: ", e);
   }
+
+  currentStep.value = "confirmation";
+  setTimeout(() => router.push("/"), 5000);
 };
-
-
-onMounted(() => {
-  setTimeout(() => {
-    router.push('/'); 
-  }, 5000); 
-});
-
 </script>
 
 <template>
