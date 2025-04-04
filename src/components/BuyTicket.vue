@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { onMounted } from 'vue';
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
@@ -23,7 +22,7 @@ const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
 const isLoading = ref(false);
 const countdown = ref(5);
-const currentStep = ref<"form" | "payment" | "confirmation">("form");
+const currentStep = ref<"form" | "payment" | "confirmation" | "success">("form");
 
 // Event details
 const eventDetails = ref<any>(null);
@@ -32,6 +31,67 @@ const eventDetails = ref<any>(null);
 const selectedPayment = ref("");
 const confirmedPayment = ref<string | null>(null);
 const registrationId = ref<string | null>(null);
+const paymentId = ref<string | null>(null);
+const bcaVANumber = ref("");
+const qrisCode = ref("");
+const qrisImageCode = ref("");
+
+// Payment status polling
+const pollInterval = ref<number | null>(null);
+let countdownTimer: number | null = null;
+
+// Fungsi untuk memeriksa status pembayaran
+const checkPaymentStatus = async () => {
+  if (!registrationId.value) return;
+  
+  try {
+    const response = await axios.get(
+      `http://localhost:5001/api/payments/registration/${registrationId.value}`
+    );
+    
+    if (response.data && response.data.data) {
+      const paymentStatus = response.data.data.status;
+      console.log("Current payment status:", paymentStatus);
+      
+      // Jika pembayaran berhasil, ubah ke halaman sukses
+      if (paymentStatus === "success") {
+        clearPolling();
+        currentStep.value = "success";
+        
+        // Mulai countdown untuk redirect ke home page
+        startCountdown();
+      }
+    }
+  } catch (error) {
+    console.error("Error checking payment status:", error);
+  }
+};
+
+// Memulai polling untuk mengecek status pembayaran
+const startPolling = () => {
+  // Cek setiap 5 detik
+  pollInterval.value = window.setInterval(checkPaymentStatus, 5000);
+};
+
+// Menghentikan polling
+const clearPolling = () => {
+  if (pollInterval.value) {
+    clearInterval(pollInterval.value);
+    pollInterval.value = null;
+  }
+};
+
+// Countdown untuk redirect ke home
+const startCountdown = () => {
+  countdown.value = 5;
+  countdownTimer = window.setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      clearInterval(countdownTimer!);
+      router.push('/');
+    }
+  }, 1000);
+};
 
 // 📤 Submit form
 const submitForm = async () => {
@@ -83,10 +143,23 @@ const submitForm = async () => {
       registrationId.value = registrationResponse.data.data._id; // ✅ Store registration ID
       console.log("Registration ID: ", registrationId.value);
 
-      currentStep.value =
-        props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
-          ? "payment"
-          : "confirmation";
+      // Untuk event gratis, cek jika respons sudah berisi pembayaran berhasil
+      if (registrationResponse.data.data.payment && 
+          registrationResponse.data.data.payment.status === "success") {
+        // Event gratis, langsung ke konfirmasi sukses
+        currentStep.value = "success";
+        startCountdown();
+      } else {
+        currentStep.value =
+          props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
+            ? "payment"
+            : "confirmation";
+            
+        // Jika pindah ke halaman payment, mulai polling status pembayaran
+        if (currentStep.value === "payment") {
+          startPolling();
+        }
+      }
     }
   } catch (error: any) {
     console.error("❌ Error during registration:", error);
@@ -134,6 +207,39 @@ const confirmPayment = async () => {
       "http://localhost:5001/api/payments",
       transactionData
     );
+    const responseData = transactionResponse.data;
+    console.log(responseData);
+    
+    // Simpan paymentId untuk pengecekan status
+    if (responseData.data && responseData.data.payment) {
+      paymentId.value = responseData.data.payment._id;
+    }
+    
+    if (responseData.data && responseData.data.paymentInstructions) {
+      if (
+        responseData.data.payment.paymentMethod === "bca_va" &&
+        responseData.data.paymentInstructions.va_numbers &&
+        responseData.data.paymentInstructions.va_numbers.length > 0
+      ) {
+        bcaVANumber.value =
+          responseData.data.paymentInstructions.va_numbers[0].va_number;
+        console.log("BCA VA Number:", bcaVANumber.value);
+      } else if (responseData.data.payment.paymentMethod === "qris") {
+        const qrAction = responseData.data.paymentInstructions.actions.find(
+          (action) => action.name === "generate-qr-code"
+        );
+        
+        if (qrAction) {
+          qrisImageCode.value = qrAction.url;
+          console.log("QRIS Image URL:", qrisImageCode.value);
+        }
+        
+        // Jika ada qr_string
+        if (responseData.data.paymentInstructions.qr_string) {
+          qrisCode.value = responseData.data.paymentInstructions.qr_string;
+        }
+      }
+    }
 
     console.log("✅ Payment confirmed:", transactionResponse.data);
   } catch (e) {
@@ -141,13 +247,13 @@ const confirmPayment = async () => {
   }
 };
 
-
-onMounted(() => {
-  setTimeout(() => {
-    router.push('/'); 
-  }, 5000); 
+// Membersihkan interval saat komponen unmount
+onUnmounted(() => {
+  clearPolling();
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+  }
 });
-
 </script>
 
 <template>
@@ -270,6 +376,7 @@ onMounted(() => {
             type="button"
             @click="confirmPayment"
             class="payment-submit-button"
+            v-if="!confirmedPayment"
           >
             Choose Payment Method
           </button>
@@ -279,16 +386,35 @@ onMounted(() => {
         <div class="payment-details">
           <div v-show="confirmedPayment === 'bca_va'" class="bca-details">
             <h3>BCA Virtual Account Payment</h3>
-            <div class="va-number">1111111111</div>
+            <div class="va-number">{{ bcaVANumber }}</div>
+            <p class="payment-instructions">
+              Silahkan transfer sesuai nominal yang tertera ke nomor Virtual Account di atas
+            </p>
           </div>
 
           <div v-show="confirmedPayment === 'qris'" class="qris-details">
             <h3>QRIS Payment</h3>
             <p>Scan this QR code below</p>
-            <div class="qrcode-placeholder">QR</div>
+            <div class="qrcode-placeholder">
+              <img :src="qrisImageCode" alt="QRIS" class="qrcode-image" />
+            </div>
+            <a :href="qrisImageCode" download="qris-code.png" class="download-button">
+              Download QR Code
+            </a>
           </div>
         </div>
       </form>
+    </div>
+
+    <div v-else-if="currentStep === 'success'" class="confirmation-wrapper">
+      <h1 class="title">Payment Success!</h1>
+
+      <div class="confirmation-details">
+        <p>Thank you for your payment!</p>
+        <p>Your e-ticket has been sent to your email.</p>
+        <p>Please check your email for the QR code ticket.</p>
+        <router-link to="/" class="download-button">Back to Home</router-link>
+      </div>
     </div>
 
     <div v-else class="confirmation-wrapper">
@@ -297,7 +423,8 @@ onMounted(() => {
       <div class="confirmation-details">
         <p>Thank you for your order!</p>
         <p>Your e-ticket will be sent to your email</p>
-        <p>You will be redirected to the home page now</p>
+        <router-link to="/" class="download-button">Back to Home</router-link>
+        <!-- <p class="countdown">Redirecting to home page in {{ countdown }} seconds...</p> -->
       </div>
     </div>
   </div>
@@ -320,10 +447,11 @@ onMounted(() => {
   </div>
 </template>
 
+
 <style scoped>
 .layout-container {
   width: 100vw;
-  height: 100vh;
+  height: 180vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -450,6 +578,13 @@ label {
   border-radius: 6px;
   cursor: pointer;
 }
+.download-button{
+  background-color: red;
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
 
 .submit-button:hover {
   background-color: hsla(0, 0%, 34%, 0.699);
@@ -555,7 +690,10 @@ label {
   align-items: center;
   gap: 15px;
 }
-
+.qrcode-image {
+  width: 200px;
+  height: 200px;
+}
 .va-number {
   font-size: 28px;
   font-weight: bold;
