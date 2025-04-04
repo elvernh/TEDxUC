@@ -1,8 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import imageError from "@/assets/images/mark.png"
+</script>
 
 <template>
   <div class="error-container fade-in">
     <div class="error-content">
+      <img class="image-error fade-in" :src="imageError" alt="Image Error" draggable="false">
       <p class="error-line error-1">
         Oops! Something went wrong.
       </p>
@@ -61,6 +64,11 @@
 .error-4 {
   animation-delay: 4s;
   font-size: 1.2rem;
+}
+.image-error{
+  width: 250px;
+  height: auto;
+  animation-delay: 5s;
 }
 
 .error-link {

@@ -2,6 +2,8 @@
 import { ref, onMounted } from "vue";
 
 const selectedPayment = ref("");
+const bcaVANumber = ref("");
+const qrisCode = ref("");
 
 onMounted(() => {
   selectedPayment.value = "";
