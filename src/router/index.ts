@@ -1,13 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import ConfirmationPage from '../views/ConfirmationPage.vue'
-import QRScanner from "../views/QRScanner.vue"; 
+import { createRouter, createWebHistory } from 'vue-router';
+import ConfirmationPage from '../views/ConfirmationPage.vue';
+import QRScanner from "../views/adminView/QRScanner.vue"; 
 import Testing from "../views/Testing.vue"; 
 
 // Core Pages
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
 import MiniGame from '../views/MiniGamePage.vue';
-import SpeakerPage from '../views/SpeakerAndSchedulePage.vue'
+import SpeakerPage from '../views/SpeakerAndSchedulePage.vue';
 
 // Event Pages
 import PreEvent1 from '../views/events/PreEvent1.vue';
@@ -24,6 +24,9 @@ import MainEventRegister from '../views/register/BuyTicketMain.vue';
 import PreEvent3Payment from '../views/transaction-page/TrfPreEvent3.vue';
 import MainEventPayment from '../views/transaction-page/TrfMainEvent.vue';
 
+// Error Page
+import ErrorPage from '../views/error/ErrorPage.vue';  // Import the error page
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,7 +36,7 @@ const router = createRouter({
     { path: "/qr-scanner", name: 'QR Scanner', component: QRScanner },
     { path: "/testing", name: 'Testing', component: Testing },
     { path: '/mini-game', name: 'Mini Game', component: MiniGame },
-    { path: '/speaker-schedule', name: 'Speaker & Schdule', component: SpeakerPage},
+    { path: '/speaker-schedule', name: 'Speaker & Schedule', component: SpeakerPage },
 
     // Event Pages
     { path: '/event/preevent1', name: 'PreEvent1', component: PreEvent1 },
@@ -52,7 +55,10 @@ const router = createRouter({
 
     // Confirmation Page
     { path: '/confirmation-page', name: 'Confirmation Page', component: ConfirmationPage },
+
+    // Error Page (Wildcard Route - Must be the last entry)
+    { path: '/:pathMatch(.*)*', name: 'ErrorPage', component: ErrorPage },
   ],
-})
+});
 
 export default router;

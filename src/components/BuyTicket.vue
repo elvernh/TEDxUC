@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
@@ -7,110 +7,136 @@ import logo from "@/components/icons/logo-white.svg";
 
 const router = useRouter();
 
-const props = defineProps<{ eventName: string }>();
+const props = defineProps<{ eventName?: string }>();
+
+// Form fields
 const fullName = ref("");
 const email = ref("");
 const phone = ref("");
 const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
-const eventDetails = ref<any>(null); // To store event details
 
+// State
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
-const isLoading = ref(false); // Add this line for the loading state
-
-const selectedPayment = ref("");
-
+const isLoading = ref(false);
 const countdown = ref(8);
-
 const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
+// Event details
+const eventDetails = ref<any>(null);
+
+// Payment selection
+const selectedPayment = ref("");
+const confirmedPayment = ref<string | null>(null);
+const registrationId = ref<string | null>(null);
+
+// 📤 Submit form
 const submitForm = async () => {
   try {
-    isLoading.value = true; // Set loading state to true when submission starts
+    isLoading.value = true;
 
-    // Fetch events
-    const response = await axios.get("http://localhost:5001/api/events");
-    const events = response.data.data;
-
-    console.log(
-      "✅ Fetched Events:",
-      events.map((e) => e.name)
-    );
-
-    // Ensure props.eventName is defined
     if (!props.eventName) {
       console.error("❌ props.eventName is undefined!");
+      errorMessages.value = ["Event name is required."];
+      showErrorPopup.value = true;
       return;
     }
 
-    console.log("🎯 Searching for:", props.eventName);
+    const response = await axios.get("http://localhost:5001/api/events");
+    const events = response.data.data;
 
-    // Find selected event (case-insensitive & trimmed)
     const selectedEvent = events.find(
       (e) =>
-        e.name.trim().toLowerCase() === props.eventName.trim().toLowerCase()
+        e.name.trim().toLowerCase() === props.eventName!.trim().toLowerCase()
     );
 
     if (!selectedEvent) {
       console.error("❌ Event not found:", props.eventName);
+      errorMessages.value = [`Event "${props.eventName}" not found.`];
+      showErrorPopup.value = true;
       return;
     }
 
     const eventIdValue = selectedEvent._id;
 
-    // Construct form data
     const formData = {
       fullName: fullName.value.trim(),
       email: email.value.trim(),
       phoneNumber: phone.value.trim(),
       gender: gender.value,
-      age: parseInt(age.value, 10), // Ensure it's a number
+      age: parseInt(age.value, 10),
       foodAllergy: foodAllergy.value?.trim() || "None",
       eventId: eventIdValue,
     };
 
-    console.log("🚀 Sending Form Data:", formData);
+    console.log("Sending form data: ", formData);
 
-    // Make POST request
     const registrationResponse = await axios.post(
       "http://localhost:5001/api/registrations/",
       formData
     );
 
-    // Check if registration was successful
     if (registrationResponse.status === 201) {
-      console.log("✅ Registration successful:", registrationResponse.data);
-      console.log("Registration data: ", registrationResponse.data.data._id);
-      console.log(props.eventName);
-      const currentPath = router.currentRoute.value.path;
+      registrationId.value = registrationResponse.data.data._id; // ✅ Store registration ID
+      console.log("Registration ID: ", registrationId.value);
 
-      // Check if eventName matches "Pre-Event 3" or "Main Event"
-      if (props.eventName == "Pre-Event 3" || props.eventName == "Main Event") {
-        currentStep.value = "payment"; // Set currentStep to "payment" for these events
-      } else {
-        currentStep.value = "confirmation"; // Set currentStep to "confirmation" for other events
-      }
+      currentStep.value =
+        props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
+          ? "payment"
+          : "confirmation";
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error during registration:", error);
 
     if (error.response && error.response.data) {
-      console.error("❌ Server Response Status:", error.response.status);
-      console.error("❌ Server Response Data:", error.response.data);
-
-      // Check if there are validation errors in the 'data' array
       if (Array.isArray(error.response.data.data)) {
-        // Collect error messages
         errorMessages.value = error.response.data.data.map(
           (errorDetail: any) => `${errorDetail.field}: ${errorDetail.message}`
         );
-        showErrorPopup.value = true; // Show the popup when errors are found
+      } else {
+        errorMessages.value = [
+          error.response.data.message || "An error occurred",
+        ];
       }
+      showErrorPopup.value = true;
     }
   } finally {
-    isLoading.value = false; // Set loading state to false when done
+    isLoading.value = false;
+  }
+};
+
+const confirmPayment = async () => {
+  try {
+    if (!selectedPayment.value) {
+      alert("Please select a payment method first.");
+      return;
+    }
+
+    if (!registrationId.value) {
+      console.error("❌ Error: Registration ID is missing!");
+      alert("No registration found. Please complete registration first.");
+      return;
+    }
+
+    console.log("Registration ID:", registrationId.value);
+
+    const transactionData = {
+      registrationId: registrationId.value,
+      paymentMethod: selectedPayment.value,
+    };
+
+    confirmedPayment.value = selectedPayment.value;
+
+    const transactionResponse = await axios.post(
+      "http://localhost:5001/api/payments",
+      transactionData
+    );
+
+    console.log("✅ Payment confirmed:", transactionResponse.data);
+  } catch (e) {
+    console.error("❌ Error at submitting transaction: ", e);
   }
 };
 </script>
@@ -199,27 +225,15 @@ const submitForm = async () => {
       <form @submit.prevent>
         <div style="color: white; margin-bottom: 10px"></div>
 
-        <!-- Radio buttons to select payment method -->
-        <input
-          type="radio"
-          name="payment"
-          id="bca"
-          v-model="selectedPayment"
-          value="bca_va"
-          class="radio-hid"
-        />
-        <input
-          type="radio"
-          name="payment"
-          id="qris"
-          v-model="selectedPayment"
-          value="qris"
-          class="radio-hid"
-        />
-
         <!-- Payment methods selection -->
-        <div class="category">
-          <label for="bca" class="payment-method bcaMethod">
+        <div class="category" :class="{ centered: confirmedPayment }">
+          <label
+            v-if="!confirmedPayment || confirmedPayment === 'bca_va'"
+            for="bca"
+            class="payment-method bcaMethod"
+            :class="{ active: selectedPayment === 'bca_va' }"
+            @click="selectedPayment = 'bca_va'"
+          >
             <div class="imgName">
               <div class="imgContainer"></div>
               <img src="/src/assets/images/bcaLogo.png" alt="bca" />
@@ -227,7 +241,13 @@ const submitForm = async () => {
             </div>
           </label>
 
-          <label for="qris" class="payment-method qrisMethod">
+          <label
+            v-if="!confirmedPayment || confirmedPayment === 'qris'"
+            for="qris"
+            class="payment-method qrisMethod"
+            :class="{ active: selectedPayment === 'qris' }"
+            @click="selectedPayment = 'qris'"
+          >
             <div class="imgName">
               <div class="imgContainer"></div>
               <img src="/src/assets/images/qrisLogo.png" alt="qris" />
@@ -236,19 +256,27 @@ const submitForm = async () => {
           </label>
         </div>
 
+        <div class="submit-button-payment">
+          <button
+            type="button"
+            @click="confirmPayment"
+            class="payment-submit-button"
+          >
+            Choose Payment Method
+          </button>
+        </div>
+
         <!-- Payment details section -->
         <div class="payment-details">
-          <!-- Display BCA details only when selectedPayment is 'bca_va' -->
-          <div v-show="selectedPayment === 'bca_va'" class="bca-details">
+          <div v-show="confirmedPayment === 'bca_va'" class="bca-details">
             <h3>BCA Virtual Account Payment</h3>
             <div class="va-number">1111111111</div>
           </div>
 
-          <!-- Display QRIS details only when selectedPayment is 'qris' -->
-          <div v-show="selectedPayment === 'qris'" class="qris-details">
+          <div v-show="confirmedPayment === 'qris'" class="qris-details">
             <h3>QRIS Payment</h3>
             <p>Scan this QR code below</p>
-            <div class="qrcode-placeholder">qr</div>
+            <div class="qrcode-placeholder">QR</div>
           </div>
         </div>
       </form>
@@ -424,6 +452,8 @@ label {
   max-width: 800px;
   padding: 40px;
   z-index: 1;
+  justify-content: center;
+  align-items: center;
 }
 .container {
   width: 600px;
@@ -444,23 +474,35 @@ label {
 .category {
   margin-top: 10px;
   padding-top: 20px;
-
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 15px;
+}
+
+.category.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .payment-method {
   position: relative;
   border: 2px solid transparent;
   border-radius: 8px;
-  padding: 20px;
+  padding: 60px;
   cursor: pointer;
   transition: all 0.3s ease;
   height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+}
+
+.payment-method.active {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .payment-method:hover {
@@ -497,7 +539,6 @@ label {
   text-align: center;
   color: #fff;
 }
-
 
 .bca-details {
   display: flex;
@@ -536,6 +577,22 @@ label {
   justify-content: center;
   border-radius: 8px;
   margin: 10px 0;
+}
+.submit-button-payment {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.payment-submit-button {
+  padding: 14px 100px;
+  font-size: 18px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3;
 }
 
 .Payment-name {
