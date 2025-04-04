@@ -25,9 +25,6 @@ const isLoading = ref(false);
 const countdown = ref(5);
 const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
-const bcaVANumber = ref("");
-const qrisCode = ref("");
-
 // Event details
 const eventDetails = ref<any>(null);
 
@@ -137,6 +134,7 @@ const confirmPayment = async () => {
       "http://localhost:5001/api/payments",
       transactionData
     );
+
     console.log("✅ Payment confirmed:", transactionResponse.data);
   } catch (e) {
     console.error("❌ Error at submitting transaction: ", e);
