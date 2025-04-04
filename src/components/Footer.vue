@@ -7,7 +7,7 @@ import logo from "@/components/icons/logo-white.svg";
       <div class="take-risk-content">
         <h2 class="take-risk-title">TAKE THE RISK?</h2>
         <p class="take-risk-description">Mark your path.</p>
-        <router-link to="/buy-ticket" class="buy-ticket-btn">
+        <router-link to="/register/mainevent" class="buy-ticket-btn">
           BUY<span class="random-spacing">&nbsp;</span>TICKET
         </router-link>
       </div>

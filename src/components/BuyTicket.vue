@@ -1,110 +1,153 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import bgImage from "@/assets/images/background-1.png";
-import logo from "@/components/icons/logo-white.svg";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import bgImage from "@/assets/images/background-1.png";
+import logo from "@/components/icons/logo-white.svg";
 
 const router = useRouter();
 
-const props = defineProps<{ eventName: string }>();
+const props = defineProps<{ eventName?: string }>();
 
+// Form fields
 const fullName = ref("");
 const email = ref("");
 const phone = ref("");
 const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
-const eventDetails = ref<any>(null); // To store event details
 
-
+// State
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
+const isLoading = ref(false);
+const countdown = ref(8);
+const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
+// Event details
+const eventDetails = ref<any>(null);
+
+// Payment selection
+const selectedPayment = ref("");
+const confirmedPayment = ref<string | null>(null);
+const registrationId = ref<string | null>(null);
+
+// 📤 Submit form
 const submitForm = async () => {
   try {
-    // Fetch events
-    const response = await axios.get("http://localhost:5000/api/events");
-    const events = response.data.data;
+    isLoading.value = true;
 
-    console.log("✅ Fetched Events:", events.map(e => e.name));
-
-    // Ensure props.eventName is defined
     if (!props.eventName) {
       console.error("❌ props.eventName is undefined!");
+      errorMessages.value = ["Event name is required."];
+      showErrorPopup.value = true;
       return;
     }
 
-    console.log("🎯 Searching for:", props.eventName);
+    const response = await axios.get("http://localhost:5001/api/events");
+    const events = response.data.data;
 
-    // Find selected event (case-insensitive & trimmed)
-    const selectedEvent = events.find(e =>
-      e.name.trim().toLowerCase() === props.eventName.trim().toLowerCase()
+    const selectedEvent = events.find(
+      (e) =>
+        e.name.trim().toLowerCase() === props.eventName!.trim().toLowerCase()
     );
 
     if (!selectedEvent) {
       console.error("❌ Event not found:", props.eventName);
+      errorMessages.value = [`Event "${props.eventName}" not found.`];
+      showErrorPopup.value = true;
       return;
     }
 
     const eventIdValue = selectedEvent._id;
 
-    // Construct form data
     const formData = {
       fullName: fullName.value.trim(),
       email: email.value.trim(),
       phoneNumber: phone.value.trim(),
       gender: gender.value,
-      age: parseInt(age.value, 10), // Ensure it's a number
+      age: parseInt(age.value, 10),
       foodAllergy: foodAllergy.value?.trim() || "None",
-      eventId: eventIdValue
+      eventId: eventIdValue,
     };
 
-    console.log("🚀 Sending Form Data:", formData);
+    console.log("Sending form data: ", formData);
 
-    // Make POST request
     const registrationResponse = await axios.post(
-      "http://localhost:5000/api/registrations/",
+      "http://localhost:5001/api/registrations/",
       formData
     );
 
-    // Check if registration was successful
     if (registrationResponse.status === 201) {
-      console.log("✅ Registration successful:", registrationResponse.data);
+      registrationId.value = registrationResponse.data.data._id; // ✅ Store registration ID
+      console.log("Registration ID: ", registrationId.value);
 
-      const currentPath = router.currentRoute.value.path;
-      if (["/register/preevent3", "/register/mainevent"].includes(currentPath)) {
-        router.push(`${currentPath}/transaction`);
-      } else {
-        router.push("/confirmation-page");
-      }
+      currentStep.value =
+        props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
+          ? "payment"
+          : "confirmation";
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error during registration:", error);
 
     if (error.response && error.response.data) {
-      console.error("❌ Server Response Status:", error.response.status);
-      console.error("❌ Server Response Data:", error.response.data);
-
-      // Check if there are validation errors in the 'data' array
       if (Array.isArray(error.response.data.data)) {
-        // Collect error messages
         errorMessages.value = error.response.data.data.map(
           (errorDetail: any) => `${errorDetail.field}: ${errorDetail.message}`
         );
-        showErrorPopup.value = true; // Show the popup when errors are found
+      } else {
+        errorMessages.value = [
+          error.response.data.message || "An error occurred",
+        ];
       }
+      showErrorPopup.value = true;
     }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const confirmPayment = async () => {
+  try {
+    if (!selectedPayment.value) {
+      alert("Please select a payment method first.");
+      return;
+    }
+
+    if (!registrationId.value) {
+      console.error("❌ Error: Registration ID is missing!");
+      alert("No registration found. Please complete registration first.");
+      return;
+    }
+
+    console.log("Registration ID:", registrationId.value);
+
+    const transactionData = {
+      registrationId: registrationId.value,
+      paymentMethod: selectedPayment.value,
+    };
+
+    confirmedPayment.value = selectedPayment.value;
+
+    const transactionResponse = await axios.post(
+      "http://localhost:5001/api/payments",
+      transactionData
+    );
+
+    console.log("✅ Payment confirmed:", transactionResponse.data);
+  } catch (e) {
+    console.error("❌ Error at submitting transaction: ", e);
   }
 };
 </script>
 
 <template>
   <div class="layout-container" :style="{ backgroundImage: `url(${bgImage})` }">
-    <div class="form-wrapper">
-      <div class="logo-container">
-        <img class="logo" :src="logo" alt="logo" />
-      </div>
+    <div class="logo-container">
+      <img class="logo" :src="logo" alt="logo" />
+    </div>
+
+    <div v-if="currentStep === 'form'" class="form-wrapper">
       <h1 class="title">Ticket Order Form</h1>
       <form @submit.prevent="submitForm">
         <div class="form-norm">
@@ -169,21 +212,102 @@ const submitForm = async () => {
         </div>
 
         <div class="form-submit">
-          <button type="submit" class="submit-button">NEXT</button>
+          <button type="submit" class="submit-button" :disabled="isLoading">
+            NEXT
+          </button>
         </div>
       </form>
     </div>
 
-    <!-- Modal for Validation Errors -->
-    <div v-if="showErrorPopup" class="error-popup">
-      <div class="popup-content">
-        <h2>Validation Errors</h2>
-        <ul>
-          <li v-for="(message, index) in errorMessages" :key="index">{{ message }}</li>
-        </ul>
-        <button @click="showErrorPopup = false">Close</button>
+    <div v-else-if="currentStep === 'payment'" class="payment-wrapper">
+      <h1 class="title">Payment</h1>
+
+      <form @submit.prevent>
+        <div style="color: white; margin-bottom: 10px"></div>
+
+        <!-- Payment methods selection -->
+        <div class="category" :class="{ centered: confirmedPayment }">
+          <label
+            v-if="!confirmedPayment || confirmedPayment === 'bca_va'"
+            for="bca"
+            class="payment-method bcaMethod"
+            :class="{ active: selectedPayment === 'bca_va' }"
+            @click="selectedPayment = 'bca_va'"
+          >
+            <div class="imgName">
+              <div class="imgContainer"></div>
+              <img src="/src/assets/images/bcaLogo.png" alt="bca" />
+              <span class="Payment-name">BCA Virtual Account</span>
+            </div>
+          </label>
+
+          <label
+            v-if="!confirmedPayment || confirmedPayment === 'qris'"
+            for="qris"
+            class="payment-method qrisMethod"
+            :class="{ active: selectedPayment === 'qris' }"
+            @click="selectedPayment = 'qris'"
+          >
+            <div class="imgName">
+              <div class="imgContainer"></div>
+              <img src="/src/assets/images/qrisLogo.png" alt="qris" />
+              <span class="Payment-name">QRIS</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="submit-button-payment">
+          <button
+            type="button"
+            @click="confirmPayment"
+            class="payment-submit-button"
+          >
+            Choose Payment Method
+          </button>
+        </div>
+
+        <!-- Payment details section -->
+        <div class="payment-details">
+          <div v-show="confirmedPayment === 'bca_va'" class="bca-details">
+            <h3>BCA Virtual Account Payment</h3>
+            <div class="va-number">1111111111</div>
+          </div>
+
+          <div v-show="confirmedPayment === 'qris'" class="qris-details">
+            <h3>QRIS Payment</h3>
+            <p>Scan this QR code below</p>
+            <div class="qrcode-placeholder">QR</div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div v-else class="confirmation-wrapper">
+      <h1 class="title">Order Confirmed!</h1>
+
+      <div class="confirmation-details">
+        <p>Thank you for your order!</p>
+        <p>Your e-ticket will be sent to your email</p>
+        <p>You will be redirected to the home page now</p>
       </div>
     </div>
+  </div>
+
+  <div v-if="showErrorPopup" class="error-popup">
+    <div class="popup-content">
+      <h2>Validation Errors</h2>
+      <ul>
+        <li v-for="(message, index) in errorMessages" :key="index">
+          {{ message }}
+        </li>
+      </ul>
+      <button @click="showErrorPopup = false">Close</button>
+    </div>
+  </div>
+
+  <div v-if="isLoading" class="loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 </template>
 
@@ -214,13 +338,23 @@ const submitForm = async () => {
   z-index: 0;
 }
 
+.form-wrapper {
+  display: none;
+}
+
 .logo {
   position: fixed;
   top: 2rem;
   left: 3rem;
-  size: 200%;
+  width: 177px;
   z-index: 100;
-  pointer-events: none;
+}
+
+.title {
+  color: rgb(255, 255, 255);
+  font-size: 70px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .form-wrapper {
@@ -231,19 +365,9 @@ const submitForm = async () => {
   display: flex;
   flex-direction: column;
   z-index: 1;
+  background-color: transparent;
 }
-
-.title {
-  color: rgb(255, 255, 255);
-  font-size: 70px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
+/* BuyTicket Styles */
 
 .form-group {
   display: flex;
@@ -252,13 +376,21 @@ form {
   margin-bottom: 20px;
 }
 
+.radio-hid {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 label {
   font-size: 30px;
   color: white;
   font-weight: normal;
 }
 
-.form-input {
+.form-input,
+.form-input-short {
   background: white;
   border: none;
   border-radius: 6px;
@@ -268,12 +400,6 @@ label {
 }
 
 .form-input-short {
-  background: white;
-  border: none;
-  border-radius: 6px;
-  padding: 15px;
-  font-size: 20px;
-  transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
 }
@@ -320,7 +446,211 @@ label {
   background-color: hsla(0, 0%, 34%, 0.699);
 }
 
-/* Error popup styles */
+/* PaymentMethod Styles */
+.payment-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  width: 600px;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 5px 12px -2px rgba(0, 0, 0, 0.1),
+    0 18px 36px -6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.container form input[type="radio"] {
+  display: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.category {
+  margin-top: 10px;
+  padding-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+}
+
+.category.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-method {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 60px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.payment-method.active {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.payment-method:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-method.bcaMethod.active,
+.payment-method.qrisMethod.active {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#bca:checked ~ .category .bcaMethod,
+#qris:checked ~ .category .qrisMethod {
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.payment-details {
+  margin: 30px 0;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-height: 200px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.payment-details h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #fff;
+}
+
+.bca-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.va-number {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px 30px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.qris-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.qris-details p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.qrcode-placeholder {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.submit-button-payment {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.payment-submit-button {
+  padding: 14px 100px;
+  font-size: 18px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3;
+}
+
+.Payment-name {
+  font-size: 20px;
+  margin-top: 10px;
+}
+.imgName {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imgName span {
+  /* margin-left: 20px; */
+  position: absolute;
+  font-weight: bold;
+  margin-top: 80px;
+}
+
+.imgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 15%;
+  transform: translateY(-25px);
+}
+
+img {
+  width: 100px;
+  height: auto;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* ConfirmationPage Styles */
+.confirmation-details {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 25px 0;
+  text-align: center;
+}
+
+.confirmation-details p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: white;
+  font-size: 18px;
+}
+
 .error-popup {
   position: fixed;
   top: 0;
@@ -369,7 +699,87 @@ label {
   cursor: pointer;
 }
 
-.popup-content button:hover {
-  background-color: hsla(0, 0%, 34%, 0.7);
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .form-wrapper,
+  .container {
+    padding: 30px 20px;
+    width: 90%;
+  }
+
+  .title {
+    margin-top: 90px;
+    font-size: 40px;
+  }
+
+  .form-row,
+  .category {
+    flex-direction: column;
+    gap: 20px;
+    grid-template-columns: 1fr;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  label {
+    font-size: 22px;
+  }
+
+  .form-group-gender {
+    flex: 0 0 170px;
+    margin-top: -25px;
+  }
+
+  .form-group-alergi {
+    flex: 1;
+    margin-top: -90px;
+  }
+
+  .form-submit {
+    margin-top: -100px;
+  }
+}
+
+@media (max-width: 590px) {
+  .form-wrapper {
+    padding: 30px 20px;
+  }
+
+  label {
+    font-size: 20px;
+  }
 }
 </style>

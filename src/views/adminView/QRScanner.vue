@@ -75,7 +75,7 @@ import { StreamBarcodeReader } from 'vue-barcode-reader';
 import axios from 'axios';
 
 // API base URL - use environment variable or default to localhost
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const scannedData = ref(null);
 const hasCamera = ref(true);
@@ -94,6 +94,7 @@ const includeQR = ref(false);
 const registrationStatus = ref('paid');
 
 // Barcode reader callbacks
+const eventId = ref('');
 const onDecode = (result) => {
   scannedData.value = result;
 };

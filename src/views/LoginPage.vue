@@ -55,7 +55,7 @@ import eyeOff from "@/components/icons/eye-off.svg";
 import eye from "@/components/icons/eye.svg";
 import { useRouter } from "vue-router";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const router = useRouter();
 const email = ref("");
