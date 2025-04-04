@@ -17,7 +17,7 @@
       <div v-if="statusMessage" class="status-message white-text">{{ statusMessage }}</div>
     </div>
 
-    <!-- Generate QR Batch Section
+    <!-- Generate QR Batch Section -->
     <section class="section">
       <h1>Generate QR Batch</h1>
       <div class="event-select">
@@ -28,7 +28,7 @@
         </select>
       </div>
       <button @click="generateQr">Generate QR Codes</button>
-    </section> -->
+    </section>
 
     <!-- Send Bulk Email Section -->
     <section class="section">
