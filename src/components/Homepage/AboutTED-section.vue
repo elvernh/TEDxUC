@@ -145,7 +145,7 @@ export default defineComponent({
 <style>
 .container {
   width: 100vw;
-  height: 150vh;
+  height: 180vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
