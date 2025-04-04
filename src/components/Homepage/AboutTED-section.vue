@@ -51,7 +51,7 @@ export default defineComponent({
             v-else-if="tedHover"
             :src="pintuOpenDikit"
             @click="tedOpen = true"
-            class="door-img"
+            class="door-img door-bounce"
           />
           <img
             v-else
@@ -60,12 +60,11 @@ export default defineComponent({
             class="door-img"
           />
           <div class="door-content" v-if="tedOpen">
-            It all started with a simple yet powerful mission: ideas worth
-            spreading. TED (Technology, Entertainment, Design) began as a
-            conference in 1984, bringing together visionaries to share
-            groundbreaking ideas. Over time, it evolved into a global platform,
-            hosting talks that challenge perspectives and ignite change in
-            fields like science, business, education, and beyond.
+            <div class="content-inner">
+              <p>It all started with a simple yet powerful mission: ideas worth spreading.</p>
+              <p>TED (Technology, Entertainment, Design) began as a conference in 1984, bringing together visionaries to share groundbreaking ideas.</p>
+              <p>Over time, it evolved into a global platform, hosting talks that challenge perspectives and ignite change in fields like science, business, education, and beyond.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -87,7 +86,7 @@ export default defineComponent({
             v-else-if="tedxHover"
             :src="pintuOpenDikit"
             @click="tedxOpen = true"
-            class="door-img"
+            class="door-img door-bounce"
           />
           <img
             v-else
@@ -96,11 +95,11 @@ export default defineComponent({
             class="door-img"
           />
           <div class="door-content" v-if="tedxOpen">
-            TED’s influence didn’t stop there. To bring its spirit of innovation
-            to local communities, TEDx was born—independently organized events
-            that foster dialogue, curiosity, and action. Through TEDx, people
-            worldwide can experience the power of ideas in a setting that sparks
-            connection and inspiration.
+            <div class="content-inner">
+              <p>TED's influence didn't stop there.</p>
+              <p>To bring its spirit of innovation to local communities, TEDx was born—independently organized events that foster dialogue, curiosity, and action.</p>
+              <p>Through TEDx, people worldwide can experience the power of ideas in a setting that sparks connection and inspiration.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -122,7 +121,7 @@ export default defineComponent({
             v-else-if="tedxucsHover"
             :src="pintuOpenDikit"
             @click="tedxucsOpen = true"
-            class="door-img"
+            class="door-img door-bounce"
           />
           <img
             v-else
@@ -131,19 +130,17 @@ export default defineComponent({
             class="door-img"
           />
           <div class="door-content" v-if="tedxucsOpen">
-            TEDxUniversitasCiputraSurabaya is our way of bringing this movement
-            to our community. Hosted by Universitas Ciputra Surabaya, we unite
-            forward-thinkers, innovators, and changemakers to explore, discuss,
-            and shape the future. With “The Infinite Maze" as this year’s theme,
-            we invite you to navigate the twists and turns of knowledge,
-            discovery, and endless possibilities.
+            <div class="content-inner">
+              <p>TEDxUniversitasCiputraSurabaya is our way of bringing this movement to our community.</p>
+              <p>Hosted by Universitas Ciputra Surabaya, we unite forward-thinkers, innovators, and changemakers to explore, discuss, and shape the future.</p>
+              <p>With "The Infinite Maze" as this year's theme, we invite you to navigate the twists and turns of knowledge, discovery, and endless possibilities.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <style>
 .container {
@@ -161,6 +158,9 @@ h1 {
   font-size: 60px;
   text-align: center;
   margin-bottom: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .door-title {
@@ -169,6 +169,8 @@ h1 {
   text-align: center;
   font-family: "Panoptica Doesburg";
   margin-bottom: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .doors-container {
@@ -197,27 +199,38 @@ h1 {
   width: 350px;
   height: auto;
   display: block;
-  
+}
+
+.door-img:hover {
+  transform: scale(1.02);
 }
 
 .door-content {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80%;
+  transform: translate(-50%, -50%);
   color: white;
-  font-size: 20px;
-  text-align: center;
+  font-size: 18px;
+  align-content: center;
   padding: 20px;
-  transform: translate(-160px, -150px);
+  border-radius: 8px;
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 0, 0, 0.7));
-  border-radius: 10px;
-  opacity: 0; 
-  transform: translate(-160px, -150px) scale(0.95); 
-  transition: 
-    opacity 0.4s ease-out,
-    transform 0.4s ease-out;
-  z-index: 2;
+  border: 1px solid white;
+  width: 280px;
+  height: 300px;
+  backdrop-filter: blur(5px);
+}
+
+.content-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.content-inner p {
+  margin: 0;
+  text-align: center;
 }
 
 .door-img {
@@ -226,9 +239,18 @@ h1 {
   object-fit: contain;
 }
 
-.door-content.v-if-active {
+.door-bounce {
+  animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.door-content.show {
   opacity: 1;
-  transform: translate(-160px, -150px) scale(1);
 }
 
 @media (max-width: 800px) {
@@ -238,7 +260,7 @@ h1 {
   }
 
   h1 {
-    font-size: 50px;
+    font-size: 36px;
     margin-bottom: -100px;
     margin-top: 150px;
   }
@@ -248,13 +270,14 @@ h1 {
   }
 
   .door-title {
-    font-size: 50px;
+    font-size: 32px;
     margin-bottom: 30px;
   }
 
   .doors-container {
     flex-direction: column;
     transform: scale(0.8);
+    gap: 60px;
   }
 
   .door-image-container {
@@ -263,9 +286,9 @@ h1 {
 
   .door-content {
     font-size: 16px;
-    padding: 15px;
-
-    transform: translate(-150px, -90px);
+    padding: 20px;
+    width: 280px;
+    max-height: 350px;
   }
 }
 </style>
