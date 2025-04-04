@@ -24,6 +24,11 @@ import MainEventRegister from '../views/register/BuyTicketMain.vue';
 import PreEvent3Payment from '../views/transaction-page/TrfPreEvent3.vue';
 import MainEventPayment from '../views/transaction-page/TrfMainEvent.vue';
 
+
+import Emailto from '../views/adminView/EmailToBulk.vue';
+import makeqr from '../views/adminView/MakeQR.vue';
+import dashboard from '../views/adminView/Dashboard.vue';
+
 // Error Page
 import ErrorPage from '../views/error/ErrorPage.vue';  // Import the error page
 
@@ -58,6 +63,11 @@ const router = createRouter({
 
     // Error Page (Wildcard Route - Must be the last entry)
     { path: '/:pathMatch(.*)*', name: 'ErrorPage', component: ErrorPage },
+
+    //ADMIN
+    { path: '/Emailto', name: 'emailto', component: Emailto },
+    { path: '/makeqr', name: 'makeqr', component: makeqr },
+    { path: '/dashboard', name: 'dashboard', component: dashboard },
   ],
 });
 

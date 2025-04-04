@@ -1,86 +1,102 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-// Reactive variables
-const qrInput = ref("");
-const qrCodeUrl = ref("");
-
-// Function to generate QR Code
-const generateQRCode = () => {
-    if (!qrInput.value.trim()) {
-        qrCodeUrl.value = "";
-        return;
-    }
-
-    qrCodeUrl.value = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrInput.value)}`;
-};
-</script>
-
 <template>
-    <div class="makeqr-container">
-        <div class="makeqr-box">
-            <h2>Generate QR Code</h2>
-
-            <!-- Input field for QR Code -->
-            <label for="qrInput">Enter Text/URL:</label>
-            <input v-model="qrInput" type="text" id="qrInput" placeholder="Enter text or URL">
-
-            <!-- Button to generate QR -->
-            <button @click="generateQRCode">Generate QR</button>
-
-            <!-- QR Code Display -->
-            <div class="qr-code" v-if="qrCodeUrl">
-                <img :src="qrCodeUrl" alt="QR Code">
-            </div>
-            <p v-else style="color: red;">Please enter text or URL.</p>
-        </div>
-    </div>
-</template>
-
-<style scoped>
-/* Unique class for this page */
-.makeqr-container {
-    font-family: Arial, sans-serif;
+    <section class="section">
+      <h1>Generate QR Batch</h1>
+      <div class="event-select">
+        <label for="event">Select Event:</label>
+        <select id="event" v-model="selectedEventId">
+          <option disabled value="">-- Select an Event --</option>
+          <option v-for="event in events" :key="event._id" :value="event._id">{{ event.name }}</option>
+        </select>
+      </div>
+      <button @click="generateQr">Generate QR Codes</button>
+    </section>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue';
+  import axios from 'axios';
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const events = ref([]);
+  const selectedEventId = ref('');
+  
+  const fetchEvents = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in!");
+        return;
+      }
+      const response = await axios.get(`${API_URL}/api/events`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      events.value = response.data.data;
+    } catch (error) {
+      console.error("Error fetching events:", error.response?.data || error.message);
+      alert("Error fetching events");
+    }
+  };
+  
+  const generateQr = async () => {
+    if (!selectedEventId.value) {
+      alert("Please select an event.");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in!");
+        return;
+      }
+      await axios.post(
+        `${API_URL}/api/admin/export/generate-qr-batch`,
+        { eventId: selectedEventId.value },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("QR batch successfully generated!");
+    } catch (error) {
+      console.error("Error generating QR batch:", error.response?.data || error.message);
+      alert("Failed to generate QR batch");
+    }
+  };
+  
+  onMounted(fetchEvents);
+  </script>
+  
+  <style scoped>
+  .section {
+    margin: 40px 0;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+  }
+  .event-select {
+    margin: 15px 0;
     text-align: center;
-    background-color: #f4f4f4;
-    padding: 20px;
-    min-height: 100vh;
-}
-
-.makeqr-box {
+  }
+  .event-select select {
+    padding: 5px 10px;
+    font-size: 16px;
+    width: 80%;
     max-width: 400px;
-    background: white;
-    padding: 20px;
-    margin: auto;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
-.makeqr-box h2 {
-    color: #333;
-}
-
-.makeqr-box input, 
-.makeqr-box button {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.makeqr-box button {
-    background-color: #007bff;
+  }
+  button {
+    background-color: #4CAF50;
     color: white;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-}
-
-.makeqr-box button:hover {
-    background-color: #0056b3;
-}
-
-.qr-code {
-    margin-top: 20px;
-}
-</style>
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+  </style>
+  
