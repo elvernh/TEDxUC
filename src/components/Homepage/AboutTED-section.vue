@@ -58,7 +58,7 @@ export default defineComponent({
             :src="pintuClose"
             @click="tedOpen = true"
             class="door-img"
-          />
+          />  <transition name="fade">
           <div class="door-content" v-if="tedOpen">
             <div class="content-inner">
               <p>It all started with a simple yet powerful mission: ideas worth spreading.</p>
@@ -66,6 +66,7 @@ export default defineComponent({
               <p>Over time, it evolved into a global platform, hosting talks that challenge perspectives and ignite change in fields like science, business, education, and beyond.</p>
             </div>
           </div>
+          </transition>
         </div>
       </div>
 
@@ -94,6 +95,7 @@ export default defineComponent({
             @click="tedxOpen = true"
             class="door-img"
           />
+          <transition name="fade">
           <div class="door-content" v-if="tedxOpen">
             <div class="content-inner">
               <p>TED's influence didn't stop there.</p>
@@ -101,6 +103,7 @@ export default defineComponent({
               <p>Through TEDx, people worldwide can experience the power of ideas in a setting that sparks connection and inspiration.</p>
             </div>
           </div>
+          </transition>
         </div>
       </div>
 
@@ -128,7 +131,7 @@ export default defineComponent({
             :src="pintuClose"
             @click="tedxucsOpen = true"
             class="door-img"
-          />
+          /><transition name="fade">
           <div class="door-content" v-if="tedxucsOpen">
             <div class="content-inner">
               <p>TEDxUniversitasCiputraSurabaya is our way of bringing this movement to our community.</p>
@@ -136,6 +139,7 @@ export default defineComponent({
               <p>With "The Infinite Maze" as this year's theme, we invite you to navigate the twists and turns of knowledge, discovery, and endless possibilities.</p>
             </div>
           </div>
+        </transition>
         </div>
       </div>
     </div>
@@ -202,9 +206,16 @@ h1 {
 }
 
 .door-img:hover {
-  transform: scale(1.02);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
 
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 .door-content {
   position: absolute;
   top: 50%;
@@ -239,15 +250,6 @@ h1 {
   object-fit: contain;
 }
 
-.door-bounce {
-  animation: bounce 0.5s ease;
-}
-
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-}
 
 .door-content.show {
   opacity: 1;
