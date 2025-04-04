@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { onMounted } from 'vue';
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
@@ -21,7 +22,7 @@ const foodAllergy = ref("");
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
 const isLoading = ref(false);
-const countdown = ref(8);
+const countdown = ref(5);
 const currentStep = ref<"form" | "payment" | "confirmation">("form");
 
 const bcaVANumber = ref("");
@@ -141,6 +142,14 @@ const confirmPayment = async () => {
     console.error("❌ Error at submitting transaction: ", e);
   }
 };
+
+
+onMounted(() => {
+  setTimeout(() => {
+    router.push('/'); 
+  }, 5000); 
+});
+
 </script>
 
 <template>
