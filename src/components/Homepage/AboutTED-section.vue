@@ -12,6 +12,8 @@ const tedxHover = ref(false);
 
 const tedxucsOpen = ref(false);
 const tedxucsHover = ref(false);
+
+
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedHover"
             :src="pintuOpenDikit"
             @click="tedOpen = true"
-            class="door-img door-bounce"
+            class="door-img "
           />
           <img
             v-else
@@ -72,7 +74,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedxHover"
             :src="pintuOpenDikit"
             @click="tedxOpen = true"
-            class="door-img door-bounce"
+            class="door-img "
           />
           <img
             v-else
@@ -109,7 +111,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedxucsHover"
             :src="pintuOpenDikit"
             @click="tedxucsOpen = true"
-            class="door-img door-bounce"
+            class="door-img "
           />
           <img
             v-else
@@ -135,7 +137,7 @@ const tedxucsHover = ref(false);
 <style scoped>
 .container {
   width: 100vw;
-  height: 130vh;
+  height: 110vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -147,7 +149,7 @@ h1 {
   color: white;
   font-size: 60px;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -169,9 +171,11 @@ h1 {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  pointer-events: none;
 }
 
 .door {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -180,15 +184,17 @@ h1 {
 
 .door-image-container {
   position: relative;
-  width: 350px;
-  height: auto;
+  display: inline-block; 
+  
 }
 
 .door-img {
   position: relative;
   width: 350px;
-  height: auto;
+  height: 500px;
   display: block;
+  object-fit: contain;
+  pointer-events: auto;
 }
 
 .pop-up-enter-active {
@@ -257,12 +263,13 @@ h1 {
   text-align: center;
 }
 
-.door-img {
-  width: 350px;
-  height: 500px;
-  object-fit: contain;
-}
+@media (max-width: 1250px) {
+  .container {
+    height: auto;
+    padding-bottom: 80px;
+  }
 
+}
 @media (max-width: 800px) {
   .container {
     height: auto;
