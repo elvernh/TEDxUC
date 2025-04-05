@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { onMounted } from 'vue';
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
@@ -23,7 +22,9 @@ const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
 const isLoading = ref(false);
 const countdown = ref(5);
-const currentStep = ref<"form" | "payment" | "confirmation" | "success">("form");
+const currentStep = ref<"form" | "payment" | "confirmation" | "success">(
+  "form"
+);
 
 // Event details
 const eventDetails = ref<any>(null);
@@ -44,23 +45,23 @@ let countdownTimer: number | null = null;
 // Fungsi untuk memeriksa status pembayaran
 const checkPaymentStatus = async () => {
   if (!registrationId.value) return;
-  
+
   try {
     const response = await axios.get(
       `http://localhost:5001/api/payments/registration/${registrationId.value}`
     );
-    
+
     if (response.data && response.data.data) {
       const paymentStatus = response.data.data.status;
       console.log("Current payment status:", paymentStatus);
-      
+
       // Jika pembayaran berhasil, ubah ke halaman sukses
       if (paymentStatus === "success") {
         clearPolling();
         currentStep.value = "success";
-        
+
         // Mulai countdown untuk redirect ke home page
-        startCountdown();
+        // startCountdown();
       }
     }
   } catch (error) {
@@ -89,7 +90,7 @@ const startCountdown = () => {
     countdown.value--;
     if (countdown.value <= 0) {
       clearInterval(countdownTimer!);
-      router.push('/');
+      router.push("/");
     }
   }, 1000);
 };
@@ -148,6 +149,22 @@ const submitForm = async () => {
         props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
           ? "payment"
           : "confirmation";
+
+      if (props.eventName === "Pre-Event 1") {
+        try {
+          const paymentResponse = await axios.post(
+            "http://localhost:5001/api/payments",
+            {
+              registrationId: registrationId.value,
+              paymentMethod: "bca_va",
+            }
+          );
+          console.log("Berhasil mengubah status payment menjadi paid")
+        } catch (e) {
+          console.log("Error: ", e)
+          console.log("Gagal mengubah status payment menjadi paid")
+        }
+      }
     }
   } catch (error: any) {
     console.error("❌ Error during registration:", error);
@@ -167,7 +184,6 @@ const submitForm = async () => {
   } finally {
     isLoading.value = false;
   }
-
 };
 
 const confirmPayment = async () => {
@@ -198,12 +214,12 @@ const confirmPayment = async () => {
     );
     const responseData = transactionResponse.data;
     console.log(responseData);
-    
+
     // Simpan paymentId untuk pengecekan status
     if (responseData.data && responseData.data.payment) {
       paymentId.value = responseData.data.payment._id;
     }
-    
+
     if (responseData.data && responseData.data.paymentInstructions) {
       if (
         responseData.data.payment.paymentMethod === "bca_va" &&
@@ -217,12 +233,12 @@ const confirmPayment = async () => {
         const qrAction = responseData.data.paymentInstructions.actions.find(
           (action) => action.name === "generate-qr-code"
         );
-        
+
         if (qrAction) {
           qrisImageCode.value = qrAction.url;
           console.log("QRIS Image URL:", qrisImageCode.value);
         }
-        
+
         // Jika ada qr_string
         if (responseData.data.paymentInstructions.qr_string) {
           qrisCode.value = responseData.data.paymentInstructions.qr_string;
@@ -236,13 +252,11 @@ const confirmPayment = async () => {
   }
 };
 
-
-onMounted(() => {
-  setTimeout(() => {
-    router.push('/'); 
-  }, 5000); 
-});
-
+// onMounted(() => {
+//   setTimeout(() => {
+//     router.push('/');
+//   }, 5000);
+// });
 </script>
 
 <template>
@@ -377,7 +391,8 @@ onMounted(() => {
             <h3>BCA Virtual Account Payment</h3>
             <div class="va-number">{{ bcaVANumber }}</div>
             <p class="payment-instructions">
-              Silahkan transfer sesuai nominal yang tertera ke nomor Virtual Account di atas
+              Silahkan transfer sesuai nominal yang tertera ke nomor Virtual
+              Account di atas
             </p>
           </div>
 
@@ -387,7 +402,11 @@ onMounted(() => {
             <div class="qrcode-placeholder">
               <img :src="qrisImageCode" alt="QRIS" class="qrcode-image" />
             </div>
-            <a :href="qrisImageCode" download="qris-code.png" class="download-button">
+            <a
+              :href="qrisImageCode"
+              download="qris-code.png"
+              class="download-button"
+            >
               Download QR Code
             </a>
           </div>
@@ -401,7 +420,7 @@ onMounted(() => {
       <div class="confirmation-details">
         <p>Thank you for your payment!</p>
         <p>Your e-ticket has been sent to your email.</p>
-        <p>Please check your email for the QR code ticket.</p>
+        <p class="ending">Please check your email for the QR code ticket.</p>
         <router-link to="/" class="download-button">Back to Home</router-link>
       </div>
     </div>
@@ -411,7 +430,7 @@ onMounted(() => {
 
       <div class="confirmation-details">
         <p>Thank you for your order!</p>
-        <p>Your e-ticket will be sent to your email</p>
+        <p class="ending">Your e-ticket will be sent to your email</p>
         <router-link to="/" class="download-button">Back to Home</router-link>
         <!-- <p class="countdown">Redirecting to home page in {{ countdown }} seconds...</p> -->
       </div>
@@ -435,7 +454,6 @@ onMounted(() => {
     <p>Loading...</p>
   </div>
 </template>
-
 
 <style scoped>
 .layout-container {
@@ -567,13 +585,13 @@ label {
   border-radius: 6px;
   cursor: pointer;
 }
-.download-button{
+.download-button {
   background-color: red;
   text-decoration: none;
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
-  margin-top: 20px;
+  /* margin-top: 40px; */
 }
 
 .submit-button:hover {
@@ -774,11 +792,10 @@ img {
 
 /* ConfirmationPage Styles */
 
-.confirmation-wrapper{
+.confirmation-wrapper {
   z-index: 9999;
 }
 .confirmation-details {
-
   padding: 20px;
   border-radius: 8px;
   margin: 25px 0;
@@ -851,6 +868,9 @@ img {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+.ending {
+  margin-bottom: 40px;
 }
 
 .spinner {
