@@ -149,7 +149,7 @@ const submitForm = async () => {
         props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
           ? "payment"
           : "confirmation";
-
+          console.log(props.eventName)
       if (props.eventName === "Pre-Event 1") {
         try {
           const paymentResponse = await axios.post(
