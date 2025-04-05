@@ -80,7 +80,7 @@ const imagePath = backgroundImage;
 
 h1 {
   color: white;
-  font-size: 60px;
+  font-size: 40px;
 }
 
 .desc-text {

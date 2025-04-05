@@ -148,7 +148,7 @@ const submitForm = async () => {
           registrationResponse.data.data.payment.status === "success") {
         // Event gratis, langsung ke konfirmasi sukses
         currentStep.value = "success";
-        startCountdown();
+        // startCountdown();
       } else {
         currentStep.value =
           props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
@@ -584,6 +584,7 @@ label {
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
+  margin-top: 20px;
 }
 
 .submit-button:hover {
@@ -783,8 +784,12 @@ img {
 }
 
 /* ConfirmationPage Styles */
+
+.confirmation-wrapper{
+  z-index: 9999;
+}
 .confirmation-details {
-  background: rgba(0, 0, 0, 0.4);
+
   padding: 20px;
   border-radius: 8px;
   margin: 25px 0;
@@ -888,6 +893,7 @@ img {
   .title {
     margin-top: 90px;
     font-size: 40px;
+    z-index: 999;
   }
 
   .form-row,
