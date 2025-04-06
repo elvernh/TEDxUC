@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ConfirmationPage from '../views/ConfirmationPage.vue';
 import QRScanner from "../views/adminView/QRScanner.vue"; 
-import Testing from "../views/Testing.vue"; 
+
 
 // Core Pages
 import Homepage from '../views/Homepage.vue';
@@ -39,7 +39,6 @@ const router = createRouter({
     { path: '/', name: 'Home', component: Homepage },
     { path: '/login', name: 'Login', component: Login },
     { path: "/qr-scanner", name: 'QR Scanner', component: QRScanner },
-    { path: "/testing", name: 'Testing', component: Testing },
     { path: '/mini-game', name: 'Mini Game', component: MiniGame },
     { path: '/speaker-schedule', name: 'Speaker & Schedule', component: SpeakerPage },
 
