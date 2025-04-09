@@ -81,11 +81,10 @@ const imagePath = backgroundImage;
 h1 {
   color: white;
   font-size: 40px;
-  margin-bottom: 50px;
+  margin-bottom: 10px;
 }
 
 .desc-text {
-  margin-top: -30px;
   color: white;
   font-size: 15px;
   max-width: 40%;

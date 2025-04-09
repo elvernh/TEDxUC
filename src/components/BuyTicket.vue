@@ -59,7 +59,6 @@ const checkPaymentStatus = async () => {
       if (paymentStatus === "success") {
         clearPolling();
         currentStep.value = "success";
-
         // Mulai countdown untuk redirect ke home page
         // startCountdown();
       }
@@ -95,6 +94,11 @@ const startCountdown = () => {
   }, 1000);
 };
 
+function copyVANumber(){
+      navigator.clipboard.writeText(bcaVANumber.value);
+      alert("BCA VA Copied to Clipboard")
+}
+
 // 📤 Submit form
 const submitForm = async () => {
   try {
@@ -124,6 +128,7 @@ const submitForm = async () => {
 
     const eventIdValue = selectedEvent._id;
 
+    
     const formData = {
       fullName: fullName.value.trim(),
       email: email.value.trim(),
@@ -149,7 +154,7 @@ const submitForm = async () => {
         props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
           ? "payment"
           : "confirmation";
-          console.log(props.eventName)
+      console.log(props.eventName);
       if (props.eventName === "Pre-Event 1") {
         try {
           const paymentResponse = await axios.post(
@@ -159,10 +164,10 @@ const submitForm = async () => {
               paymentMethod: "bca_va",
             }
           );
-          console.log("Berhasil mengubah status payment menjadi paid")
+          console.log("Berhasil mengubah status payment menjadi paid");
         } catch (e) {
-          console.log("Error: ", e)
-          console.log("Gagal mengubah status payment menjadi paid")
+          console.log("Error: ", e);
+          console.log("Gagal mengubah status payment menjadi paid");
         }
       }
     }
@@ -261,10 +266,6 @@ const confirmPayment = async () => {
 
 <template>
   <div class="layout-container" :style="{ backgroundImage: `url(${bgImage})` }">
-    <div class="logo-container">
-      <img class="logo" :src="logo" alt="logo" />
-    </div>
-
     <div v-if="currentStep === 'form'" class="form-wrapper">
       <h1 class="title">Ticket Order Form</h1>
       <form @submit.prevent="submitForm">
@@ -394,6 +395,7 @@ const confirmPayment = async () => {
               Silahkan transfer sesuai nominal yang tertera ke nomor Virtual
               Account di atas
             </p>
+            <button @click="copyVANumber" class="copy-btn">Copy</button>
           </div>
 
           <div v-show="confirmedPayment === 'qris'" class="qris-details">
@@ -570,7 +572,6 @@ label {
 .form-submit {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
   width: 100%;
 }
 
@@ -607,6 +608,8 @@ label {
   justify-content: center;
   align-items: center;
 }
+
+
 .container {
   width: 600px;
   border-radius: 8px;
@@ -710,6 +713,21 @@ label {
   padding: 15px 30px;
   border-radius: 6px;
   font-family: monospace;
+}
+
+.copy-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: red; /* red-500 */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.copy-btn:hover {
+  background-color: #f13434; /* red-400 */
 }
 
 .qris-details {
@@ -928,10 +946,6 @@ img {
   .form-group-alergi {
     flex: 1;
     margin-top: -90px;
-  }
-
-  .form-submit {
-    margin-top: -100px;
   }
 }
 
