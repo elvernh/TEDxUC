@@ -32,7 +32,7 @@ import axios from "axios";
 const scannedData = ref(null);
 const hasCamera = ref(true);
 const statusMessage = ref("");
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_URL = import.meta.env.VITE_API_URL || "163.53.195.131:3000";
 
 const onDecode = (result) => {
   scannedData.value = result;
