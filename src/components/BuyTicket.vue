@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+
+interface Event {
+  _id: string;
+  name: string;
+  // ... other properties
+}
 import axios from "axios";
 import bgImage from "@/assets/images/background-1.png";
 import logo from "@/components/icons/logo-white.svg";
@@ -115,7 +121,7 @@ const submitForm = async () => {
     const events = response.data.data;
 
     const selectedEvent = events.find(
-      (e) =>
+      (e: any) =>
         e.name.trim().toLowerCase() === props.eventName!.trim().toLowerCase()
     );
 
@@ -236,7 +242,7 @@ const confirmPayment = async () => {
         console.log("BCA VA Number:", bcaVANumber.value);
       } else if (responseData.data.payment.paymentMethod === "qris") {
         const qrAction = responseData.data.paymentInstructions.actions.find(
-          (action) => action.name === "generate-qr-code"
+          (action: any) => action.name === "generate-qr-code"
         );
 
         if (qrAction) {
