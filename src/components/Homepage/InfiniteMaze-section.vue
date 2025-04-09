@@ -1,21 +1,15 @@
-<script lang="ts">
+<script setup lang="ts">
 import sideImage from "@/assets/images/x.png";
-export default {
-  data() {
-    return {
-      sideImagePath: sideImage,
-    };
-  },
-};
+
+const sideImagePath = sideImage;
 </script>
 
 <template>
   <div class="layout-container">
     <div class="side-image">
-      <img :src="sideImagePath" class="image" draggable="false"/>
+      <img :src="sideImagePath" class="image" draggable="false" />
     </div>
     <div class="text-container">
-    
       <h1 class="title">THE INFINITE MAZE</h1>
       <h2 class="subtitle">
         Life is a labyrinth with winding paths, filled with ups and downs. Every
@@ -31,7 +25,6 @@ export default {
         illuminate the way ahead.
       </h2>
     </div>
-  
   </div>
 </template>
 
@@ -44,7 +37,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: black;
-  padding: 0 20px;
+  padding: 50px 50px;
   box-sizing: border-box;
 }
 
@@ -90,8 +83,10 @@ export default {
   text-align: justify;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
+  .layout-container {
+    padding: 50px 50px;
+  }
   .title {
     font-size: 80px;
   }
@@ -101,18 +96,21 @@ export default {
 }
 
 @media (max-width: 992px) {
+  .layout-container {
+    padding: 50px 50px;
+  }
   .title {
-    font-size: 70px;
+    font-size: 60px;
   }
   .subtitle {
-    font-size: 22px;
+    font-size: 20px;
   }
 }
 
 @media (max-width: 768px) {
   .layout-container {
     flex-direction: column;
-    padding: 500px 50px;
+    padding: 50px 40px;
     gap: 30px;
   }
   .text-container {
@@ -127,35 +125,32 @@ export default {
   }
   .subtitle {
     font-size: 20px;
-    text-align: lefy;
+    text-align: left;
   }
 }
 
-  @media (max-width: 590px) {
-    .layout-container {
-      padding: 500px 35px;
-      gap: 20px;
-    }
-    .title {
-      font-size: 40px;
-    }
-    .subtitle {
-      font-size: 18px;
-    }
+@media (max-width: 590px) {
+  .layout-container {
+    padding: 40px 30px;
   }
-
-  @media (max-width: 480px) {
-    .layout-container {
-      padding: 100px 35px;
-      gap: 20px;
-    }
-    .title {
-      font-size: 40px;
-    }
-    .subtitle {
-      font-size: 15px;
-      text-align-last: center;
-    }
+  .title {
+    font-size: 40px;
   }
+  .subtitle {
+    font-size: 18px;
+  }
+}
 
+@media (max-width: 480px) {
+  .layout-container {
+    padding: 30px 20px;
+  }
+  .title {
+    font-size: 40px;
+  }
+  .subtitle {
+    font-size: 15px;
+    text-align-last: center;
+  }
+}
 </style>
