@@ -54,7 +54,7 @@ const checkPaymentStatus = async () => {
 
   try {
     const response = await axios.get(
-      `https://163.53.195.131:3000/api/payments/registration/${registrationId.value}`
+      `http://163.53.195.131:3000/api/payments/registration/${registrationId.value}`
     );
 
     if (response.data && response.data.data) {
@@ -148,7 +148,7 @@ const submitForm = async () => {
     console.log("Sending form data: ", formData);
 
     const registrationResponse = await axios.post(
-      "https://163.53.195.131:3000/api/registrations/",
+      "http://163.53.195.131:3000/api/registrations/",
       formData
     );
 
@@ -164,7 +164,7 @@ const submitForm = async () => {
       if (props.eventName === "Pre-Event 1") {
         try {
           const paymentResponse = await axios.post(
-            "https://163.53.195.131:3000/api/payments",
+            "http://163.53.195.131:3000/api/payments",
             {
               registrationId: registrationId.value,
               paymentMethod: "bca_va",
@@ -220,7 +220,7 @@ const confirmPayment = async () => {
     confirmedPayment.value = selectedPayment.value;
 
     const transactionResponse = await axios.post(
-      "https://163.53.195.131:3000/api/payments",
+      "http://163.53.195.131:3000/api/payments",
       transactionData
     );
     const responseData = transactionResponse.data;
