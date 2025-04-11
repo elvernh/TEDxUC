@@ -164,7 +164,7 @@ const submitForm = async () => {
       if (props.eventName === "Pre-Event 1") {
         try {
           const paymentResponse = await axios.post(
-            "https://dickyyyy.site/api/payments"
+            "https://dickyyyy.site/api/payments",
             {
               registrationId: registrationId.value,
               paymentMethod: "bca_va",
