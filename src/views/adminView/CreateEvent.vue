@@ -19,6 +19,7 @@
           <option value="Pre Event Day 1">Pre Event Day 1</option>
           <option value="Pre Event Day 2">Pre Event Day 2</option>
           <option value="Pre Event Day 3">Pre Event Day 3</option>
+          <option value="Main Event">Main Event</option>
         </select>
       </div>
   

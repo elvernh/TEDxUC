@@ -28,6 +28,7 @@ import MainEventPayment from '../views/transaction-page/TrfMainEvent.vue';
 import Emailto from '../views/adminView/EmailToBulk.vue';
 import makeqr from '../views/adminView/MakeQR.vue';
 import dashboard from '../views/adminView/Dashboard.vue';
+import createEvent from '../views/adminView/CreateEvent.vue';
 
 // Error Page
 import ErrorPage from '../views/error/ErrorPage.vue';  // Import the error page
@@ -67,6 +68,7 @@ const router = createRouter({
     { path: '/Emailto', name: 'emailto', component: Emailto },
     { path: '/makeqr', name: 'makeqr', component: makeqr },
     { path: '/dashboard', name: 'dashboard', component: dashboard },
+    { path: '/create-event', name: 'createEvent', component: createEvent },
   ],
 });
 
