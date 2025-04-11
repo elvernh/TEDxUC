@@ -34,6 +34,7 @@ const logout = () => {
       <div class="right-side" :class="{ open: isMobileMenuOpen }">
         <ul>
           <li><router-link to="/dashboard">Dashboard</router-link></li>
+          <li><router-link to="create-event">Create Event</router-link></li>
           <li><router-link to="/qr-scanner">Scan QR</router-link></li>
           <li><router-link to="/Emailto">Email Registration</router-link></li>
           <li><router-link to="/makeqr">Create QR</router-link></li>

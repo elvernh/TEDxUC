@@ -119,7 +119,7 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   
-  const API_URL = import.meta.env.VITE_API_URL || '163.53.195.131:3000';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://dickyyyy.site';
   const token = localStorage.getItem('token');
   
   const stats = ref<any>(null);
