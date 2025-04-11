@@ -13,6 +13,7 @@
       <p>Total Revenue: {{ stats.totalRevenue }}</p>
       <p>Attended Count: {{ stats.attendedCount }}</p>
       <p>Attendance Rate: {{ stats.attendanceRate }}%</p>
+
       <div class="event-stats" v-if="stats.eventStats">
         <h3>Event Stats</h3>
         <table>
@@ -23,6 +24,8 @@
               <th>Date</th>
               <th>Registered</th>
               <th>Paid</th>
+              <th>Actions</th>
+              <!-- New column for Delete button -->
             </tr>
           </thead>
           <tbody>
@@ -32,6 +35,10 @@
               <td>{{ new Date(event.date).toLocaleDateString() }}</td>
               <td>{{ event.registeredCount }}</td>
               <td>{{ event.paidRegistrations }}</td>
+              <td>
+                <button @click="deleteEvent(event._id)">Delete</button>
+                <!-- Delete button -->
+              </td>
             </tr>
           </tbody>
         </table>
@@ -136,31 +143,6 @@
         </button>
       </div>
     </section>
-
-    <section class="events-section">
-      <h2>Events</h2>
-      <table v-if="events.length">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="event in events" :key="event._id">
-            <td>{{ event.name }}</td>
-            <td>{{ event.type }}</td>
-            <td>{{ new Date(event.date).toLocaleDateString() }}</td>
-            <td>
-              <button @click="deleteEvent(event._id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else>No events found.</div>
-    </section>
   </div>
 </template>
 
@@ -180,7 +162,6 @@ const payPagination = ref<any>(null);
 const currentRegPage = ref(1);
 const currentPayPage = ref(1);
 const events = ref<any[]>([]);
-
 
 // Fetch dashboard statistics
 const fetchStats = async () => {
@@ -322,7 +303,6 @@ const deleteEvent = async (id: string) => {
     console.error("Error deleting event", error);
   }
 };
-
 
 onMounted(() => {
   fetchStats();
