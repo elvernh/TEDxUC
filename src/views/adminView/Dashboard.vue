@@ -19,6 +19,7 @@
         <table>
           <thead>
             <tr>
+              <th>Id</th>
               <th>Event</th>
               <th>Type</th>
               <th>Date</th>
@@ -30,6 +31,7 @@
           </thead>
           <tbody>
             <tr v-for="event in stats.eventStats" :key="event._id">
+              <td>{{ event._id }}</td>
               <td>{{ event.name }}</td>
               <td>{{ event.type }}</td>
               <td>{{ new Date(event.date).toLocaleDateString() }}</td>
