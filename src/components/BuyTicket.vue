@@ -117,7 +117,7 @@ const submitForm = async () => {
       return;
     }
 
-    const response = await axios.get("http://163.53.195.131:3000/api/events");
+    const response = await axios.get("https://dickyyyy.site/api/events");
     const events = response.data.data;
 
     const selectedEvent = events.find(
