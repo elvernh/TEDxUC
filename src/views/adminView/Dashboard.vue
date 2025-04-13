@@ -282,7 +282,7 @@ const updatePaymentStatus = async (id: string) => {
 // Fetch all events
 const fetchEvents = async () => {
   try {
-    const res = await axios.get(`${API_URL}/api/admin/events`, {
+    const res = await axios.get(`${API_URL}/api/events`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     events.value = res.data.data;
