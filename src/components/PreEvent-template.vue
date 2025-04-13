@@ -35,7 +35,9 @@ const imagePath = backgroundImage;
     </p>
 
     <router-link
-      v-if="props.eventName !== 'PRE-EVENT 2'"
+      v-if="
+        props.eventName !== 'PRE-EVENT 2' && props.eventName !== 'PRE-EVENT 3' && props.eventName !== 'PRE-EVENT 1'
+      "
       class="register-btn"
       :to="`/register/${props.registerLink}`"
     >
