@@ -24,6 +24,7 @@
               <th>Type</th>
               <th>Date</th>
               <th>Registered</th>
+              <td>Is Active?</td>
               <th>Paid</th>
               <th>Actions</th>
             </tr>
@@ -34,6 +35,8 @@
               <td>{{ event.name }}</td>
               <td>{{ event.type }}</td>
               <td>{{ new Date(event.date).toLocaleDateString() }}</td>
+              <!-- <td>{{   }}</td> -->
+              <td> {{ event.isActive }}</td>
               <td>{{ event.registeredCount }}</td>
               <td>{{ event.paidRegistrations }}</td>
               <td>
@@ -337,12 +340,71 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.modal-overlay {
+/* Scoped Styles for the Dashboard Component */
+.dashboard-admin {
+  padding: 20px;
+}
+
+.stats-section,
+.registrations-section,
+.payments-section {
+  margin-bottom: 40px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+}
+
+.pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Modal Style */
+.update-event-modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -350,61 +412,40 @@ onMounted(() => {
   z-index: 1000;
 }
 
-.modal {
-  background: white;
-  padding: 20px 30px;
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
   border-radius: 8px;
-  min-width: 300px;
-  max-width: 400px;
+  width: 400px;
 }
 
-.modal h3 {
-  margin-top: 0;
-}
-
-.modal label {
-  display: block;
+.modal-content h3 {
   margin-bottom: 10px;
 }
 
-.modal input {
+.modal-content input {
   width: 100%;
-  padding: 6px 10px;
-  margin-top: 4px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
   border-radius: 4px;
+  border: 1px solid #ddd;
 }
 
-.modal-buttons {
+.modal-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 }
 
-.dashboard-admin {
-  margin: 20px;
+.modal-actions button {
+  padding: 10px 15px;
 }
 
-.stats-section {
-  margin-bottom: 20px;
+.modal-actions .cancel-btn {
+  background-color: #f44336;
 }
 
-.event-stats table {
-  width: 100%;
-  border-collapse: collapse;
+.modal-actions .save-btn {
+  background-color: #4caf50;
 }
 
-.event-stats table th,
-.event-stats table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 </style>
