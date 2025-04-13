@@ -352,7 +352,7 @@ const confirmPayment = async () => {
 
         <!-- Payment methods selection -->
         <div class="category" :class="{ centered: confirmedPayment }">
-          <label
+          <!-- <label
             v-if="!confirmedPayment || confirmedPayment === 'bca_va'"
             for="bca"
             class="payment-method bcaMethod"
@@ -364,7 +364,7 @@ const confirmPayment = async () => {
               <img src="/src/assets/images/bcaLogo.png" alt="bca" />
               <span class="Payment-name">BCA Virtual Account</span>
             </div>
-          </label>
+          </label> -->
 
           <label
             v-if="!confirmedPayment || confirmedPayment === 'qris'"
