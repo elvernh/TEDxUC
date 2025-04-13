@@ -295,7 +295,7 @@ const fetchEvents = async () => {
 const deleteEvent = async (id: string) => {
   if (!confirm("Are you sure you want to delete this event?")) return;
   try {
-    await axios.delete(`${API_URL}/api/admin/events/${id}`, {
+    await axios.delete(`${API_URL}/api/events/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     alert("Event deleted successfully.");
