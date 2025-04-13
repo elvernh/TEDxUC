@@ -30,14 +30,15 @@
             </tr>
           </thead>
           <tbody>
+            <!-- <tr v-for="event in events" :key="event._id"> -->
             <tr v-for="event in stats.eventStats" :key="event._id">
               <td>{{ event._id }}</td>
               <td>{{ event.name }}</td>
               <td>{{ event.type }}</td>
               <td>{{ new Date(event.date).toLocaleDateString() }}</td>
               <!-- <td>{{   }}</td> -->
-              <td> {{ event.isActive }}</td>
               <td>{{ event.registeredCount }}</td>
+              <td>{{ event.isActive }}</td>
               <td>{{ event.paidRegistrations }}</td>
               <td>
                 <button @click="openEditEventModal(event)">Edit</button>
@@ -79,9 +80,17 @@
       </table>
       <div v-else>No registrations found.</div>
       <div class="pagination" v-if="regPagination">
-        <button :disabled="currentRegPage === 1" @click="fetchRegistrations(currentRegPage - 1)">Prev</button>
+        <button
+          :disabled="currentRegPage === 1"
+          @click="fetchRegistrations(currentRegPage - 1)"
+        >
+          Prev
+        </button>
         <span>Page {{ currentRegPage }} of {{ regPagination.pages }}</span>
-        <button :disabled="currentRegPage === regPagination.pages" @click="fetchRegistrations(currentRegPage + 1)">
+        <button
+          :disabled="currentRegPage === regPagination.pages"
+          @click="fetchRegistrations(currentRegPage + 1)"
+        >
           Next
         </button>
       </div>
@@ -103,22 +112,36 @@
         </thead>
         <tbody>
           <tr v-for="pay in payments" :key="pay._id">
-            <td>{{ pay.registrationId.fullName }} ({{ pay.registrationId.registrationNumber }})</td>
+            <td>
+              {{ pay.registrationId.fullName }} ({{
+                pay.registrationId.registrationNumber
+              }})
+            </td>
             <td>{{ pay.paymentMethod }}</td>
             <td>{{ pay.amount }}</td>
             <td>{{ pay.status }}</td>
             <td>{{ new Date(pay.paymentDate).toLocaleString() }}</td>
             <td>
-              <button @click="updatePaymentStatus(pay._id)">Update Status</button>
+              <button @click="updatePaymentStatus(pay._id)">
+                Update Status
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
       <div v-else>No payments found.</div>
       <div class="pagination" v-if="payPagination">
-        <button :disabled="currentPayPage === 1" @click="fetchPayments(currentPayPage - 1)">Prev</button>
+        <button
+          :disabled="currentPayPage === 1"
+          @click="fetchPayments(currentPayPage - 1)"
+        >
+          Prev
+        </button>
         <span>Page {{ currentPayPage }} of {{ payPagination.pages }}</span>
-        <button :disabled="currentPayPage === payPagination.pages" @click="fetchPayments(currentPayPage + 1)">
+        <button
+          :disabled="currentPayPage === payPagination.pages"
+          @click="fetchPayments(currentPayPage + 1)"
+        >
           Next
         </button>
       </div>
@@ -199,9 +222,12 @@ const fetchStats = async () => {
 
 const fetchRegistrations = async (page = 1) => {
   try {
-    const res = await axios.get(`${API_URL}/api/admin/registrations?page=${page}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(
+      `${API_URL}/api/admin/registrations?page=${page}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     registrations.value = res.data.data.registrations;
     regPagination.value = res.data.data.pagination;
     currentRegPage.value = page;
@@ -213,18 +239,29 @@ const fetchRegistrations = async (page = 1) => {
 const updateRegistration = async (id: string) => {
   const fullName = prompt("Enter updated full name:");
   const email = prompt("Enter updated email:");
-  const status = prompt("Enter updated status (paid/pending/cancelled/expired):");
-  const attendanceStatus = prompt("Enter updated attendance status (attended/not_attended):");
+  const status = prompt(
+    "Enter updated status (paid/pending/cancelled/expired):"
+  );
+  const attendanceStatus = prompt(
+    "Enter updated attendance status (attended/not_attended):"
+  );
   if (!fullName || !email || !status || !attendanceStatus) {
     alert("All fields required.");
     return;
   }
   try {
-    await axios.put(`${API_URL}/api/admin/registrations/${id}`, {
-      fullName, email, status, attendanceStatus,
-    }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    await axios.put(
+      `${API_URL}/api/admin/registrations/${id}`,
+      {
+        fullName,
+        email,
+        status,
+        attendanceStatus,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     alert("Registration updated successfully.");
     fetchRegistrations(currentRegPage.value);
   } catch (error) {
@@ -247,9 +284,12 @@ const deleteRegistration = async (id: string) => {
 
 const fetchPayments = async (page = 1) => {
   try {
-    const res = await axios.get(`${API_URL}/api/admin/export/payments?page=${page}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(
+      `${API_URL}/api/admin/export/payments?page=${page}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     payments.value = res.data.data.payments;
     payPagination.value = res.data.data.pagination;
     currentPayPage.value = page;
@@ -265,9 +305,13 @@ const updatePaymentStatus = async (id: string) => {
     return;
   }
   try {
-    await axios.put(`${API_URL}/api/admin/payments/${id}`, { status }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    await axios.put(
+      `${API_URL}/api/admin/payments/${id}`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     alert("Payment status updated.");
     fetchPayments(currentPayPage.value);
   } catch (error) {
@@ -319,21 +363,21 @@ const deleteEvent = async (id: string) => {
     await axios.delete(`${API_URL}/api/events/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    
+
     // Alert the user and refresh the events
     alert("Event deleted successfully.");
-    fetchEvents();  // Refresh the events list after deletion
-    fetchStats();   // Optionally refresh stats if needed
+    fetchEvents(); // Refresh the events list after deletion
+    fetchStats(); // Optionally refresh stats if needed
   } catch (error) {
     console.error("Error deleting event", error);
     alert("Failed to delete event.");
   }
 };
 
-
 // Fetch initial data
 onMounted(() => {
   fetchStats();
+  fetchEvents();
   fetchRegistrations();
   fetchPayments();
 });
@@ -447,5 +491,4 @@ button:disabled {
 .modal-actions .save-btn {
   background-color: #4caf50;
 }
-
 </style>
