@@ -217,6 +217,325 @@ const submitForm = async () => {
 </template>
 
 <style scoped>
+ .layout-container {
+  width: 100vw;
+  height: 180vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+  padding: 20px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.layout-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+.form-wrapper {
+  display: none;
+}
+
+.logo {
+  position: fixed;
+  top: 2rem;
+  left: 3rem;
+  width: 177px;
+  z-index: 100;
+}
+
+.title {
+  color: rgb(255, 255, 255);
+  font-size: 70px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  background-color: transparent;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.radio-hid {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+label {
+  font-size: 30px;
+  color: white;
+  font-weight: normal;
+}
+
+.form-input,
+.form-input-short {
+  background: white;
+  border: none;
+  border-radius: 6px;
+  padding: 15px;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.form-input-short {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.form-group-usia {
+  flex: 0 0 100px;
+}
+
+.form-group-gender {
+  flex: 0 0 170px;
+}
+
+.form-group-alergi {
+  flex: 1;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.submit-button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  width: 100%;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.download-button {
+  background-color: red;
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.submit-button:hover {
+  background-color: hsla(0, 0%, 34%, 0.699);
+}
+
+.payment-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.container {
+  width: 600px;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 5px 12px -2px rgba(0, 0, 0, 0.1),
+    0 18px 36px -6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.category {
+  margin-top: 10px;
+  padding-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+}
+
+.category.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-method {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 60px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.payment-method:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-details {
+  margin: 30px 0;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-height: 200px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.payment-details h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #fff;
+}
+
+.qris-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.qris-details p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.qrcode-placeholder {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.submit-button-payment {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.payment-submit-button {
+  padding: 14px 100px;
+  font-size: 18px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3;
+}
+
+.Payment-name {
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.qrcode-image {
+  display: block;
+  margin: 0 auto;
+  width: 300px;
+  height: 300px;
+}
+
+.qrcode-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.imgName {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imgName span {
+  position: absolute;
+  font-weight: bold;
+  margin-top: 80px;
+}
+
+.imgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 15%;
+  transform: translateY(-25px);
+}
+
+img {
+  width: 400px;
+  height: auto;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.confirmation-wrapper {
+  z-index: 9999;
+}
+
+.confirmation-details {
+  padding: 20px;
+  border-radius: 8px;
+  margin: 25px 0;
+  text-align: center;
+}
 .layout-container {
   width: 100vw;
   height: 180vh;
@@ -367,6 +686,7 @@ label {
   z-index: 1;
   justify-content: center;
   align-items: center;
+  display: flex;
 }
 
 
