@@ -10,8 +10,12 @@ export default defineComponent({
   data() {
     return {
       imagePath: heroSection,
+      scrollY: 0
     };
   },
+  mounted() {
+    // The v-parallax directive will handle parallax internally
+  }
 });
 </script>
 
@@ -20,14 +24,10 @@ export default defineComponent({
     class="hero-container" 
     :style="{ backgroundImage: `url('${imagePath}')` }"
   >
-    <div 
-      class="parallax-container" 
-      v-parallax="0.3"
-    >
-      <SilhouetteOverlay />
+    <div class="parallax-container">
       <div class="text-container">
         <h1>
-          <span class="maze-text">Do you see the maze </span> 
+          <span class="maze-text" v-parallax="0.15">Do you see the maze </span> 
         </h1>
         <h1 
           class="title" 
@@ -37,7 +37,7 @@ export default defineComponent({
         </h1>
         <h2 
           class="subtitle" 
-          v-parallax="0.1"
+          v-parallax="0.25"
         >
           Every step shapes who we become, every turn unlocks new potential. At
           TEDxUniversitasCiputraSurabaya, we believe that life itself is an
@@ -53,7 +53,7 @@ export default defineComponent({
 <style scoped>
 .hero-container {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;  /* Allows the container to expand if needed */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -61,7 +61,7 @@ export default defineComponent({
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* Keeps background image clipping if needed */
 }
 
 .parallax-container {
@@ -80,13 +80,15 @@ export default defineComponent({
   max-width: 900px;
   text-align: center; 
   z-index: 2;
+  padding: 0 20px;
 }
 
 .maze-text{
   font-family: "Panoptica Doesburg";
-  font-family: 400;
+  font-weight: 400;
   font-size: 50px;
   color: white;
+  will-change: transform;
 }
 
 .title {
@@ -94,7 +96,7 @@ export default defineComponent({
   font-size: 80px;
   will-change: transform;
   margin-top: -20px;
-  margin-bottom: 10;
+  margin-bottom: 10px;
 }
 
 .subtitle {
@@ -116,7 +118,6 @@ export default defineComponent({
 }
 
 @media (max-width: 480px) {
-
   .maze-text{
     font-size: 25px;
   }

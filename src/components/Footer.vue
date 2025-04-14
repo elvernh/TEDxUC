@@ -1,10 +1,8 @@
-import logo from "@/components/icons/logo-white.svg";
-
 <template>
   <div class="tedx-container">
-    <!-- Take the Risk Section -->
+    <!-- Take the Risk Section with Parallax -->
     <div class="take-risk-section">
-      <div class="take-risk-content">
+      <div class="take-risk-content" v-parallax="0.01">
         <h2 class="take-risk-title">TAKE THE RISK?</h2>
         <p class="take-risk-description">Mark your path.</p>
         <router-link to="/register/mainevent" class="buy-ticket-btn">
@@ -15,7 +13,7 @@ import logo from "@/components/icons/logo-white.svg";
 
     <footer class="tedx-footer">
       <div class="footer-content">
-        <div class="footer-column">
+        <div class="footer-column" v-parallax="0.01">
           <div class="footer-logo">
             <span class="tedx-logo">
               TED<span class="tedx-small">x</span>
@@ -25,7 +23,7 @@ import logo from "@/components/icons/logo-white.svg";
             <span class="university-text">Surabaya</span>
           </div>
         </div>
-        <div class="footer-column">
+        <div class="footer-column" v-parallax="0.01">
           <div class="footer-title">THE INFINITE MAZE</div>
           <div class="footer-copyright">2025 All Rights Reserved</div>
           <div class="footer-social">
@@ -104,16 +102,26 @@ body,
 }
 
 .tedx-container {
-  min-height: 100vh;
-  max-height: 100%;
   width: 100vw;
-  max-width: 100%;
   display: flex;
   flex-direction: column;
   background-color: black;
   color: white;
   overflow-x: hidden;
+  /* Remove fixed min-height if it’s interfering – let content dictate height */
 }
+
+/* Ensure footer itself stays at the bottom */
+.tedx-footer {
+  background: linear-gradient(to bottom, black, #770000);
+  padding: 2rem;
+  width: 100vw;
+  box-sizing: border-box;
+  margin-top: auto; /* Pushes footer to the bottom of the container */
+  position: relative;
+  overflow: hidden;
+}
+
 .tedx-container::before {
   content: "";
   position: absolute;
@@ -132,6 +140,7 @@ body,
   width: 100vw;
   max-width: 100%;
   box-sizing: border-box;
+  overflow: hidden; /* Important for parallax */
 }
 
 .take-risk-title {
@@ -139,6 +148,7 @@ body,
   font-size: 3.2rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  will-change: transform; /* Optimize for animations */
 }
 
 .take-risk-description {
@@ -146,6 +156,7 @@ body,
   max-width: 800px;
   font-size: 1.3rem;
   margin: 0 auto 2rem;
+  will-change: transform;
 }
 
 .buy-ticket-btn {
@@ -160,6 +171,8 @@ body,
   font-weight: bold;
   border-radius: 8px;
   text-decoration: none;
+  display: inline-block;
+  will-change: transform;
 }
 
 .buy-ticket-btn:hover {
@@ -167,14 +180,6 @@ body,
   color: red;
 }
 
-.tedx-footer {
-  background: linear-gradient(to bottom, black, #770000);
-  padding: 2rem;
-  width: 100vw;
-  max-width: 100%;
-  margin-top: auto;
-  box-sizing: border-box;
-}
 
 .footer-content {
   display: flex;
@@ -188,6 +193,7 @@ body,
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  will-change: transform;
 }
 
 .footer-logo {
@@ -233,9 +239,18 @@ body,
   font-size: 1rem;
   vertical-align: top;
 }
+
 .footer-social {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.social-icon {
+  transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+  transform: translateY(-5px);
 }
 </style>
