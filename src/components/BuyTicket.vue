@@ -1,21 +1,17 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
+
+import bgImage from "@/assets/images/background-1.png";
 
 interface Event {
   _id: string;
   name: string;
-  // ... other properties
 }
-import axios from "axios";
-import bgImage from "@/assets/images/background-1.png";
-import logo from "@/components/icons/logo-white.svg";
-
-const router = useRouter();
 
 const props = defineProps<{ eventName?: string }>();
 
-// Form fields
 const fullName = ref("");
 const email = ref("");
 const phone = ref("");
@@ -23,64 +19,36 @@ const age = ref("");
 const gender = ref("");
 const foodAllergy = ref("");
 
-// State
+const registrationId = ref<string | null>(null);
+const qrisImageCode = ref("");
+const amount = ref<number | null>(null);
+
 const errorMessages = ref<string[]>([]);
 const showErrorPopup = ref(false);
 const isLoading = ref(false);
-const countdown = ref(5);
-const currentStep = ref<"form" | "payment" | "confirmation" | "success">(
-  "form"
-);
+const currentStep = ref<"form" | "qris" | "success">("form");
 
-// Event details
-const eventDetails = ref<any>(null);
-
-// Payment selection
-const selectedPayment = ref("");
-const confirmedPayment = ref<string | null>(null);
-const registrationId = ref<string | null>(null);
-const paymentId = ref<string | null>(null);
-const bcaVANumber = ref("");
-const qrisCode = ref("");
-const qrisImageCode = ref("");
-
-// Payment status polling
 const pollInterval = ref<number | null>(null);
-let countdownTimer: number | null = null;
 
-// Fungsi untuk memeriksa status pembayaran
 const checkPaymentStatus = async () => {
   if (!registrationId.value) return;
-
   try {
     const response = await axios.get(
-      `https//:dickyyyy.site/api/payments/registration/${registrationId.value}`
+      `https://dickyyyy.site/api/payments/registration/${registrationId.value}`
     );
-
-    if (response.data && response.data.data) {
-      const paymentStatus = response.data.data.status;
-      console.log("Current payment status:", paymentStatus);
-
-      // Jika pembayaran berhasil, ubah ke halaman sukses
-      if (paymentStatus === "success") {
-        clearPolling();
-        currentStep.value = "success";
-        // Mulai countdown untuk redirect ke home page
-        // startCountdown();
-      }
+    if (response.data?.data?.status === "success") {
+      clearPolling();
+      currentStep.value = "success";
     }
   } catch (error) {
     console.error("Error checking payment status:", error);
   }
 };
 
-// Memulai polling untuk mengecek status pembayaran
 const startPolling = () => {
-  // Cek setiap 5 detik
   pollInterval.value = window.setInterval(checkPaymentStatus, 5000);
 };
 
-// Menghentikan polling
 const clearPolling = () => {
   if (pollInterval.value) {
     clearInterval(pollInterval.value);
@@ -88,249 +56,118 @@ const clearPolling = () => {
   }
 };
 
-// Countdown untuk redirect ke home
-const startCountdown = () => {
-  countdown.value = 5;
-  countdownTimer = window.setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(countdownTimer!);
-      router.push("/");
-    }
-  }, 1000);
-};
-
-function copyVANumber(){
-      navigator.clipboard.writeText(bcaVANumber.value);
-      alert("BCA VA Copied to Clipboard")
-}
-
-// 📤 Submit form
 const submitForm = async () => {
   try {
     isLoading.value = true;
 
     if (!props.eventName) {
-      console.error("❌ props.eventName is undefined!");
       errorMessages.value = ["Event name is required."];
       showErrorPopup.value = true;
       return;
     }
 
-    const response = await axios.get("https://dickyyyy.site/api/events");
-    const events = response.data.data;
-
-    const selectedEvent = events.find(
-      (e: any) =>
+    const { data } = await axios.get("https://dickyyyy.site/api/events");
+    const selectedEvent = data.data.find(
+      (e: Event) =>
         e.name.trim().toLowerCase() === props.eventName!.trim().toLowerCase()
     );
 
     if (!selectedEvent) {
-      console.error("❌ Event not found:", props.eventName);
       errorMessages.value = [`Event "${props.eventName}" not found.`];
       showErrorPopup.value = true;
       return;
     }
 
-    const eventIdValue = selectedEvent._id;
-
-    
     const formData = {
       fullName: fullName.value.trim(),
       email: email.value.trim(),
       phoneNumber: phone.value.trim(),
       gender: gender.value,
-      age: parseInt(age.value, 10),
+      age: parseInt(age.value),
       foodAllergy: foodAllergy.value?.trim() || "None",
-      eventId: eventIdValue,
+      eventId: selectedEvent._id,
     };
 
-    console.log("Sending form data: ", formData);
-
-    const registrationResponse = await axios.post(
+    const regResponse = await axios.post(
       "https://dickyyyy.site/api/registrations/",
       formData
     );
 
-    if (registrationResponse.status === 201) {
-      registrationId.value = registrationResponse.data.data._id; // ✅ Store registration ID
-      console.log("Registration ID: ", registrationId.value);
+    if (regResponse.status === 201) {
+      registrationId.value = regResponse.data.data._id;
 
-      currentStep.value =
-        props.eventName === "Pre-Event 3" || props.eventName === "Main Event"
-          ? "payment"
-          : "confirmation";
-      console.log(props.eventName);
-      if (props.eventName === "Pre-Event 1") {
-        try {
-          const paymentResponse = await axios.post(
-            "https://dickyyyy.site/api/payments",
-            {
-              registrationId: registrationId.value,
-              paymentMethod: "bca_va",
-            }
-          );
-          console.log("Berhasil mengubah status payment menjadi paid");
-        } catch (e) {
-          console.log("Error: ", e);
-          console.log("Gagal mengubah status payment menjadi paid");
+      // Auto-create QRIS payment
+      const paymentResponse = await axios.post(
+        "https://dickyyyy.site/api/payments",
+        {
+          registrationId: registrationId.value,
+          paymentMethod: "qris",
         }
+      );
+
+      const paymentData = paymentResponse.data.data;
+
+      amount.value = paymentData.amount;
+
+      const qrAction = paymentData.paymentInstructions.actions?.find(
+        (action: any) => action.name === "generate-qr-code"
+      );
+
+      if (qrAction) {
+        qrisImageCode.value = qrAction.url;
       }
+
+      currentStep.value = "qris";
+      startPolling();
     }
   } catch (error: any) {
-    console.error("❌ Error during registration:", error);
-
-    if (error.response && error.response.data) {
-      if (Array.isArray(error.response.data.data)) {
-        errorMessages.value = error.response.data.data.map(
-          (errorDetail: any) => `${errorDetail.field}: ${errorDetail.message}`
-        );
-      } else {
-        errorMessages.value = [
-          error.response.data.message || "An error occurred",
-        ];
-      }
+    if (error.response?.data) {
+      const responseData = error.response.data;
+      errorMessages.value = Array.isArray(responseData.data)
+        ? responseData.data.map((e: any) => `${e.field}: ${e.message}`)
+        : [responseData.message];
       showErrorPopup.value = true;
     }
   } finally {
     isLoading.value = false;
   }
 };
-
-const confirmPayment = async () => {
-  try {
-    if (!selectedPayment.value) {
-      alert("Please select a payment method first.");
-      return;
-    }
-
-    if (!registrationId.value) {
-      console.error("❌ Error: Registration ID is missing!");
-      alert("No registration found. Please complete registration first.");
-      return;
-    }
-
-    console.log("Registration ID:", registrationId.value);
-
-    const transactionData = {
-      registrationId: registrationId.value,
-      paymentMethod: selectedPayment.value,
-    };
-
-    confirmedPayment.value = selectedPayment.value;
-
-    const transactionResponse = await axios.post(
-      "https://dickyyyy.site/api/payments",
-      transactionData
-    );
-    const responseData = transactionResponse.data;
-    console.log(responseData);
-
-    // Simpan paymentId untuk pengecekan status
-    if (responseData.data && responseData.data.payment) {
-      paymentId.value = responseData.data.payment._id;
-    }
-
-    if (responseData.data && responseData.data.paymentInstructions) {
-      if (
-        responseData.data.payment.paymentMethod === "bca_va" &&
-        responseData.data.paymentInstructions.va_numbers &&
-        responseData.data.paymentInstructions.va_numbers.length > 0
-      ) {
-        bcaVANumber.value =
-          responseData.data.paymentInstructions.va_numbers[0].va_number;
-        console.log("BCA VA Number:", bcaVANumber.value);
-      } else if (responseData.data.payment.paymentMethod === "qris") {
-        const qrAction = responseData.data.paymentInstructions.actions.find(
-          (action: any) => action.name === "generate-qr-code"
-        );
-
-        if (qrAction) {
-          qrisImageCode.value = qrAction.url;
-          console.log("QRIS Image URL:", qrisImageCode.value);
-        }
-
-        // Jika ada qr_string
-        if (responseData.data.paymentInstructions.qr_string) {
-          qrisCode.value = responseData.data.paymentInstructions.qr_string;
-        }
-      }
-    }
-
-    console.log("✅ Payment confirmed:", transactionResponse.data);
-  } catch (e) {
-    console.error("❌ Error at submitting transaction: ", e);
-  }
-};
-
-// onMounted(() => {
-//   setTimeout(() => {
-//     router.push('/');
-//   }, 5000);
-// });
 </script>
 
 <template>
   <div class="layout-container" :style="{ backgroundImage: `url(${bgImage})` }">
+    <!-- Step 1: Registration Form -->
     <div v-if="currentStep === 'form'" class="form-wrapper">
       <h1 class="title">Ticket Order Form</h1>
       <form @submit.prevent="submitForm">
         <div class="form-norm">
           <div class="form-group">
-            <label for="fullName">Nama Lengkap</label>
-            <input
-              v-model="fullName"
-              class="form-input"
-              type="text"
-              required
-              placeholder="Nama"
-            />
+            <label>Nama Lengkap</label>
+            <input v-model="fullName" class="form-input" required />
           </div>
           <div class="form-group">
             <label>No. Telp</label>
-            <input
-              v-model="phone"
-              type="text"
-              required
-              class="form-input"
-              placeholder="Nomor Telepon"
-            />
+            <input v-model="phone" class="form-input" required />
           </div>
           <div class="form-group">
             <label>Email</label>
-            <input
-              v-model="email"
-              type="email"
-              required
-              class="form-input"
-              placeholder="Email address"
-            />
+            <input v-model="email" type="email" class="form-input" required />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group-usia">
             <label>Usia</label>
-            <input
-              v-model="age"
-              type="number"
-              required
-              class="form-input-short"
-            />
+            <input v-model="age" type="number" class="form-input-short" required />
           </div>
-
           <div class="form-group-gender">
             <label>Gender</label>
-            <select v-model="gender" class="form-input-short">
+            <select v-model="gender" class="form-input-short" required>
               <option value="Laki-laki">Laki-laki</option>
               <option value="Perempuan">Perempuan</option>
             </select>
           </div>
-
-          <div
-            v-if="props.eventName === 'Main Event'"
-            class="form-group-alergi"
-          >
+          <div v-if="props.eventName === 'Main Event'" class="form-group-alergi">
             <label>Alergi Makanan</label>
             <input v-model="foodAllergy" type="text" class="form-input-short" />
           </div>
@@ -344,119 +181,35 @@ const confirmPayment = async () => {
       </form>
     </div>
 
-    <div v-else-if="currentStep === 'payment'" class="payment-wrapper">
-      <h1 class="title">Payment</h1>
-
-      <form @submit.prevent>
-        <div style="color: white; margin-bottom: 10px"></div>
-
-        <!-- Payment methods selection -->
-        <div class="category" :class="{ centered: confirmedPayment }">
-          <!-- <label
-            v-if="!confirmedPayment || confirmedPayment === 'bca_va'"
-            for="bca"
-            class="payment-method bcaMethod"
-            :class="{ active: selectedPayment === 'bca_va' }"
-            @click="selectedPayment = 'bca_va'"
-          >
-            <div class="imgName">
-              <div class="imgContainer"></div>
-              <img src="/src/assets/images/bcaLogo.png" alt="bca" />
-              <span class="Payment-name">BCA Virtual Account</span>
-            </div>
-          </label> -->
-
-          <label
-            v-if="!confirmedPayment || confirmedPayment === 'qris'"
-            for="qris"
-            class="payment-method qrisMethod"
-            :class="{ active: selectedPayment === 'qris' }"
-            @click="selectedPayment = 'qris'"
-          >
-            <div class="imgName">
-              <div class="imgContainer"></div>
-              <img src="/src/assets/images/qrisLogo.png" alt="qris" />
-              <span class="Payment-name">QRIS</span>
-            </div>
-          </label>
-        </div>
-
-        <div class="submit-button-payment">
-          <button
-            type="button"
-            @click="confirmPayment"
-            class="payment-submit-button"
-            v-if="!confirmedPayment"
-          >
-            Choose Payment Method
-          </button>
-        </div>
-
-        <!-- Payment details section -->
-        <div class="payment-details">
-          <div v-show="confirmedPayment === 'bca_va'" class="bca-details">
-            <h3>BCA Virtual Account Payment</h3>
-            <div class="va-number">{{ bcaVANumber }}</div>
-            <p class="payment-instructions">
-              Silahkan transfer sesuai nominal yang tertera ke nomor Virtual
-              Account di atas
-            </p>
-            <button @click="copyVANumber" class="copy-btn">Copy</button>
-          </div>
-
-          <div v-show="confirmedPayment === 'qris'" class="qris-details">
-            <h3>QRIS Payment</h3>
-            <p>Scan this QR code below</p>
-            <div class="qrcode-placeholder">
-              <img :src="qrisImageCode" alt="QRIS" class="qrcode-image" />
-            </div>
-            <a
-              :href="qrisImageCode"
-              download="qris-code.png"
-              class="download-button"
-            >
-              Download QR Code
-            </a>
-          </div>
-        </div>
-      </form>
+    <!-- Step 2: QRIS -->
+    <div v-else-if="currentStep === 'qris'" class="payment-wrapper">
+      <h1 class="title">QRIS Payment</h1>
+      <p>Scan this QR code to pay:</p>
+      <img :src="qrisImageCode" alt="QRIS Code" class="qrcode-image" />
+      <p class="price">Rp{{ amount?.toLocaleString("id-ID") }}</p>
+      <a :href="qrisImageCode" download="qris-code.png" class="download-button">Download QR Code</a>
     </div>
 
+    <!-- Step 3: Success -->
     <div v-else-if="currentStep === 'success'" class="confirmation-wrapper">
       <h1 class="title">Payment Success!</h1>
-
-      <div class="confirmation-details">
-        <p>Thank you for your payment!</p>
-        <p>Your e-ticket has been sent to your email.</p>
-        <p class="ending">Please check your email for the QR code ticket.</p>
-        <router-link to="/" class="download-button">Back to Home</router-link>
-      </div>
-    </div>
-
-    <div v-else class="confirmation-wrapper">
-      <h1 class="title">Order Confirmed!</h1>
-
-      <div class="confirmation-details">
-        <p>Thank you for your order!</p>
-        <p class="ending">Your e-ticket will be sent to your email</p>
-        <router-link to="/" class="download-button">Back to Home</router-link>
-        <!-- <p class="countdown">Redirecting to home page in {{ countdown }} seconds...</p> -->
-      </div>
+      <p>Thank you for your payment.</p>
+      <router-link to="/" class="download-button">Back to Home</router-link>
     </div>
   </div>
 
+  <!-- Error Popup -->
   <div v-if="showErrorPopup" class="error-popup">
     <div class="popup-content">
-      <h2>Validation Errors</h2>
+      <h2>Error</h2>
       <ul>
-        <li v-for="(message, index) in errorMessages" :key="index">
-          {{ message }}
-        </li>
+        <li v-for="(msg, i) in errorMessages" :key="i">{{ msg }}</li>
       </ul>
       <button @click="showErrorPopup = false">Close</button>
     </div>
   </div>
 
+  <!-- Loading -->
   <div v-if="isLoading" class="loader">
     <div class="spinner"></div>
     <p>Loading...</p>
@@ -604,6 +357,7 @@ label {
 .submit-button:hover {
   background-color: hsla(0, 0%, 34%, 0.699);
 }
+
 
 /* PaymentMethod Styles */
 .payment-wrapper {
