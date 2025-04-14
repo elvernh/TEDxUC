@@ -165,6 +165,7 @@ nav {
 
 .right-side ul li {
   position: relative;
+  padding: 10px;
 }
 
 .right-side ul li a,
@@ -173,7 +174,6 @@ nav {
   color: white;
   transition: color 0.4s ease;
   cursor: pointer;
-  
 }
 
 .right-side ul li a:hover,
@@ -187,20 +187,21 @@ nav {
   position: absolute;
   text-align: center;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);;
+  transform: translateX(-50%) translateY(10px);
   min-width: 150px;
   background: rgba(0, 0, 0, 0.9);
   list-style: none;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 200;
-  padding: 0.12px 0; 
-  border-top: 10px solid transparent;
-border-bottom: 15px solid transparent;
+  border-top: 20px solid transparent;
+  border-bottom: 25px solid transparent;
+  gap: 0;
+  margin-top: 5px;
 }
 
 .dropdown-menu li {
-  padding: 6px 20px;
+  padding: 0px 20px;
 }
 
 .dropdown-menu li a {
@@ -208,6 +209,7 @@ border-bottom: 15px solid transparent;
   color: white;
   text-decoration: none;
   transition: color 0.3s;
+  line-height: 0.3;
 }
 
 .dropdown-menu li a:hover {
@@ -232,6 +234,25 @@ border-bottom: 15px solid transparent;
     display: flex;
   }
 
+  .bar {
+    background-color: white;
+    height: 4px;
+    width: 100%;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  }
+
+  .bar1 {
+    transform: rotate(45deg) translate(8px, 8px);
+  }
+
+  .bar2 {
+    opacity: 0;
+  }
+
+  .bar3 {
+    transform: rotate(-45deg) translate(8px, -8px);
+  }
+
   .right-side {
     display: none;
     position: absolute;
@@ -252,6 +273,33 @@ border-bottom: 15px solid transparent;
   .right-side ul {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    list-style: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 200;
+    margin: 0.3rem auto 0;
+    box-shadow: none;
+    border: none;
+
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    gap: 0;
+  }
+
+  .dropdown-menu li {
+    padding: 0.1rem 0;
+  }
+
+  .dropdown-menu li a {
+    line-height: 1.5;
   }
 }
 </style>
