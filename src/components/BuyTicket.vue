@@ -494,8 +494,11 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
 }
+
 .qris-details p {
   margin-bottom: 10px;
   text-align: center;
@@ -532,6 +535,24 @@ label {
   font-size: 20px;
   margin-top: 10px;
 }
+.qrcode-image {
+  display: block;
+  margin: 0 auto;
+  width: 300px;
+  height: 300px;
+}
+
+.qrcode-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
 .imgName {
   display: flex;
   justify-content: center;
