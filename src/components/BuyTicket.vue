@@ -106,7 +106,7 @@ const submitForm = async () => {
       );
 
       const paymentData = paymentResponse.data.data;
-      console.log(paymentResponse)
+      console.log(paymentData)
       amount.value = paymentData.amount;
 
       const qrAction = paymentData.paymentInstructions.actions?.find(
@@ -364,7 +364,6 @@ label {
   z-index: 1;
   justify-content: center;
   align-items: center;
-  display: flex;
 }
 
 .container {
