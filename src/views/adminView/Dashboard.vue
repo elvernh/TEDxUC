@@ -24,22 +24,25 @@
               <th>Type</th>
               <th>Date</th>
               <th>Registered</th>
+              <td>Is Active?</td>
               <th>Paid</th>
               <th>Actions</th>
-              <!-- New column for Delete button -->
             </tr>
           </thead>
           <tbody>
+            <!-- <tr v-for="event in events" :key="event._id"> -->
             <tr v-for="event in stats.eventStats" :key="event._id">
               <td>{{ event._id }}</td>
               <td>{{ event.name }}</td>
               <td>{{ event.type }}</td>
               <td>{{ new Date(event.date).toLocaleDateString() }}</td>
+              <!-- <td>{{   }}</td> -->
               <td>{{ event.registeredCount }}</td>
+              <td>{{ event.isActive }}</td>
               <td>{{ event.paidRegistrations }}</td>
               <td>
+                <button @click="openEditEventModal(event)">Edit</button>
                 <button @click="deleteEvent(event._id)">Delete</button>
-                <!-- Delete button -->
               </td>
             </tr>
           </tbody>
@@ -76,7 +79,6 @@
         </tbody>
       </table>
       <div v-else>No registrations found.</div>
-      <!-- Pagination for registrations -->
       <div class="pagination" v-if="regPagination">
         <button
           :disabled="currentRegPage === 1"
@@ -128,7 +130,6 @@
         </tbody>
       </table>
       <div v-else>No payments found.</div>
-      <!-- Pagination for payments -->
       <div class="pagination" v-if="payPagination">
         <button
           :disabled="currentPayPage === 1"
@@ -145,6 +146,29 @@
         </button>
       </div>
     </section>
+
+    <!-- Edit Event Modal -->
+    <div v-if="showEditModal" class="modal-overlay">
+      <div class="modal">
+        <h3>Edit Event</h3>
+        <label>
+          Name:
+          <input v-model="editEvent.name" type="text" />
+        </label>
+        <label>
+          Price:
+          <input v-model.number="editEvent.price" type="number" />
+        </label>
+        <label>
+          Quota:
+          <input v-model.number="editEvent.quota" type="number" />
+        </label>
+        <div class="modal-buttons">
+          <button @click="updateEvent">Save</button>
+          <button @click="closeEditEventModal">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -165,20 +189,37 @@ const currentRegPage = ref(1);
 const currentPayPage = ref(1);
 const events = ref<any[]>([]);
 
-// Fetch dashboard statistics
+// Modal state
+const showEditModal = ref(false);
+const editEvent = ref<any>({
+  _id: "",
+  name: "",
+  price: 0,
+  quota: 0,
+});
+
+const fetchEvents = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/events`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    events.value = res.data.data; // Set the fetched events in the state
+  } catch (error) {
+    console.error("Error fetching events", error);
+  }
+};
+
 const fetchStats = async () => {
   try {
     const res = await axios.get(`${API_URL}/api/admin/dashboard`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     stats.value = res.data.data;
-    console.log(stats.value);
   } catch (error) {
     console.error("Error fetching dashboard stats", error);
   }
 };
 
-// Fetch registrations with pagination
 const fetchRegistrations = async (page = 1) => {
   try {
     const res = await axios.get(
@@ -195,7 +236,6 @@ const fetchRegistrations = async (page = 1) => {
   }
 };
 
-// Update a registration
 const updateRegistration = async (id: string) => {
   const fullName = prompt("Enter updated full name:");
   const email = prompt("Enter updated email:");
@@ -229,7 +269,6 @@ const updateRegistration = async (id: string) => {
   }
 };
 
-// Delete a registration
 const deleteRegistration = async (id: string) => {
   if (!confirm("Are you sure to delete this registration?")) return;
   try {
@@ -243,7 +282,6 @@ const deleteRegistration = async (id: string) => {
   }
 };
 
-// Fetch payments with pagination
 const fetchPayments = async (page = 1) => {
   try {
     const res = await axios.get(
@@ -260,61 +298,93 @@ const fetchPayments = async (page = 1) => {
   }
 };
 
-// Update payment status
 const updatePaymentStatus = async (id: string) => {
-  const newStatus = prompt("Enter new payment status (e.g., success):");
-  if (!newStatus) return;
+  const status = prompt("Enter payment status (paid/pending):");
+  if (!status) {
+    alert("Status required.");
+    return;
+  }
   try {
     await axios.put(
-      `${API_URL}/api/admin/payments/${id}/status`,
-      { status: newStatus },
+      `${API_URL}/api/admin/payments/${id}`,
+      { status },
       {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    alert("Payment status updated successfully.");
+    alert("Payment status updated.");
     fetchPayments(currentPayPage.value);
   } catch (error) {
     console.error("Error updating payment status", error);
   }
 };
 
-// Fetch all events
-const fetchEvents = async () => {
+const openEditEventModal = (event: any) => {
+  editEvent.value = { ...event };
+  showEditModal.value = true;
+};
+
+const closeEditEventModal = () => {
+  showEditModal.value = false;
+};
+
+const updateEvent = async () => {
+  const { _id, name, price, quota } = editEvent.value;
+  if (!name || !price || !quota) {
+    alert("All fields are required.");
+    return;
+  }
   try {
-    const res = await axios.get(`${API_URL}/api/admin/events`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    events.value = res.data.data;
+    await axios.put(
+      `${API_URL}/api/events/${_id}`,
+      { name, price, quota },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    alert("Event updated successfully.");
+    closeEditEventModal();
+    fetchStats(); // refresh stats
+    fetchRegistrations(); // refresh registrations
+    fetchPayments(); // refresh payments
   } catch (error) {
-    console.error("Error fetching events", error);
+    console.error("Error updating event", error);
+    alert("Failed to update event.");
   }
 };
 
-// Delete an event
+// In your script section (DashboardAdmin.ts)
+
 const deleteEvent = async (id: string) => {
   if (!confirm("Are you sure you want to delete this event?")) return;
+
   try {
-    await axios.delete(`${API_URL}/api/admin/events/${id}`, {
+    // Make a DELETE request to your API to delete the event
+    await axios.delete(`${API_URL}/api/events/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    // Alert the user and refresh the events
     alert("Event deleted successfully.");
-    fetchEvents();
-    fetchStats(); // optionally refresh stats
+    fetchEvents(); // Refresh the events list after deletion
+    fetchStats(); // Optionally refresh stats if needed
   } catch (error) {
     console.error("Error deleting event", error);
+    alert("Failed to delete event.");
   }
 };
 
+// Fetch initial data
 onMounted(() => {
   fetchStats();
+  fetchEvents();
   fetchRegistrations();
   fetchPayments();
-  fetchEvents();
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/* Scoped Styles for the Dashboard Component */
 .dashboard-admin {
   padding: 20px;
 }
@@ -370,5 +440,55 @@ button:hover {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* Modal Style */
+.update-event-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+}
+
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 10px 15px;
+}
+
+.modal-actions .cancel-btn {
+  background-color: #f44336;
+}
+
+.modal-actions .save-btn {
+  background-color: #4caf50;
 }
 </style>
