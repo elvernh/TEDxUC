@@ -2,6 +2,8 @@
 import { ref, onMounted } from "vue";
 
 const selectedPayment = ref("");
+const bcaVANumber = ref("");
+const qrisCode = ref("");
 
 onMounted(() => {
   selectedPayment.value = "";
@@ -17,7 +19,7 @@ export default {
 </script>
   
   
-  <template>
+<template>
   <div
     class="layout-container"
     style="background-image: url('/src/assets/images/background-1.png')"
@@ -27,7 +29,8 @@ export default {
       <h1 class="title">Payment</h1>
 
       <form @submit.prevent>
-        <div style="color: white; margin-bottom: 10px"></div>
+        <!-- Payment options -->
+        <!-- 
         <input
           type="radio"
           name="payment"
@@ -35,6 +38,7 @@ export default {
           v-model="selectedPayment"
           value="bca"
         />
+        -->
         <input
           type="radio"
           name="payment"
@@ -44,16 +48,18 @@ export default {
         />
 
         <div class="category">
-          <label for="bca" class="payment-method bcaMethod">
+          <!-- 
+          <label for="bca" class="payment-method bcaMethod" :class="{ active: selectedPayment === 'bca' }">
             <div class="imgName">
               <div class="imgContainer">
-                <!-- <img src="/src/assets/images/bcaLogo.png" alt="bca" /> -->
+                <img src="/src/assets/images/bcaLogo.png" alt="bca" />
               </div>
               <span class="name">BCA Virtual Account</span>
             </div>
           </label>
+          -->
 
-          <label for="qris" class="payment-method qrisMethod">
+          <label for="qris" class="payment-method qrisMethod" :class="{ active: selectedPayment === 'qris' }">
             <div class="imgName">
               <div class="imgContainer">
                 <!-- <img src="/src/assets/images/qrisLogo.png" alt="qris" /> -->
@@ -64,10 +70,12 @@ export default {
         </div>
 
         <div class="payment-details">
+          <!-- 
           <div v-if="selectedPayment === 'bca'" class="bca-details">
             <h3>BCA Virtual Account Payment</h3>
             <div class="va-number">1111111111</div>
           </div>
+          -->
 
           <div v-if="selectedPayment === 'qris'" class="qris-details">
             <h3>QRIS Payment</h3>
@@ -75,11 +83,11 @@ export default {
             <div class="qrcode-placeholder">qr</div>
           </div>
         </div>
-
       </form>
     </div>
   </div>
 </template>
+
   
   
   <style scoped>
@@ -145,10 +153,11 @@ export default {
   margin-top: 10px;
   padding-top: 20px;
 
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 15px;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
+
 
 .payment-method {
   position: relative;

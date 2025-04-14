@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Nav from "@/components/NavBar.vue";
-import HeroSection from "@/components/homepage/Hero-section.vue";
-import AboutPage from "@/components/homepage/AboutTED-section.vue";
-import EventStarts from "@/components/homepage/EventStarts-section.vue"
-import InfiniteMaze from "@/components/homepage/InfiniteMaze-section.vue";
+import HeroSection from "@/components/Homepage/Hero-section.vue";
+import AboutPage from "@/components/Homepage/AboutTED-section.vue";
+import EventStarts from "@/components/Homepage/EventStarts-section.vue"
+import InfiniteMaze from "@/components/Homepage/InfiniteMaze-section.vue";
 import Footer from "@/components/Footer.vue";
 import { useRoute } from "vue-router";
 

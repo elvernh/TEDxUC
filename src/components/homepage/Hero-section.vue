@@ -33,7 +33,7 @@ export default defineComponent({
           class="title" 
           v-parallax="0.2"
         >
-          as a challenge to conquer or a journey to navigate?
+          As a challenge to conquer or a journey to navigate?
         </h1>
         <h2 
           class="subtitle" 

@@ -6,6 +6,9 @@
       </div>
       <h1 class="login-title">Login</h1>
       <p class="login-subtitle">Hi, you need to Login to Enter!</p>
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
       <form @submit.prevent="login">
         <div class="form-group">
           <label for="email">Email <span>*</span></label>
@@ -36,54 +39,107 @@
             </span>
           </div>
         </div>
-        <button type="submit" class="login-button">Login</button>
-        yah menurutmu 
-<router-link to="/qr-scanner" class="qr-scanner-btn">
-  Go to QR Scanner
-</router-link>
-
+        <button type="submit" class="login-button" :disabled="isLoading">
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 import tedxLogo from "@/components/icons/logo-black.png";
 import eyeOff from "@/components/icons/eye-off.svg";
 import eye from "@/components/icons/eye.svg";
 import { useRouter } from "vue-router";
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://dickyyyy.site';
 
 const router = useRouter();
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
+const errorMessage = ref("");
+const isLoading = ref(false);
+
+onMounted(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    router.push("/qr-scanner"); 
+  }
+});
 
 const login = async () => {
+  errorMessage.value = "";
+  isLoading.value = true;
+  
   try {
-    if (email.value === "admin@tedx.com" && password.value === "password123") {
-      localStorage.setItem("token", "mockToken123"); 
-      alert("Login successful!");
+    // Add debug logging
+    console.log(`Attempting to login with email: ${email.value}`);
+    console.log(`API URL: ${API_URL}/api/auth/login`);
+    
+    // Set specific headers for the request
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
+      email: email.value,
+      password: password.value,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    console.log('Login response:', response.data);
+    
+    // Extract data from the response
+    const responseData = response.data;
+    
+    // Check if the response format matches our expected structure
+    if (responseData.status === 'success' && responseData.data) {
+      const { token, user } = responseData.data;
+      
+      console.log('Login successful, user:', user.name);
+      
+      // Store user data and token
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      
+      // Redirect to QR scanner
       router.push("/qr-scanner");
     } else {
-      alert("Invalid email or password.");
+      // Handle unexpected response format
+      console.error('Unexpected response format:', responseData);
+      errorMessage.value = "Login failed. Unexpected server response.";
     }
-  } catch (error) {
-    alert("Login failed.");
+  } catch (error: any) {
+    console.error("Login error details:", error);
+    
+    // Extract error message from response if available
+    if (error.response) {
+      console.log('Error status:', error.response.status);
+      console.log('Error data:', error.response.data);
+      
+      if (error.response.status === 401) {
+        errorMessage.value = "Invalid email or password. Please try again.";
+      } else if (error.response.data && error.response.data.message) {
+        errorMessage.value = error.response.data.message;
+      } else {
+        errorMessage.value = `Server error (${error.response.status}). Please try again later.`;
+      }
+    } else if (error.request) {
+      // Request was made but no response received
+      console.log('No response received:', error.request);
+      errorMessage.value = "Unable to connect to the server. Please check your internet connection.";
+    } else {
+      // Something else caused the error
+      errorMessage.value = "Login failed. Please try again.";
+    }
+  } finally {
+    isLoading.value = false;
   }
-  // try {
-  //   const response = await axios.post("http://localhost:5000/api/admin/login", {
-  //     email: email.value,
-  //     password: password.value,
-  //   });
-  //   localStorage.setItem("token", response.data.token);
-  //   router.push("/qr-scanner");
-  // } catch (error) {
-  //   alert("Login failed. Please check your credentials.");
-  // }
 };
-
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
@@ -178,8 +234,22 @@ input {
   transition: background 0.2s;
 }
 
-.login-button:hover {
+.login-button:hover:not(:disabled) {
   background: #eb0028;
+}
+
+.login-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
 }
 
 .forgot-password {
@@ -190,5 +260,3 @@ input {
   font-weight: bold;
 }
 </style>
-
-

@@ -3,5 +3,5 @@ import buyTicket from "@/components/BuyTicket.vue";
 </script>
 
 <template>
-  <buyTicket :eventName="'Pre-Event 3'"></buyTicket>
+    <buyTicket :eventName="'Pre-Event 3'" />
 </template>
