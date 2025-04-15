@@ -107,7 +107,7 @@ const submitForm = async () => {
 
       const paymentData = paymentResponse.data.data;
       console.log(paymentData)
-      amount.value = paymentData.amount;
+      amount.value = paymentData.payment.totalAmount;
 
       const qrAction = paymentData.paymentInstructions.actions?.find(
         (action: any) => action.name === "generate-qr-code"
@@ -184,7 +184,7 @@ const submitForm = async () => {
     <!-- Step 2: QRIS -->
     <div v-else-if="currentStep === 'qris'" class="payment-wrapper">
       <h1 class="title">QRIS Payment</h1>
-      <p>Scan this QR code to pay:</p>
+      <p class="payment-description">Scan this QR code to pay!</p>
       <img :src="qrisImageCode" alt="QRIS Code" class="qrcode-image" />
       <p class="price">Rp{{ amount?.toLocaleString("id-ID") }}</p>
       <a :href="qrisImageCode" download="qris-code.png" class="download-button">Download QR Code</a>
@@ -358,13 +358,17 @@ label {
 }
 
 .payment-wrapper {
+  display: flex;                /* Enable flexbox */
+  flex-direction: column;       /* Align items in a column */
+  justify-content: center;      /* Center items vertically */
+  align-items: center;          /* Center items horizontally */
   width: 100%;
   max-width: 800px;
   padding: 40px;
   z-index: 1;
-  justify-content: center;
-  align-items: center;
+  text-align: center;           /* Center text inside */
 }
+
 
 .container {
   width: 600px;
@@ -388,6 +392,8 @@ label {
   justify-content: center;
   align-items: center;
 }
+
+
 
 .payment-method {
   position: relative;
@@ -423,6 +429,20 @@ label {
   text-align: center;
   color: #fff;
 }
+
+.payment-description {
+  font-size: 1.375rem;  /* Around 22px */
+  font-weight: 600;     /* Semi-bold */
+  text-align: center;   /* Center align the text */
+}
+
+.price {
+  font-size: 2rem;      /* Around 32px */
+  font-weight: 700;     /* Bold */
+  color: #fff;          /* Dark color for readability */
+  text-align: center;   /* Center align the text */
+}
+
 
 .qris-details {
   display: flex;
@@ -685,7 +705,6 @@ label {
   z-index: 1;
   justify-content: center;
   align-items: center;
-  display: flex;
 }
 
 
