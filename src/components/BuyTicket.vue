@@ -439,7 +439,7 @@ label {
 .price {
   font-size: 2rem;      /* Around 32px */
   font-weight: 700;     /* Bold */
-  color: #fff;          /* Dark color for readability */
+  color: #fff !important;          /* Dark color for readability */
   text-align: center;   /* Center align the text */
 }
 
