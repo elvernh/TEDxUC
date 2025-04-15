@@ -22,12 +22,12 @@ onUnmounted(() => {
 
 <template>
   <div class="layout-container">
-    <div class="side-image" v-parallax="0.08">
+    <div class="side-image" v-parallax="0.03">
       <img :src="sideImagePath" class="image" draggable="false" />
     </div>
     <div class="text-container">
-      <h1 class="title" v-parallax="0.08">THE INFINITE MAZE</h1>
-      <h2 class="subtitle" v-parallax="0.05">
+      <h1 class="title" v-parallax="0.03">THE INFINITE MAZE</h1>
+      <h2 class="subtitle" v-parallax="0.03">
         Life is a labyrinth with winding paths, filled with ups and downs. Every
         turn presents a new challenge, every step a new lesson. To navigate this
         maze, we must embrace the journey—gathering skills, unlocking potential,

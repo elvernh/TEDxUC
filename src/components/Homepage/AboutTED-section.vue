@@ -4,49 +4,66 @@ import pintuClose from "@/assets/images/PINTU 1.png";
 import pintuOpenDikit from "@/assets/images/PINTU 2.png";
 import pintuOpen from "@/assets/images/PINTU 3.png";
 
-// Existing door state variables and hover states
+// State variables
 const tedOpen = ref(false);
 const tedHover = ref(false);
-
 const tedxOpen = ref(false);
 const tedxHover = ref(false);
-
 const tedxucsOpen = ref(false);
 const tedxucsHover = ref(false);
 
-// For parallax effect and scroll tracking
+// Scroll tracking
 const scrollY = ref(0);
+const isMobile = ref(false);
+
+// Thresholds
+let thresholdTED_OPEN = 500;
+let thresholdTED_CLOSE = 800;
+let thresholdTEDX_OPEN = 900;
+let thresholdTEDX_CLOSE = 1200;
+let thresholdTEDXUCS_OPEN = 1300;
+let thresholdTEDXUCS_CLOSE = 1600;
+
 const handleScroll = () => {
   scrollY.value = window.scrollY;
 };
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  isMobile.value = window.innerWidth < 800;
+
+  if (isMobile.value) {
+    // Mobile thresholds: open doors one by one
+    thresholdTED_OPEN = 0;
+    thresholdTED_CLOSE = 1000;
+    thresholdTEDX_OPEN = 1000;
+    thresholdTEDX_CLOSE = 1500;
+    thresholdTEDXUCS_OPEN = 1500;
+    thresholdTEDXUCS_CLOSE = 2000;
+  } else {
+    // Desktop thresholds: all open together
+    thresholdTED_OPEN = 500;
+    thresholdTED_CLOSE = 1100;
+    thresholdTEDX_OPEN = 500;
+    thresholdTEDX_CLOSE = 1100;
+    thresholdTEDXUCS_OPEN = 500;
+    thresholdTEDXUCS_CLOSE = 1100;
+  }
+
+  window.addEventListener("scroll", handleScroll);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener("scroll", handleScroll);
 });
 
-// --- New Code for Scroll-Triggered Opening & Closing ---
-// Define open and close thresholds for each door
-// Adjust these numbers to suit your desired scroll regions
-const thresholdTED_OPEN = 500;
-const thresholdTED_CLOSE = 1100;
-
-const thresholdTEDX_OPEN = 500;
-const thresholdTEDX_CLOSE = 1100;
-
-const thresholdTEDXUCS_OPEN = 500;
-const thresholdTEDXUCS_CLOSE = 1100;
-
-// Watch the scrollY value and update door states based on these thresholds
+// Update doors when scroll changes
 watch(scrollY, (newVal) => {
   tedOpen.value = newVal >= thresholdTED_OPEN && newVal <= thresholdTED_CLOSE;
   tedxOpen.value = newVal >= thresholdTEDX_OPEN && newVal <= thresholdTEDX_CLOSE;
   tedxucsOpen.value = newVal >= thresholdTEDXUCS_OPEN && newVal <= thresholdTEDXUCS_CLOSE;
 });
 </script>
+
 
 <template>
   <div class="container">

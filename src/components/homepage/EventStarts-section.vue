@@ -63,15 +63,16 @@ onUnmounted(() => {
   <div
     class="maze-container"
     :style="{ backgroundImage: `url('${mazeSection}')` }"
+    v-parallax="0.1"
   >
-    <div class="parallax-background" v-parallax="0.08"></div>
-    <div class="time-container" v-parallax="0.1">
-      <h1>EVENT STARTS IN</h1>
+    <div class="parallax-background" v-parallax="0.001"></div>
+    <div class="time-container" v-parallax="0.001">
+      <h1 v-parallax="0.1">EVENT STARTS IN</h1>
       <div class="timer">
         <div class="time-box" 
              v-for="(value, label, index) in { days, hours, minutes, seconds }" 
              :key="label"
-             v-parallax="{value: 0.15 + (index * 0.02)}">
+             v-parallax="{value: 0.05 + (index * 0.001)}">
           <div class="time">{{ value }}</div>
           <div class="label">{{ label.charAt(0).toUpperCase() + label.slice(1) }}</div>
         </div>
@@ -92,7 +93,7 @@ onUnmounted(() => {
   background-position: center;
   color: white;
   position: relative;
-  overflow: hidden; /* Important for parallax */
+  overflow: hidden;
 }
 
 .parallax-background {

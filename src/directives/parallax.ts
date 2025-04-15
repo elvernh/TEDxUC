@@ -1,27 +1,25 @@
-// src/directives/parallax.ts
-import type { DirectiveBinding } from 'vue'
-
-interface ParallaxHTMLElement extends HTMLElement {
-  _cleanupParallax?: () => void
-}
-
-export const vParallax = {
-  mounted(el: ParallaxHTMLElement, binding: DirectiveBinding) {
-    const speed = binding.value || 0.5
+// directives/parallax.ts
+export default {
+  mounted(el: HTMLElement & { _onScroll?: () => void }, binding: any) {
+    const factor = typeof binding.value === 'number' ? binding.value : 0.1;
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      el.style.transform = `translateY(${scrollPosition * -speed}px)`
-    }
+      if (window.innerWidth <= 768) {
+        el.style.transform = 'translateY(0px)';
+        return;
+      }
+      const offset = window.scrollY * -factor;
+      el.style.transform = `translateY(${offset}px)`;
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    el._cleanupParallax = handleScroll
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+
+    el._onScroll = handleScroll;
   },
-
-  unmounted(el: ParallaxHTMLElement) {
-    if (el._cleanupParallax) {
-      window.removeEventListener('scroll', el._cleanupParallax)
-      delete el._cleanupParallax
+  unmounted(el: HTMLElement & { _onScroll?: () => void }) {
+    if (el._onScroll) {
+      window.removeEventListener('scroll', el._onScroll);
     }
-  }
-}
+  },
+};
