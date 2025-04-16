@@ -162,7 +162,7 @@ const submitForm = async () => {
           </div>
           <div class="form-group-gender">
             <label>Gender</label>
-            <select v-model="gender" class="form-input-short" required>
+            <select v-model="gender" class="form-input-short select-wrapper" required>
               <option value="Laki-laki">Laki-laki</option>
               <option value="Perempuan">Perempuan</option>
             </select>
@@ -295,12 +295,14 @@ label {
 
 .form-input,
 .form-input-short {
-  background: white;
-  border: none;
-  border-radius: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  color: black;
   padding: 15px;
+  border-radius: 6px;
   font-size: 20px;
-  transition: all 0.3s ease;
 }
 
 .form-input-short {
@@ -332,6 +334,30 @@ label {
   justify-content: center;
   width: 100%;
 }
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  padding-right: 2rem;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  font-size: 1rem;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: black;
+}
+
 
 .submit-button {
   background-color: #000000;
