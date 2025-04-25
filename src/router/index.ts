@@ -29,6 +29,7 @@ import Emailto from '../views/adminView/EmailToBulk.vue';
 import makeqr from '../views/adminView/MakeQR.vue';
 import dashboard from '../views/adminView/Dashboard.vue';
 import createEvent from '../views/adminView/CreateEvent.vue';
+import GalleryView from '../views/GalleryView.vue'
 
 // Error Page
 import ErrorPage from '../views/error/ErrorPage.vue';  // Import the error page
@@ -63,6 +64,7 @@ const router = createRouter({
 
     // Error Page (Wildcard Route - Must be the last entry)
     { path: '/:pathMatch(.*)*', name: 'ErrorPage', component: ErrorPage },
+    { path: '/gallery', name: 'gallery', component: GalleryView},
 
     //ADMIN
     { path: '/Emailto', name: 'emailto', component: Emailto },
