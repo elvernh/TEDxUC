@@ -1,27 +1,71 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import pacmanImage from "@/assets/images/pacmanChara.png";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import pacmanRightImage from "@/assets/images/pacmanRightImage.png";
+import pacmanLeftImage from "@/assets/images/pacmanLeftImage.png";
+import pacmanUpImage from "@/assets/images/pacmanUpImage.png";
+import pacmanDownImage from "@/assets/images/pacmanDownImage.png";
+
+import vip1Right from "@/assets/images/vip1/vip1-right.png";
+import vip1Left from "@/assets/images/vip1/vip1-left.png";
+import vip1Up from "@/assets/images/vip1/vip1-up.png";
+import vip1Down from "@/assets/images/vip1/vip1-down.png";
+
+import vip2Right from "@/assets/images/vip2/right.png";
+import vip2Left from "@/assets/images/vip2/left.png";
+import vip2Up from "@/assets/images/vip2/up.png";
+import vip2Down from "@/assets/images/vip2/down.png";
+
+import vip3Right from "@/assets/images/vip3/right.png";
+import vip3Left from "@/assets/images/vip3/left.png";
+import vip3Up from "@/assets/images/vip3/up.png";
+import vip3Down from "@/assets/images/vip3/down.png";
+
+import mibRight from "@/assets/images/mib/right.png";
+import mibLeft from "@/assets/images/mib/left.png";
+import mibUp from "@/assets/images/mib/up.png";
+import mibDown from "@/assets/images/mib/down.png";
 
 const GRID_SIZE = 15;
 const CELL_SIZE = 800 / GRID_SIZE;
-const SPEED = 1.3;
+const BASE_SPEED = 250;
 const GAME_SIZE = { width: 800, height: 800 };
 const CHARACTER_SIZE = CELL_SIZE * 0.8;
+const MAX_HIGH_SCORES = 5;
+const GHOST_SPEED_INCREASE = 1; 
+
+const SPRITE_FRAMES = 4; // 4 frames per direction
+const FRAME_WIDTH = 48; // Each frame is 480px wide
+const FRAME_HEIGHT = 48; // Height of each frame in the sprite sheet
+const ANIMATION_SPEED = 150; 
+
+const currentFrame = ref(0);
+const lastFrameChange = ref(0);
 
 const gridPosition = ref({ x: 7, y: 9 });
 const nextDirection = ref<Direction>("none");
 const isMoving = ref(false);
+const level = ref(1); 
 
 type Position = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right" | "none";
+
+type GhostCharacter = "vip1" | "vip2" | "vip3" | "mib";
+
 type Ghost = {
   position: Position;
   gridPosition: Position;
-  color: string;
+  character: GhostCharacter;
   speed: number;
   direction: Direction;
   nextDirection: Direction;
   isMoving: boolean;
+  currentFrame: number;
+  lastFrameChange: number;  sprites: {
+    right: string;
+    left: string;
+    up: string;
+    down: string;
+  };
 };
 
 const position = ref<Position>({ x: 200, y: 200 });
@@ -32,12 +76,39 @@ const gameOver = ref(false);
 const ghosts = ref<Ghost[]>([]);
 const showGame = ref(false);
 // const powerPelletActive = ref(false);
+// Update animation frames
+const updateAnimation = (timestamp: number) => {
+  if (gameStarted.value && !gameOver.value && direction.value !== "none") {
+    if (timestamp - lastFrameChange.value > ANIMATION_SPEED) {
+      currentFrame.value = (currentFrame.value + 1) % SPRITE_FRAMES;
+      lastFrameChange.value = timestamp;
+    }
+  } else {
+    // Reset to first frame when not moving
+    currentFrame.value = 0;
+  }
+};
+
+
+const currentSpriteImage = computed(() => {
+  switch(direction.value) {
+    case "right": return pacmanRightImage;
+    case "left": return pacmanLeftImage;
+    case "up": return pacmanUpImage;
+    case "down": return pacmanDownImage;
+    default: return pacmanRightImage; // Default facing right when not moving
+  }
+});
+
+const getSpritePosition = () => {
+  return `-${currentFrame.value * FRAME_WIDTH}px 0px`;
+};
 
 const COLLISION_PADDING = 5;
-
+let lastTime = 0;
 // Game layout (0 = empty, 1 = wall, 2 = food, 3 = power pellet, 4 = ghost lair)
 const gameLayout = ref([
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1,
   1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1,
   1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
@@ -55,6 +126,27 @@ const gameLayout = ref([
 ]);
 
 let animationId: number | null = null;
+
+
+
+const gameLoop = (timestamp: number) => {
+  if (lastTime === 0) {
+    lastTime = timestamp;
+  }
+  
+  // Calculate delta time in milliseconds
+  const deltaTime = timestamp - lastTime;
+  lastTime = timestamp;
+  
+  if (gameStarted.value && !gameOver.value) {
+    movePacman(deltaTime);
+    moveGhosts(deltaTime);
+    checkGhostCollision();
+    updateAnimation(timestamp); // Add animation update
+  }
+  
+  animationId = requestAnimationFrame(gameLoop);
+};
 
 const canMove = (gridX: number, gridY: number): boolean => {
   if (
@@ -104,7 +196,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 
-const movePacman = () => {
+const movePacman = (deltaTime: number) => {
   if (direction.value === "none" && nextDirection.value === "none") return;
   if (!isMoving.value) {
     const canChangeDirection = canMove(
@@ -141,8 +233,11 @@ const movePacman = () => {
     const dx = targetX - position.value.x;
     const dy = targetY - position.value.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Calculate speed based on delta time
+    const frameSpeed = BASE_SPEED * (deltaTime / 1000);
 
-    if (distance < SPEED) {
+    if (distance < frameSpeed) {
       position.value = { x: targetX, y: targetY };
       isMoving.value = false;
 
@@ -160,8 +255,8 @@ const movePacman = () => {
       }
     } else {
       position.value = {
-        x: position.value.x + (dx / distance) * SPEED,
-        y: position.value.y + (dy / distance) * SPEED,
+        x: position.value.x + (dx / distance) * frameSpeed,
+        y: position.value.y + (dy / distance) * frameSpeed,
       };
     }
   }
@@ -180,56 +275,110 @@ const movePacman = () => {
 };
 
 const initGhosts = () => {
+  const baseSpeed = 2 + (level.value - 1) * GHOST_SPEED_INCREASE;
   ghosts.value = [
     {
-      position: {
-        x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {  x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-      },
-      gridPosition: { x: 7, y: 7 },
-      color: "red",
-      speed: 1.2,
+     },
+      gridPosition: { x: 7, y: 7  },
+      character: "vip1",
+      speed: baseSpeed,
       direction: "left",
       nextDirection: "none",
       isMoving: false,
+      currentFrame: 0,
+      lastFrameChange: 0,
+      sprites: {
+        right: vip1Right,
+        left: vip1Left,
+        up: vip1Up,
+        down: vip1Down
+      }
     },
     {
-      position: {
-        x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: { x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-      },
-      gridPosition: { x: 7, y: 8 },
-      color: "pink",
-      speed: 1.2,
+     },
+      gridPosition: { x: 7, y: 8  },
+      character: "vip2",
+      speed: baseSpeed,
       direction: "up",
       nextDirection: "none",
       isMoving: false,
+      currentFrame: 0,
+      lastFrameChange: 0,
+      sprites: {
+        right: vip2Right,
+        left: vip2Left,
+        up: vip2Up,
+        down: vip2Down
+      }
     },
     {
-      position: {
-        x: 6 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {  x: 6 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-      },
+    },
       gridPosition: { x: 6, y: 7 },
-      color: "cyan",
-      speed: 1.2,
+      character: "vip3",
+      speed: baseSpeed,
       direction: "right",
       nextDirection: "none",
       isMoving: false,
+      currentFrame: 0,
+      lastFrameChange: 0,
+      sprites: {
+        right: vip3Right,
+        left: vip3Left,
+        up: vip3Up,
+        down: vip3Down
+      }
     },
     {
-      position: {
-        x: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {   x: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-      },
+    },
       gridPosition: { x: 8, y: 7 },
-      color: "orange",
-      speed: 1.2,
+      character: "mib",
+      speed: baseSpeed * 1.3, 
       direction: "down",
       nextDirection: "none",
       isMoving: false,
+      currentFrame: 0,
+      lastFrameChange: 0,
+      sprites: {
+        right: mibRight,
+        left: mibLeft,
+        up: mibUp,
+        down: mibDown
+      }
     },
+
   ];
+};
+const getGhostSprite = (ghost: Ghost) => {
+  switch(ghost.direction) {
+    case "right": return ghost.sprites.right;
+    case "left": return ghost.sprites.left;
+    case "up": return ghost.sprites.up;
+    case "down": return ghost.sprites.down;
+    default: return ghost.sprites.right; // Default facing right
+  }
+};
+
+const getGhostSpritePosition = (ghost: Ghost) => {
+  return `-${ghost.currentFrame * FRAME_WIDTH}px 0px`;
+};
+
+const updateGhostAnimation = (ghost: Ghost, timestamp: number) => {
+  if (ghost.direction !== "none") {
+    if (timestamp - ghost.lastFrameChange > ANIMATION_SPEED) {
+      ghost.currentFrame = (ghost.currentFrame + 1) % SPRITE_FRAMES;
+      ghost.lastFrameChange = timestamp;
+    }
+  } else {
+    ghost.currentFrame = 0;
+  }
 };
 
 const getValidDirections = (ghost: Ghost): Direction[] => {
@@ -277,7 +426,9 @@ const getValidDirections = (ghost: Ghost): Direction[] => {
 
   return validDirections.length > 0 ? validDirections : ["none"];
 };
-const moveGhosts = () => {
+
+
+const moveGhosts = (deltaTime: number) => {
   ghosts.value.forEach((ghost) => {
     // Similar to how Pacman moves
     if (!ghost.isMoving) {
@@ -363,6 +514,8 @@ const moveGhosts = () => {
   });
 };
 
+
+
 const checkFoodCollision = () => {
   const centerX = position.value.x + CHARACTER_SIZE / 2;
   const centerY = position.value.y + CHARACTER_SIZE / 2;
@@ -381,11 +534,10 @@ const checkFoodCollision = () => {
 
     // Check if all food is eaten
     if (!gameLayout.value.includes(2)) {
-      gameOver.value = true;
+      nextLevel(); // Advance to next level instead of ending game
     }
   }
 };
-
 // Check collision with ghosts
 const checkGhostCollision = () => {
   const characterCenterX = position.value.x + CHARACTER_SIZE / 2;
@@ -406,13 +558,28 @@ const checkGhostCollision = () => {
   });
 };
 
-const gameLoop = () => {
-  if (gameStarted.value && !gameOver.value) {
-    movePacman();
-    moveGhosts();
-    checkGhostCollision(); 
-    }
-  animationId = requestAnimationFrame(gameLoop);
+
+const nextLevel = () => {
+  level.value++; // Increment level
+  
+  // Reset pacman position
+  gridPosition.value = { x: 7, y: 13 };
+  position.value = {
+    x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+    y: 13 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+  };
+  
+  // Reset direction
+  direction.value = "none";
+  nextDirection.value = "none";
+  isMoving.value = false;
+  
+  // Reset the level layout
+  gameLayout.value = [...originalLayout];
+  
+  // Reinitialize ghosts with increased speed
+  initGhosts();
+
 };
 
 const startGame = () => {
@@ -430,6 +597,7 @@ const startGame = () => {
   isMoving.value = false;
   gameLayout.value = [...originalLayout];
   initGhosts();
+  lastTime = 0; // Reset the last time when starting a new game
 };
 
 // Initialize original layout for resetting
@@ -449,7 +617,6 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <br /><br /><br />
     <div class="score">Score: {{ score }}</div>
     <div class="game-area">
       <button
@@ -457,7 +624,7 @@ onUnmounted(() => {
         class="start-game"
         v-if="!gameStarted || gameOver"
       >
-        {{ gameOver ? "Game Over - Play Again" : "Start Game" }}
+        {{ gameOver ? "Play Again" : "Start Game" }}
       </button>
 
       <div class="grid" v-if="showGame">
@@ -474,33 +641,36 @@ onUnmounted(() => {
       </div>
 
       <div
-        class="character"
-        v-if="showGame"
-        :style="{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          backgroundImage: `url(${pacmanImage})`,
-          width: `${CHARACTER_SIZE}px`,
-          height: `${CHARACTER_SIZE}px`,
-        }"
-      ></div>
+    class="character"
+    v-if="showGame"
+    :style="{
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+      backgroundImage: `url(${currentSpriteImage})`,
+      backgroundPosition: getSpritePosition(),
+      width: `${CHARACTER_SIZE}px`,
+      height: `${CHARACTER_SIZE}px`,
+      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
+    }"
+  ></div>
 
-      <template v-if="showGame">
-        <div
-          v-for="(ghost, index) in ghosts"
-          :key="index"
-          class="ghost"
-          :style="{
-            left: `${ghost.position.x}px`,
-            top: `${ghost.position.y}px`,
-            backgroundColor: ghost.color,
-            width: `${CHARACTER_SIZE}px`,
-            height: `${CHARACTER_SIZE}px`,
-            // backgroundColor: powerPelletActive ? 'left' : ghost.color,
-            // opacity: powerPelletActive ? 0.6 : 1
-          }"
-        ></div>
-      </template>
+  <template v-if="showGame">
+  <div
+    v-for="(ghost, index) in ghosts"
+    :key="index"
+    class="ghost"
+    :class="`ghost-${ghost.character}`"
+    :style="{
+      left: `${ghost.position.x}px`,
+      top: `${ghost.position.y}px`,
+      backgroundImage: `url(${getGhostSprite(ghost)})`,
+      backgroundPosition: getGhostSpritePosition(ghost),
+      width: `${CHARACTER_SIZE}px`,
+      height: `${CHARACTER_SIZE}px`,
+      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
+    }"
+  ></div>
+</template>
 
       <div class="controls" v-if="showGame">
         <button @click="nextDirection = 'up'">up</button>
@@ -510,6 +680,7 @@ onUnmounted(() => {
           <button @click="direction = 'right'">right</button>
         </div>
       </div>
+      <div class="overlay" v-if="gameOver"></div>
     </div>
   </div>
 </template>
@@ -521,16 +692,19 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   background-color: black;
-  color: white;
-  padding: 40px;
+  color: rgb(255, 255, 255);
+  padding: 0;
+  
 }
 
 .game-area {
   position: relative;
   width: 800px;
   height: 800px;
-  background-color: #111;
-  border: 2px solid #333;
+  background-color: #151515;
+  border: 2px solid #1e1e1e;
+margin-top: 0;
+transform: scale(0.8);
 }
 
 .grid {
@@ -539,18 +713,41 @@ onUnmounted(() => {
   grid-template-rows: repeat(15, 1fr);
   width: 100%;
   height: 100%;
+  
 }
 
 .wall {
-  background-color: #ffffff;
+  background-color: #ececec;
   border-radius: 3px;
   margin: 1px;
 }
 
-.food {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.food { 
+  
+  width: 4px;
+  height: 4px;
+  position: relative;
+  left: 40%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    /* Row 1 */
+    4px 0px 0 0 white,
+    8px 0px 0 0 white,
+    /* Row 2 */
+    0px 4px 0 0 white,
+    4px 4px 0 0 white,
+    8px 4px 0 0 white,
+    12px 4px 0 0 white,
+    /* Row 3 */
+    0px 8px 0 0 white,
+    4px 8px 0 0 white,
+    8px 8px 0 0 white,
+    12px 8px 0 0 white,
+    /* Row 4 */
+    4px 12px 0 0 white,
+    8px 12px 0 0 white;
+  image-rendering: pixelated;
 }
 
 .food::after {
@@ -561,34 +758,23 @@ onUnmounted(() => {
   border-radius: 50%;
 }
 
-.power-pellet {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.power-pellet::after {
-  content: "";
-  width: 12px;
-  height: 12px;
-  background-color: rgb(255, 0, 0);
-  border-radius: 50%;
-}
 
 .character {
   position: absolute;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  z-index: 201;
+  z-index: 101;
 }
 
 .ghost {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px 10px 0 0;
-  z-index: 1;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  z-index: 100;
+  transition: 
+    background-position 0.1s ease,
+    transform 0.2s ease;
 }
 
 .ghost::before {
@@ -604,26 +790,39 @@ onUnmounted(() => {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 250px;
+  height: 80px;
   transform: translate(-50%, -50%);
   padding: 15px 30px;
   background-color: #ff0000;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
-  z-index: 10;
+  z-index: 200;
   cursor: pointer;
 }
 
 .score {
   font-size: 30px;
-  margin: 20px 0;
+  margin-top: 88px;
 }
 .controls {
   display: none;
 }
-@media (max-width: 768px) {
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(15px);
+  z-index: 105;
+  
+
+}@media (max-width: 768px) {
   .container {
     padding: 10px;
     width: 100%;
@@ -634,16 +833,13 @@ onUnmounted(() => {
     width: 100%;
     max-width: 100vmin;
     height: 100vmin;
-    margin: 20px auto;
+    margin: 120px auto;
     position: relative;
   }
   
-  .grid {
-    /* No need to scale - we'll adjust the game area size instead */
-  }
   
-  .character, .ghost {
-    /* These will maintain their pixel sizes but within the scaled game area */
+  .character,
+  .ghost {
   }
   
   .controls {
@@ -651,37 +847,34 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     position: fixed;
-    bottom: 20px;
+    top: 550px;
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 400;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 15px 0;
-    border-radius: 15px;
-    margin: 0 auto;
+    margin: 0px auto;
     width: 90%;
     max-width: 400px;
+    gap: 15px;
   }
   
   .controls > div {
     display: flex;
     gap: 15px;
-    margin-top: 10px;
   }
   
   .controls button {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     font-size: 24px;
     background-color: rgba(51, 51, 51, 0.8);
     color: white;
     border: 2px solid #666;
-    border-radius: 50%;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-top: 0px;
+    flex: 0 0 auto; 
   }
   
   .controls button:active {
@@ -693,17 +886,16 @@ onUnmounted(() => {
     font-size: 24px;
     margin: 10px 0;
     position: fixed;
-    top: 10px;
+    top: 100px;
     left: 0;
     right: 0;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.7);
     padding: 5px;
     z-index: 100;
   }
   
   .start-game {
-    font-size: 18px;
+    font-size: 25px;
     padding: 12px 24px;
     white-space: nowrap;
   }
