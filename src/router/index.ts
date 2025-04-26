@@ -6,7 +6,7 @@ import QRScanner from "../views/adminView/QRScanner.vue";
 // Core Pages
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
-// import MiniGame from '../views/MiniGamePage.vue';
+import MiniGame from '../views/MiniGamePage.vue';
 import SpeakerPage from '../views/SpeakerAndSchedulePage.vue';
 
 // Event Pages
@@ -41,7 +41,7 @@ const router = createRouter({
     { path: '/', name: 'Home', component: Homepage },
     { path: '/login', name: 'Login', component: Login },
     { path: "/qr-scanner", name: 'QR Scanner', component: QRScanner },
-    // { path: '/mini-game', name: 'Mini Game', component: MiniGame },
+    { path: '/mini-game', name: 'Mini Game', component: MiniGame },
     { path: '/speaker-schedule', name: 'Speaker & Schedule', component: SpeakerPage },
 
     // Event Pages
