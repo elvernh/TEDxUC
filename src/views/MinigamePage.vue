@@ -695,15 +695,7 @@ onUnmounted(() => {
     margin: 20px auto;
     position: relative;
   }
-  
-  .grid {
-    /* No need to scale - we'll adjust the game area size instead */
-  }
-  
-  .character, .ghost {
-    /* These will maintain their pixel sizes but within the scaled game area */
-  }
-  
+
   .controls {
     display: flex;
     flex-direction: column;
