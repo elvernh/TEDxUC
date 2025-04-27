@@ -46,6 +46,7 @@ const nextDirection = ref<Direction>("none");
 const isMoving = ref(false);
 const level = ref(1); 
 
+
 type Position = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -75,8 +76,8 @@ const gameStarted = ref(false);
 const gameOver = ref(false);
 const ghosts = ref<Ghost[]>([]);
 const showGame = ref(false);
-// const powerPelletActive = ref(false);
-// Update animation frames
+
+
 const updateAnimation = (timestamp: number) => {
   if (gameStarted.value && !gameOver.value && direction.value !== "none") {
     if (timestamp - lastFrameChange.value > ANIMATION_SPEED) {
@@ -84,21 +85,10 @@ const updateAnimation = (timestamp: number) => {
       lastFrameChange.value = timestamp;
     }
   } else {
-    // Reset to first frame when not moving
     currentFrame.value = 0;
   }
+  requestAnimationFrame(updateAnimation); 
 };
-
-
-const currentSpriteImage = computed(() => {
-  switch(direction.value) {
-    case "right": return pacmanRightImage;
-    case "left": return pacmanLeftImage;
-    case "up": return pacmanUpImage;
-    case "down": return pacmanDownImage;
-    default: return pacmanRightImage; // Default facing right when not moving
-  }
-});
 
 const getSpritePosition = () => {
   return `-${currentFrame.value * FRAME_WIDTH}px 0px`;
@@ -197,6 +187,9 @@ const handleKeydown = (event: KeyboardEvent) => {
 };
 
 const movePacman = (deltaTime: number) => {
+  if (direction.value !== "none") {
+  lastValidDirection.value = direction.value;
+}
   if (direction.value === "none" && nextDirection.value === "none") return;
   if (!isMoving.value) {
     const canChangeDirection = canMove(
@@ -381,6 +374,21 @@ const updateGhostAnimation = (ghost: Ghost, timestamp: number) => {
   }
 };
 
+const lastValidDirection = ref<Direction>("right");
+
+const currentSpriteImage = computed(() => {
+  const displayDirection = direction.value !== "none" ? direction.value : lastValidDirection.value;
+  
+  switch(displayDirection) {
+    case "right": return pacmanRightImage;
+    case "left": return pacmanLeftImage;
+    case "up": return pacmanUpImage;
+    case "down": return pacmanDownImage;
+    default: return pacmanRightImage;
+  }
+});
+
+
 const getValidDirections = (ghost: Ghost): Direction[] => {
   const { x, y } = ghost.gridPosition;
   const validDirections: Direction[] = [];
@@ -430,7 +438,6 @@ const getValidDirections = (ghost: Ghost): Direction[] => {
 
 const moveGhosts = (deltaTime: number) => {
   ghosts.value.forEach((ghost) => {
-    // Similar to how Pacman moves
     if (!ghost.isMoving) {
       // Choose a new direction if needed
       if (ghost.direction === "none" || Math.random() < 0.05) {
@@ -600,6 +607,11 @@ const startGame = () => {
   lastTime = 0; // Reset the last time when starting a new game
 };
 
+const gameScale = computed(() => {
+  const gameArea = document.querySelector('.game-area');
+  if (!gameArea) return 1;
+  return gameArea.clientWidth / 800; // 800 is your original game size
+});
 // Initialize original layout for resetting
 const originalLayout = [...gameLayout.value];
 
@@ -617,7 +629,7 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <div class="score">Score: {{ score }}</div>
+    
     <div class="game-area">
       <button
         @click="startGame"
@@ -638,38 +650,38 @@ onUnmounted(() => {
             'ghost-lair': cell === 4,
           }"
         ></div>
+        
       </div>
-
+      <div class="score">Score: {{ score }}</div>
       <div
-    class="character"
-    v-if="showGame"
-    :style="{
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-      backgroundImage: `url(${currentSpriteImage})`,
-      backgroundPosition: getSpritePosition(),
-      width: `${CHARACTER_SIZE}px`,
-      height: `${CHARACTER_SIZE}px`,
-      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
-    }"
-  ></div>
+  class="character"
+  v-if="showGame"
+  :style="{
+    left: `calc(${position.x / 800 * 100}%`,
+    top: `calc(${position.y / 800 * 100}%`,
+    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    backgroundImage: `url(${currentSpriteImage})`,
+    backgroundPosition: getSpritePosition(),
+    backgroundSize: `${(FRAME_WIDTH * SPRITE_FRAMES) / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
+  }"
+></div>
 
   <template v-if="showGame">
-  <div
-    v-for="(ghost, index) in ghosts"
-    :key="index"
-    class="ghost"
-    :class="`ghost-${ghost.character}`"
-    :style="{
-      left: `${ghost.position.x}px`,
-      top: `${ghost.position.y}px`,
-      backgroundImage: `url(${getGhostSprite(ghost)})`,
-      backgroundPosition: getGhostSpritePosition(ghost),
-      width: `${CHARACTER_SIZE}px`,
-      height: `${CHARACTER_SIZE}px`,
-      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
-    }"
-  ></div>
+    <div
+  v-for="(ghost, index) in ghosts"
+  :key="index"
+  class="ghost"
+  :style="{
+    left: `calc(${ghost.position.x / 800 * 100}%`,
+    top: `calc(${ghost.position.y / 800 * 100}%`,
+    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    backgroundImage: `url(${getGhostSprite(ghost)})`,
+    backgroundPosition: getGhostSpritePosition(ghost),
+    backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
+  }"
+></div>
 </template>
 
       <div class="controls" v-if="showGame">
@@ -703,8 +715,9 @@ onUnmounted(() => {
   height: 800px;
   background-color: #151515;
   border: 2px solid #1e1e1e;
-margin-top: 0;
+margin-top: 70px;
 transform: scale(0.8);
+
 }
 
 .grid {
@@ -723,7 +736,6 @@ transform: scale(0.8);
 }
 
 .food { 
-  
   width: 4px;
   height: 4px;
   position: relative;
@@ -805,8 +817,9 @@ transform: scale(0.8);
 }
 
 .score {
-  font-size: 30px;
-  margin-top: 88px;
+  font-size: 50px;
+  margin-top: 50px;
+  align-items: center;
 }
 .controls {
   display: none;
@@ -833,12 +846,13 @@ transform: scale(0.8);
     width: 100%;
     max-width: 100vmin;
     height: 100vmin;
-    margin: 120px auto;
+    margin: 110px auto;
     position: relative;
+    
   }
   
   
-  .character,
+  .character
   .ghost {
   }
   
@@ -847,7 +861,7 @@ transform: scale(0.8);
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 550px;
+    top: 650px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -884,11 +898,7 @@ transform: scale(0.8);
   
   .score {
     font-size: 24px;
-    margin: 10px 0;
     position: fixed;
-    top: 100px;
-    left: 0;
-    right: 0;
     text-align: center;
     padding: 5px;
     z-index: 100;
