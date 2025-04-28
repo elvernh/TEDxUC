@@ -685,7 +685,7 @@ onUnmounted(() => {
 </template>
 
       <div class="controls" v-if="showGame">
-        <button @click="nextDirection = 'up'">up</button>
+        <button @click="direction = 'up'">up</button>
         <div>
           <button @click="direction = 'left'">left</button>
           <button @click="direction = 'down'">down</button>
