@@ -46,7 +46,6 @@ const nextDirection = ref<Direction>("none");
 const isMoving = ref(false);
 const level = ref(1); 
 
-
 type Position = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -79,7 +78,10 @@ const showGame = ref(false);
 
 
 const updateAnimation = (timestamp: number) => {
-  if (gameStarted.value && !gameOver.value && direction.value !== "none") {
+  
+  const isMobile = window.innerWidth <= 768;
+  
+  if (!isMobile && gameStarted.value && !gameOver.value && direction.value !== "none") {
     if (timestamp - lastFrameChange.value > ANIMATION_SPEED) {
       currentFrame.value = (currentFrame.value + 1) % SPRITE_FRAMES;
       lastFrameChange.value = timestamp;
@@ -116,8 +118,9 @@ const gameLayout = ref([
 ]);
 
 let animationId: number | null = null;
-
-
+const instructionText = computed(() => {
+    return "Use the arrow keys to move and avoid the ghosts!";
+});
 
 const gameLoop = (timestamp: number) => {
   if (lastTime === 0) {
@@ -170,10 +173,6 @@ const canGhostMove = (gridX: number, gridY: number): boolean => {
 const handleKeydown = (event: KeyboardEvent) => {
   if (!gameStarted.value || gameOver.value) return;
 
-  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-    event.preventDefault();
-  }
-  
   switch (event.key) {
     case "ArrowUp":
       direction.value = "up";
@@ -359,7 +358,7 @@ const getGhostSprite = (ghost: Ghost) => {
     case "left": return ghost.sprites.left;
     case "up": return ghost.sprites.up;
     case "down": return ghost.sprites.down;
-    default: return ghost.sprites.right; // Default facing right
+    default: return ghost.sprites.right; 
   }
 };
 
@@ -367,16 +366,6 @@ const getGhostSpritePosition = (ghost: Ghost) => {
   return `-${ghost.currentFrame * FRAME_WIDTH}px 0px`;
 };
 
-const updateGhostAnimation = (ghost: Ghost, timestamp: number) => {
-  if (ghost.direction !== "none") {
-    if (timestamp - ghost.lastFrameChange > ANIMATION_SPEED) {
-      ghost.currentFrame = (ghost.currentFrame + 1) % SPRITE_FRAMES;
-      ghost.lastFrameChange = timestamp;
-    }
-  } else {
-    ghost.currentFrame = 0;
-  }
-};
 
 const lastValidDirection = ref<Direction>("right");
 
@@ -545,11 +534,9 @@ const checkFoodCollision = () => {
 
     // Check if all food is eaten
     if (!gameLayout.value.includes(2)) {
-      nextLevel(); // Advance to next level instead of ending game
-    }
+      nextLevel();  }
   }
 };
-// Check collision with ghosts
 const checkGhostCollision = () => {
   const characterCenterX = position.value.x + CHARACTER_SIZE / 2;
   const characterCenterY = position.value.y + CHARACTER_SIZE / 2;
@@ -571,7 +558,7 @@ const checkGhostCollision = () => {
 
 
 const nextLevel = () => {
-  level.value++; // Increment level
+  level.value++; 
   
   // Reset pacman position
   gridPosition.value = { x: 7, y: 13 };
@@ -608,16 +595,13 @@ const startGame = () => {
   isMoving.value = false;
   gameLayout.value = [...originalLayout];
   initGhosts();
-  lastTime = 0; // Reset the last time when starting a new game
-};
+  lastTime = 0; };
 
 const gameScale = computed(() => {
   const gameArea = document.querySelector('.game-area');
   if (!gameArea) return 1;
-  return gameArea.clientWidth / 800; // 800 is your original game size
-});
-// Initialize original layout for resetting
-const originalLayout = [...gameLayout.value];
+  return gameArea.clientWidth / 800;
+});const originalLayout = [...gameLayout.value];
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
@@ -642,7 +626,9 @@ onUnmounted(() => {
       >
         {{ gameOver ? "Play Again" : "Start Game" }}
       </button>
-
+      <div class="instructions" v-if="!gameStarted && !gameOver">
+  {{ instructionText }}
+</div>
       <div class="grid" v-if="showGame">
         <div
           v-for="(cell, index) in gameLayout"
@@ -650,13 +636,13 @@ onUnmounted(() => {
           :class="{
             wall: cell === 1,
             food: cell === 2,
-            // 'power-pellet': cell === 3,
-            'ghost-lair': cell === 4,
+             'ghost-lair': cell === 4,
           }"
         ></div>
         
       </div>
-      <div class="score">Score: {{ score }}</div>
+     
+<div class="score" v-if="gameStarted && !gameOver">Score: {{ score }}</div>
       <div
   class="character"
   v-if="showGame"
@@ -667,7 +653,7 @@ onUnmounted(() => {
     height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
     backgroundImage: `url(${currentSpriteImage})`,
     backgroundPosition: getSpritePosition(),
-    backgroundSize: `${(FRAME_WIDTH * SPRITE_FRAMES) / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
+    backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
   }"
 ></div>
 
@@ -689,7 +675,7 @@ onUnmounted(() => {
 </template>
 
       <div class="controls" v-if="showGame">
-        <button @click="direction = 'up'">up</button>
+        <button @click="nextDirection = 'up'">up</button>
         <div>
           <button @click="direction = 'left'">left</button>
           <button @click="direction = 'down'">down</button>
@@ -702,6 +688,18 @@ onUnmounted(() => {
 </template>
 
 
+
+<style scoped>
+:root, body {
+  overflow: hidden;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+}
+</style>
+
+
+
 <style scoped>
 .container {
   display: flex;
@@ -710,7 +708,11 @@ onUnmounted(() => {
   background-color: black;
   color: rgb(255, 255, 255);
   padding: 0;
-  
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .game-area {
@@ -722,6 +724,19 @@ onUnmounted(() => {
 margin-top: 70px;
 transform: scale(0.8);
 
+}
+.instructions {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(255, 255, 255);
+  font-size: 30px;
+  text-align: center;
+  z-index: 200;
+  width: 80%;
+  max-width: 400px;
+  font-weight: bold;
 }
 
 .grid {
@@ -836,10 +851,83 @@ transform: scale(0.8);
   width: 100%;
   height: 100%;
   backdrop-filter: blur(15px);
-  z-index: 105;
-  
+  background-color: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  z-index: 105;  
+}
 
-}@media (max-width: 768px) {
+
+
+@media (max-height: 900px) {
+  .game-area {
+    transform: scale(0.7);
+    margin-top: 30px;
+  }
+  
+  .controls {
+    top: 550px;
+  }
+}
+
+@media (max-height: 800px) {
+  .game-area {
+    transform: scale(0.6);
+    
+aspect-ratio: 1 / 1; 
+  }
+
+  .score{
+  font-size: 40px;
+  margin-top: 50px;
+  align-items: center;
+}
+  
+.controls {
+    top: 300px;
+  }
+  
+  .controls button {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+
+@media (max-height: 720px) {
+  .game-area {
+    transform: scale(0.55);
+aspect-ratio: 1 / 1; 
+  }
+  
+  .score{
+  font-size: 35px;
+  margin-top: 30px;
+  align-items: center;
+}
+  .controls {
+    top: 300px;
+  }
+  
+  .controls button {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-height: 600px) {
+  .game-area {
+    transform: scale(0.4);
+  }
+  
+  .controls {
+    top: 350px;
+  }
+}
+
+
+
+@media (max-width: 768px) {
   .container {
     padding: 10px;
     width: 100%;
@@ -854,18 +942,16 @@ transform: scale(0.8);
     position: relative;
     
   }
-  
-  
-  .character
-  .ghost {
+  .instructions {
+    font-size: 16px;
+    top: 70%;
   }
-  
   .controls {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 600px;
+    top: 650px;
     bottom: 0;
     left: 0;
     right: 0;
