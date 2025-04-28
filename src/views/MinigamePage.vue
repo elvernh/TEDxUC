@@ -861,7 +861,7 @@ transform: scale(0.8);
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 650px;
+    top: 600px;
     bottom: 0;
     left: 0;
     right: 0;

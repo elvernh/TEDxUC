@@ -6,7 +6,7 @@ import QRScanner from "../views/adminView/QRScanner.vue";
 // Core Pages
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
-import MiniGame from '../views/MiniGamePage.vue';
+import MiniGame from '../views/MinigamePage.vue';
 import SpeakerPage from '../views/SpeakerAndSchedulePage.vue';
 
 // Event Pages
