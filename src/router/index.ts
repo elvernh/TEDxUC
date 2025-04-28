@@ -6,7 +6,7 @@ import QRScanner from "../views/adminView/QRScanner.vue";
 // Core Pages
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
-// import MiniGame from '../views/MiniGamePage.vue';
+import MiniGame from '../views/MiniGamePage.vue';
 import SpeakerPage from '../views/SpeakerAndSchedulePage.vue';
 
 // Event Pages
@@ -48,6 +48,8 @@ const router = createRouter({
     { path: '/event/preevent2', name: 'PreEvent2', component: PreEvent2 },
     { path: '/event/preevent3', name: 'PreEvent3', component: PreEvent3 },
     { path: '/event/mainevent', name: 'MainEvent', component: MainEvent },
+
+    {path: '/minigame', name: 'minigame', component: MiniGame},
 
     // Registration Pages
     { path: '/register/preevent1', name: 'PreEvent1 Register', component: PreEvent1Register },
