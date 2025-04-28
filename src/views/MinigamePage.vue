@@ -170,6 +170,10 @@ const canGhostMove = (gridX: number, gridY: number): boolean => {
 const handleKeydown = (event: KeyboardEvent) => {
   if (!gameStarted.value || gameOver.value) return;
 
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+    event.preventDefault();
+  }
+  
   switch (event.key) {
     case "ArrowUp":
       direction.value = "up";
