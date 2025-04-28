@@ -28,7 +28,7 @@ const navigationPath = [
       { name: "Main Event", path: "/event/mainevent" },
     ],
   },
-  { name: "Mini Game", path: "/mini-game" },
+  // { name: "Mini Game", path: "/mini-game" },
   { name: "Speaker & Schedule", path: "/speaker-schedule" },
   { name: "Gallery", path: "/gallery" },
 ];
