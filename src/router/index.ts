@@ -6,7 +6,7 @@ import QRScanner from "../views/adminView/QRScanner.vue";
 // Core Pages
 import Homepage from '../views/Homepage.vue';
 import Login from '../views/LoginPage.vue';
-import MiniGame from '../views/MiniGamePage.vue';
+import MiniGame from '../views/MinigamePage.vue';
 import SpeakerPage from '../views/SpeakerAndSchedulePage.vue';
 
 // Event Pages
@@ -29,6 +29,7 @@ import Emailto from '../views/adminView/EmailToBulk.vue';
 import makeqr from '../views/adminView/MakeQR.vue';
 import dashboard from '../views/adminView/Dashboard.vue';
 import createEvent from '../views/adminView/CreateEvent.vue';
+import GalleryView from '../views/GalleryView.vue'
 
 // Error Page
 import ErrorPage from '../views/error/ErrorPage.vue';  // Import the error page
@@ -40,7 +41,7 @@ const router = createRouter({
     { path: '/', name: 'Home', component: Homepage },
     { path: '/login', name: 'Login', component: Login },
     { path: "/qr-scanner", name: 'QR Scanner', component: QRScanner },
-    // { path: '/mini-game', name: 'Mini Game', component: MiniGame },
+    { path: '/mini-game', name: 'Mini Game', component: MiniGame },
     { path: '/speaker-schedule', name: 'Speaker & Schedule', component: SpeakerPage },
 
     // Event Pages
@@ -65,6 +66,7 @@ const router = createRouter({
 
     // Error Page (Wildcard Route - Must be the last entry)
     { path: '/:pathMatch(.*)*', name: 'ErrorPage', component: ErrorPage },
+    { path: '/gallery', name: 'gallery', component: GalleryView},
 
     //ADMIN
     { path: '/Emailto', name: 'emailto', component: Emailto },

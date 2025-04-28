@@ -1,17 +1,33 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
 import sideImage from "@/assets/images/x.png";
 
 const sideImagePath = sideImage;
+
+// For parallax effect
+const scrollY = ref(0);
+
+const handleScroll = () => {
+  scrollY.value = window.scrollY;
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
   <div class="layout-container">
-    <div class="side-image">
+    <div class="side-image" v-parallax="0.03">
       <img :src="sideImagePath" class="image" draggable="false" />
     </div>
     <div class="text-container">
-      <h1 class="title">THE INFINITE MAZE</h1>
-      <h2 class="subtitle">
+      <h1 class="title" v-parallax="0.03">THE INFINITE MAZE</h1>
+      <h2 class="subtitle" v-parallax="0.03">
         Life is a labyrinth with winding paths, filled with ups and downs. Every
         turn presents a new challenge, every step a new lesson. To navigate this
         maze, we must embrace the journey—gathering skills, unlocking potential,
@@ -20,9 +36,9 @@ const sideImagePath = sideImage;
         <br />
         At TEDxUniversitasCiputraSurabaya, we invite you to explore this
         intricate path. The Infinite Maze is not just about reaching the finish
-        line; it’s about the process of discovery, resilience, and growth. Join
+        line; it's about the process of discovery, resilience, and growth. Join
         us as we uncover the insights that shape our journey and
-        illuminate the way ahead.
+        illuminate the way ahead.
       </h2>
     </div>
   </div>
@@ -31,15 +47,18 @@ const sideImagePath = sideImage;
 <style scoped>
 .layout-container {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;   /* Instead of height */
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   background-color: black;
-  padding: 50px 50px;
+  padding: 50px;       /* Adjust padding if needed */
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;    /* Only if needed for parallax elements */
 }
+
 
 .layout-container::after {
   content: "";
@@ -47,8 +66,13 @@ const sideImagePath = sideImage;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 120px; /* Sesuaikan tinggi shadow */
-  z-index: 1; /* Harus lebih rendah dari navbar */
+  height: 120px;
+  z-index: 1;
+}
+
+.side-image {
+  will-change: transform; /* Optimize for animations */
+  transition: transform 0.3s ease-out;
 }
 
 .image {
@@ -72,6 +96,7 @@ const sideImagePath = sideImage;
   font-size: 100px;
   margin-bottom: 15px;
   margin-top: 10px;
+  will-change: transform;
 }
 
 .subtitle {
@@ -81,6 +106,7 @@ const sideImagePath = sideImage;
   text-align-last: left;
   margin-top: 10px;
   text-align: justify;
+  will-change: transform;
 }
 
 @media (max-width: 1200px) {

@@ -46,6 +46,7 @@ const nextDirection = ref<Direction>("none");
 const isMoving = ref(false);
 const level = ref(1); 
 
+
 type Position = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -75,8 +76,8 @@ const gameStarted = ref(false);
 const gameOver = ref(false);
 const ghosts = ref<Ghost[]>([]);
 const showGame = ref(false);
-// const powerPelletActive = ref(false);
-// Update animation frames
+
+
 const updateAnimation = (timestamp: number) => {
   if (gameStarted.value && !gameOver.value && direction.value !== "none") {
     if (timestamp - lastFrameChange.value > ANIMATION_SPEED) {
@@ -84,21 +85,10 @@ const updateAnimation = (timestamp: number) => {
       lastFrameChange.value = timestamp;
     }
   } else {
-    // Reset to first frame when not moving
     currentFrame.value = 0;
   }
+  requestAnimationFrame(updateAnimation); 
 };
-
-
-const currentSpriteImage = computed(() => {
-  switch(direction.value) {
-    case "right": return pacmanRightImage;
-    case "left": return pacmanLeftImage;
-    case "up": return pacmanUpImage;
-    case "down": return pacmanDownImage;
-    default: return pacmanRightImage; // Default facing right when not moving
-  }
-});
 
 const getSpritePosition = () => {
   return `-${currentFrame.value * FRAME_WIDTH}px 0px`;
@@ -180,37 +170,30 @@ const canGhostMove = (gridX: number, gridY: number): boolean => {
 const handleKeydown = (event: KeyboardEvent) => {
   if (!gameStarted.value || gameOver.value) return;
 
-  // Prevent scrolling when pressing arrow keys
   if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
     event.preventDefault();
   }
-
+  
   switch (event.key) {
     case "ArrowUp":
-    case "w":
-    case "W":
       direction.value = "up";
       break;
     case "ArrowDown":
-    case "s":
-    case "S":
       direction.value = "down";
       break;
     case "ArrowLeft":
-    case "a":
-    case "A":
       direction.value = "left";
       break;
     case "ArrowRight":
-    case "d":
-    case "D":
       direction.value = "right";
       break;
   }
 };
 
-
 const movePacman = (deltaTime: number) => {
+  if (direction.value !== "none") {
+  lastValidDirection.value = direction.value;
+}
   if (direction.value === "none" && nextDirection.value === "none") return;
   if (!isMoving.value) {
     const canChangeDirection = canMove(
@@ -395,6 +378,21 @@ const updateGhostAnimation = (ghost: Ghost, timestamp: number) => {
   }
 };
 
+const lastValidDirection = ref<Direction>("right");
+
+const currentSpriteImage = computed(() => {
+  const displayDirection = direction.value !== "none" ? direction.value : lastValidDirection.value;
+  
+  switch(displayDirection) {
+    case "right": return pacmanRightImage;
+    case "left": return pacmanLeftImage;
+    case "up": return pacmanUpImage;
+    case "down": return pacmanDownImage;
+    default: return pacmanRightImage;
+  }
+});
+
+
 const getValidDirections = (ghost: Ghost): Direction[] => {
   const { x, y } = ghost.gridPosition;
   const validDirections: Direction[] = [];
@@ -444,7 +442,6 @@ const getValidDirections = (ghost: Ghost): Direction[] => {
 
 const moveGhosts = (deltaTime: number) => {
   ghosts.value.forEach((ghost) => {
-    // Similar to how Pacman moves
     if (!ghost.isMoving) {
       // Choose a new direction if needed
       if (ghost.direction === "none" || Math.random() < 0.05) {
@@ -614,6 +611,11 @@ const startGame = () => {
   lastTime = 0; // Reset the last time when starting a new game
 };
 
+const gameScale = computed(() => {
+  const gameArea = document.querySelector('.game-area');
+  if (!gameArea) return 1;
+  return gameArea.clientWidth / 800; // 800 is your original game size
+});
 // Initialize original layout for resetting
 const originalLayout = [...gameLayout.value];
 
@@ -631,8 +633,7 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <br /><br /><br />
-    <div class="score">Score: {{ score }}</div>
+    
     <div class="game-area">
       <button
         @click="startGame"
@@ -653,42 +654,42 @@ onUnmounted(() => {
             'ghost-lair': cell === 4,
           }"
         ></div>
+        
       </div>
-
+      <div class="score">Score: {{ score }}</div>
       <div
-    class="character"
-    v-if="showGame"
-    :style="{
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-      backgroundImage: `url(${currentSpriteImage})`,
-      backgroundPosition: getSpritePosition(),
-      width: `${CHARACTER_SIZE}px`,
-      height: `${CHARACTER_SIZE}px`,
-      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
-    }"
-  ></div>
+  class="character"
+  v-if="showGame"
+  :style="{
+    left: `calc(${position.x / 800 * 100}%`,
+    top: `calc(${position.y / 800 * 100}%`,
+    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    backgroundImage: `url(${currentSpriteImage})`,
+    backgroundPosition: getSpritePosition(),
+    backgroundSize: `${(FRAME_WIDTH * SPRITE_FRAMES) / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
+  }"
+></div>
 
   <template v-if="showGame">
-  <div
-    v-for="(ghost, index) in ghosts"
-    :key="index"
-    class="ghost"
-    :class="`ghost-${ghost.character}`"
-    :style="{
-      left: `${ghost.position.x}px`,
-      top: `${ghost.position.y}px`,
-      backgroundImage: `url(${getGhostSprite(ghost)})`,
-      backgroundPosition: getGhostSpritePosition(ghost),
-      width: `${CHARACTER_SIZE}px`,
-      height: `${CHARACTER_SIZE}px`,
-      backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES}px ${FRAME_HEIGHT}px`
-    }"
-  ></div>
+    <div
+  v-for="(ghost, index) in ghosts"
+  :key="index"
+  class="ghost"
+  :style="{
+    left: `calc(${ghost.position.x / 800 * 100}%`,
+    top: `calc(${ghost.position.y / 800 * 100}%`,
+    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
+    backgroundImage: `url(${getGhostSprite(ghost)})`,
+    backgroundPosition: getGhostSpritePosition(ghost),
+    backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
+  }"
+></div>
 </template>
 
       <div class="controls" v-if="showGame">
-        <button @click="nextDirection = 'up'">up</button>
+        <button @click="direction = 'up'">up</button>
         <div>
           <button @click="direction = 'left'">left</button>
           <button @click="direction = 'down'">down</button>
@@ -708,6 +709,7 @@ onUnmounted(() => {
   align-items: center;
   background-color: black;
   color: rgb(255, 255, 255);
+  padding: 0;
   
 }
 
@@ -717,6 +719,9 @@ onUnmounted(() => {
   height: 800px;
   background-color: #151515;
   border: 2px solid #1e1e1e;
+margin-top: 70px;
+transform: scale(0.8);
+
 }
 
 .grid {
@@ -725,6 +730,7 @@ onUnmounted(() => {
   grid-template-rows: repeat(15, 1fr);
   width: 100%;
   height: 100%;
+  
 }
 
 .wall {
@@ -734,7 +740,6 @@ onUnmounted(() => {
 }
 
 .food { 
-  
   width: 4px;
   height: 4px;
   position: relative;
@@ -769,19 +774,6 @@ onUnmounted(() => {
   border-radius: 50%;
 }
 
-.power-pellet {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.power-pellet::after {
-  content: "";
-  width: 12px;
-  height: 12px;
-  background-color: rgb(255, 0, 0);
-  border-radius: 50%;
-}
 
 .character {
   position: absolute;
@@ -829,9 +821,9 @@ onUnmounted(() => {
 }
 
 .score {
-  font-size: 30px;
-  margin-top: 10%;
-  margin-bottom: 15px;
+  font-size: 50px;
+  margin-top: 50px;
+  align-items: center;
 }
 .controls {
   display: none;
@@ -858,47 +850,49 @@ onUnmounted(() => {
     width: 100%;
     max-width: 100vmin;
     height: 100vmin;
-    margin: 20px auto;
+    margin: 110px auto;
     position: relative;
+    
   }
   
+  
+  .character
+  .ghost {
+  }
   
   .controls {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: fixed;
-    bottom: 20px;
+    top: 600px;
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 400;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 15px 0;
-    border-radius: 15px;
-    margin: 0 auto;
+    margin: 0px auto;
     width: 90%;
     max-width: 400px;
+    gap: 15px;
   }
   
   .controls > div {
     display: flex;
     gap: 15px;
-    margin-top: 10px;
   }
   
   .controls button {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     font-size: 24px;
     background-color: rgba(51, 51, 51, 0.8);
     color: white;
     border: 2px solid #666;
-    border-radius: 50%;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-top: 0px;
+    flex: 0 0 auto; 
   }
   
   .controls button:active {
@@ -908,19 +902,14 @@ onUnmounted(() => {
   
   .score {
     font-size: 24px;
-    margin: 10px 0;
     position: fixed;
-    top: 10px;
-    left: 0;
-    right: 0;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.7);
     padding: 5px;
     z-index: 100;
   }
   
   .start-game {
-    font-size: 18px;
+    font-size: 25px;
     padding: 12px 24px;
     white-space: nowrap;
   }

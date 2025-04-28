@@ -30,6 +30,7 @@ const navigationPath = [
   },
   { name: "Mini Game", path: "/mini-game" },
   { name: "Speaker & Schedule", path: "/speaker-schedule" },
+  { name: "Gallery", path: "/gallery" },
 ];
 </script>
 

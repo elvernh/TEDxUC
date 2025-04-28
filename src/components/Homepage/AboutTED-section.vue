@@ -1,32 +1,83 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import pintuClose from "@/assets/images/PINTU 1.png";
 import pintuOpenDikit from "@/assets/images/PINTU 2.png";
 import pintuOpen from "@/assets/images/PINTU 3.png";
 
+// State variables
 const tedOpen = ref(false);
 const tedHover = ref(false);
-
 const tedxOpen = ref(false);
 const tedxHover = ref(false);
-
 const tedxucsOpen = ref(false);
 const tedxucsHover = ref(false);
 
+// Scroll tracking
+const scrollY = ref(0);
+const isMobile = ref(false);
 
+// Thresholds
+let thresholdTED_OPEN = 500;
+let thresholdTED_CLOSE = 800;
+let thresholdTEDX_OPEN = 900;
+let thresholdTEDX_CLOSE = 1200;
+let thresholdTEDXUCS_OPEN = 1300;
+let thresholdTEDXUCS_CLOSE = 1600;
+
+const handleScroll = () => {
+  scrollY.value = window.scrollY;
+};
+
+onMounted(() => {
+  isMobile.value = window.innerWidth < 800;
+
+  if (isMobile.value) {
+    // Mobile thresholds: open doors one by one
+    thresholdTED_OPEN = 0;
+    thresholdTED_CLOSE = 1000;
+    thresholdTEDX_OPEN = 1000;
+    thresholdTEDX_CLOSE = 1500;
+    thresholdTEDXUCS_OPEN = 1500;
+    thresholdTEDXUCS_CLOSE = 2000;
+  } else {
+    // Desktop thresholds: all open together
+    thresholdTED_OPEN = 500;
+    thresholdTED_CLOSE = 1100;
+    thresholdTEDX_OPEN = 500;
+    thresholdTEDX_CLOSE = 1100;
+    thresholdTEDXUCS_OPEN = 500;
+    thresholdTEDXUCS_CLOSE = 1100;
+  }
+
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
+
+// Update doors when scroll changes
+watch(scrollY, (newVal) => {
+  tedOpen.value = newVal >= thresholdTED_OPEN && newVal <= thresholdTED_CLOSE;
+  tedxOpen.value = newVal >= thresholdTEDX_OPEN && newVal <= thresholdTEDX_CLOSE;
+  tedxucsOpen.value = newVal >= thresholdTEDXUCS_OPEN && newVal <= thresholdTEDXUCS_CLOSE;
+});
 </script>
+
 
 <template>
   <div class="container">
-    <h1>Learn the Difference!</h1>
+    <h1 v-parallax="0.05">Learn the Difference!</h1>
     <div class="doors-container">
       <div
         class="door"
         @mouseenter="tedHover = true"
         @mouseleave="tedHover = false"
+        v-parallax="0.2"
       >
         <h2 class="door-title">TED</h2>
         <div class="door-image-container">
+          <!-- When door is open, show the open image; otherwise show the hover or closed image -->
           <img
             v-if="tedOpen"
             :src="pintuOpen"
@@ -37,7 +88,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedHover"
             :src="pintuOpenDikit"
             @click="tedOpen = true"
-            class="door-img "
+            class="door-img"
           />
           <img
             v-else
@@ -61,6 +112,7 @@ const tedxucsHover = ref(false);
         class="door"
         @mouseenter="tedxHover = true"
         @mouseleave="tedxHover = false"
+        v-parallax="0.2"
       >
         <h2 class="door-title">TEDX</h2>
         <div class="door-image-container">
@@ -74,7 +126,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedxHover"
             :src="pintuOpenDikit"
             @click="tedxOpen = true"
-            class="door-img "
+            class="door-img"
           />
           <img
             v-else
@@ -98,6 +150,7 @@ const tedxucsHover = ref(false);
         class="door"
         @mouseenter="tedxucsHover = true"
         @mouseleave="tedxucsHover = false"
+        v-parallax="0.2"
       >
         <h2 class="door-title">TEDXUCS</h2>
         <div class="door-image-container">
@@ -111,7 +164,7 @@ const tedxucsHover = ref(false);
             v-else-if="tedxucsHover"
             :src="pintuOpenDikit"
             @click="tedxucsOpen = true"
-            class="door-img "
+            class="door-img"
           />
           <img
             v-else
@@ -143,6 +196,8 @@ const tedxucsHover = ref(false);
   justify-content: center;
   align-items: center;
   background-color: rgb(0, 0, 0);
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  position: relative;
 }
 
 h1 {
@@ -153,6 +208,7 @@ h1 {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
+  will-change: transform; /* Optimize for animations */
 }
 
 .door-title {
@@ -163,6 +219,7 @@ h1 {
   margin-bottom: 20px;
   font-weight: 600;
   letter-spacing: 0.5px;
+  will-change: transform;
 }
 
 .doors-container {
@@ -172,6 +229,7 @@ h1 {
   align-items: center;
   flex-wrap: wrap;
   pointer-events: none;
+  position: relative;
 }
 
 .door {
@@ -180,12 +238,18 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  will-change: transform;
+  transition: transform 0.3s ease-out;
+}
+
+.door:hover {
+  transform: translateY(-5px);
 }
 
 .door-image-container {
   position: relative;
-  display: inline-block; 
-  
+  display: inline-block;
+  will-change: transform;
 }
 
 .door-img {
@@ -195,6 +259,11 @@ h1 {
   display: block;
   object-fit: contain;
   pointer-events: auto;
+  transition: transform 0.3s ease;
+}
+
+.door-img:hover {
+  transform: scale(1.02);
 }
 
 .pop-up-enter-active {
@@ -250,6 +319,7 @@ h1 {
   width: 280px;
   height: 300px;
   backdrop-filter: blur(5px);
+  z-index: 10;
 }
 
 .content-inner {
@@ -268,8 +338,8 @@ h1 {
     height: auto;
     padding-bottom: 80px;
   }
-
 }
+
 @media (max-width: 800px) {
   .container {
     height: auto;
@@ -297,9 +367,10 @@ h1 {
     gap: 60px;
   }
 
-  p{
+  p {
     font-size: 18px;
   }
+  
   .door-image-container {
     width: 350px;
   }

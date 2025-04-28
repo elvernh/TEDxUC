@@ -40,13 +40,22 @@ const updateTimer = () => {
   );
 };
 
+// For parallax effect
+const scrollY = ref(0);
+
+const handleScroll = () => {
+  scrollY.value = window.scrollY;
+};
+
 onMounted(() => {
   timer = setInterval(updateTimer, 1000);
   updateTimer();
+  window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
   if (timer) clearInterval(timer);
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -54,11 +63,16 @@ onUnmounted(() => {
   <div
     class="maze-container"
     :style="{ backgroundImage: `url('${mazeSection}')` }"
+    v-parallax="0.1"
   >
-    <div class="time-container">
-      <h1>EVENT STARTS IN</h1>
+    <div class="parallax-background" v-parallax="0.001"></div>
+    <div class="time-container" v-parallax="0.001">
+      <h1 v-parallax="0.1">EVENT STARTS IN</h1>
       <div class="timer">
-        <div class="time-box" v-for="(value, label) in { days, hours, minutes, seconds }" :key="label">
+        <div class="time-box" 
+             v-for="(value, label, index) in { days, hours, minutes, seconds }" 
+             :key="label"
+             v-parallax="{value: 0.05 + (index * 0.001)}">
           <div class="time">{{ value }}</div>
           <div class="label">{{ label.charAt(0).toUpperCase() + label.slice(1) }}</div>
         </div>
@@ -79,16 +93,30 @@ onUnmounted(() => {
   background-position: center;
   color: white;
   position: relative;
+  overflow: hidden;
 }
+
+.parallax-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: 110% 110%;
+  background-position: center;
+  z-index: -1;
+  will-change: transform;
+}
+
 .maze-container::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 120px; /* Sesuaikan tinggi shadow */
+  height: 120px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 100%);
-  z-index: 1; /* Harus lebih rendah dari navbar */
+  z-index: 1;
 }
 
 .maze-container::after {
@@ -97,9 +125,9 @@ onUnmounted(() => {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 150px; /* Sesuaikan tinggi shadow */
+  height: 150px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%);
-  pointer-events: none; /* Supaya tidak mengganggu interaksi */
+  pointer-events: none;
 }
 
 .time-container {
@@ -107,6 +135,8 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   font-size: 40px;
+  will-change: transform;
+  z-index: 2;
 }
 
 .timer {
@@ -122,6 +152,12 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+.time-box:hover {
+  transform: translateY(-5px);
 }
 
 .time {
@@ -136,9 +172,12 @@ onUnmounted(() => {
   color: white;
   text-align: center;
 }
+
 .time-container h1 {
   margin-bottom: 10px;
+  will-change: transform;
 }
+
 .label {
   font-size: 30px;
   font-weight: bold;
@@ -159,7 +198,6 @@ onUnmounted(() => {
 
   .time {
     font-size: 48px;
-    /* padding: 15px 20px; */
     min-width: 60px;
   }
 
