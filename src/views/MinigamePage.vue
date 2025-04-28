@@ -180,21 +180,35 @@ const canGhostMove = (gridX: number, gridY: number): boolean => {
 const handleKeydown = (event: KeyboardEvent) => {
   if (!gameStarted.value || gameOver.value) return;
 
+  // Prevent scrolling when pressing arrow keys
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+    event.preventDefault();
+  }
+
   switch (event.key) {
     case "ArrowUp":
+    case "w":
+    case "W":
       direction.value = "up";
       break;
     case "ArrowDown":
+    case "s":
+    case "S":
       direction.value = "down";
       break;
     case "ArrowLeft":
+    case "a":
+    case "A":
       direction.value = "left";
       break;
     case "ArrowRight":
+    case "d":
+    case "D":
       direction.value = "right";
       break;
   }
 };
+
 
 const movePacman = (deltaTime: number) => {
   if (direction.value === "none" && nextDirection.value === "none") return;

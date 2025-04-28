@@ -49,7 +49,7 @@ const router = createRouter({
     { path: '/event/preevent3', name: 'PreEvent3', component: PreEvent3 },
     { path: '/event/mainevent', name: 'MainEvent', component: MainEvent },
 
-    {path: '/minigame', name: 'minigame', component: MiniGame},
+    {path: '/mini-game', name: 'minigame', component: MiniGame},
 
     // Registration Pages
     { path: '/register/preevent1', name: 'PreEvent1 Register', component: PreEvent1Register },
