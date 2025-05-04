@@ -51,6 +51,14 @@
 </template>
 
 <script>
+import wilson from "@/assets/pembicara/WILSON DAVID MULYA HUANG_SELF DEVELOPMENT.jpg";
+import holly from "@/assets/pembicara/Holly Natasha_Entrepreneurship.jpg";
+import evy from "@/assets/pembicara/EVELYN HUTANI_COMEDY.png";
+import kukuh from "@/assets/pembicara/R Kukuh_Technology.png";
+import maxi from "@/assets/pembicara/maxi.jpeg";
+import mario from "@/assets/pembicara/Mario Oswin_Culinary.jpg";
+import dany from "@/assets/pembicara/Danyannisa_Music.jpg";
+
 export default {
   name: "SpeakerAndSchedulePage",
   data() {
@@ -60,8 +68,7 @@ export default {
       speakers: [
       {
           name: "Wilson David Mulya H.",
-          image:
-            "src/assets/pembicara/WILSON DAVID MULYA HUANG_SELF DEVELOPMENT.jpg", // Using placeholder images
+          image: wilson, // Using placeholder images
           date: new Date(2025, 3, 12),
           time: "11:50-12:10",
           timeFormat: "PM",
@@ -69,7 +76,7 @@ export default {
         },
         {
           name: "Holly Natasha",
-          image: "src/assets/pembicara/Holly Natasha_Entrepreneurship.jpg",
+          image: holly,
           date: new Date(2025, 3, 12),
           time: "12:10-12:30",
           timeFormat: "PM",
@@ -77,7 +84,7 @@ export default {
         },
         {
           name: "Evelyn Saraswati Hutani",
-          image: "src/assets/pembicara/EVELYN HUTANI_COMEDY.png",
+          image: evy,
           date: new Date(2025, 3, 12),
           time: "12:30-12:50",
           timeFormat: "PM",
@@ -85,7 +92,7 @@ export default {
         },
         {
           name: "R. Kukuh Rahadiansyah",
-          image: "src/assets/pembicara/R Kukuh_Technology.png",
+          image: kukuh,
           date: new Date(2025, 3, 12),
           time: "14:27-14:45",
           timeFormat: "PM",
@@ -93,7 +100,7 @@ export default {
         },
         {
           name: "Maximilian John",
-          image: "src/assets/pembicara/maxi.jpeg",
+          image: maxi,
           date: new Date(2025, 3, 12),
           time: "14:40-15:00",
           timeFormat: "PM",
@@ -101,7 +108,7 @@ export default {
         },
         {
           name: "Mario Oswin",
-          image: "src/assets/pembicara/Mario Oswin_Culinary.jpg",
+          image: mario,
           date: new Date(2025, 3, 12),
           time: "15:00-15:20",
           timeFormat: "PM",
@@ -109,7 +116,7 @@ export default {
         },
         {
           name: "Danyannisa",
-          image: "src/assets/pembicara/Danyannisa_Music.jpg",
+          image: dany,
           date: new Date(2025, 3, 12),
           time: "15:20-15:40",
           timeFormat: "PM",
