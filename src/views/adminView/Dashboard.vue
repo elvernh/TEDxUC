@@ -59,6 +59,7 @@
             <th>Full Name</th>
             <th>Email</th>
             <th>Reg Number</th>
+            <th>Phone Number</th>
             <th>Status</th>
             <th>Attendance</th>
             <th>Actions</th>
@@ -69,6 +70,7 @@
             <td>{{ reg.fullName }}</td>
             <td>{{ reg.email }}</td>
             <td>{{ reg.registrationNumber }}</td>
+            <td>{{ reg.phoneNumber }}</td>
             <td>{{ reg.status }}</td>
             <td>{{ reg.attendanceStatus }}</td>
             <td>
