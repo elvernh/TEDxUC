@@ -1,35 +1,47 @@
 <template>
   <div class="speaker-schedule">
     <div class="header">
-      <div class="tedx-logo">
-        
-      </div>
+      <div class="tedx-logo"></div>
       <div class="title-container">
-        <p class="title">SPEAKER<br>SCHEDULE</p>
+        <p class="title">SPEAKER<br />SCHEDULE</p>
         <div class="triangle-marker"></div>
       </div>
       <p class="subtitle">
-        The voices that will shape The Infinite Maze are almost here. 
-        Who will take the stage? When will each session unfold? The answers are coming soon.
+        The voices that will shape The Infinite Maze are almost here. Who will
+        take the stage? When will each session unfold? The answers are coming
+        soon.
       </p>
     </div>
-    
-    <div class="date-display">12.04.2025</div>
-    
+
+    <div class="date-display">11.05.2025</div>
+
     <div class="timeline">
-      <div v-for="(speaker, index) in speakers" :key="index" class="speaker-item">
+      <div
+        v-for="(speaker, index) in speakers"
+        :key="index"
+        class="speaker-item"
+      >
         <div class="timeline-line"></div>
-        <div class="speaker-circle" :class="{ 'active': index === activeIndex }">
+        <div class="speaker-circle" :class="{ active: index === activeIndex }">
           <div class="speaker-image">
-            <img :src="speaker.image || '/api/placeholder/120/120'" alt="Speaker image" />
+            <img
+              :src="speaker.image || '/api/placeholder/120/120'"
+              :alt="`Photo of ${speaker.name}`"
+            />
           </div>
         </div>
-        <div class="speaker-time">{{ speaker.time }}<span class="time-format">{{ speaker.timeFormat }}</span></div>
+        <div class="speaker-time">
+          {{ speaker.time
+          }}<span class="time-format">{{ speaker.timeFormat }}</span>
+        </div>
         <div class="content-wrapper">
           <div class="speaker-info">
             <h2 class="speaker-name">{{ speaker.name }}</h2>
             <p class="speaker-description">
-              {{ speaker.description || 'The voices that will shape The Infinite Maze are almost here. Who will take the stage? When will each session unfold? The answers are coming soon.' }}
+              {{
+                speaker.description ||
+                "The voices that will shape The Infinite Maze are almost here. Who will take the stage? When will each session unfold? The answers are coming soon."
+              }}
             </p>
           </div>
         </div>
@@ -40,59 +52,117 @@
 
 <script>
 export default {
-  name: 'SpeakerAndSchedulePage',
+  name: "SpeakerAndSchedulePage",
   data() {
     return {
-      currentDate: new Date(2025, 3, 12), // April 12, 2025 (months are 0-indexed)
+      currentDate: new Date(2025, 3, 12), // April 12, 2025
       activeIndex: 0,
       speakers: [
-        {
-          name: 'Bertrand Kurniawan',
-          image: '/api/placeholder/120/120', // Using placeholder images
+      {
+          name: "Wilson David Mulya H.",
+          image:
+            "src/assets/pembicara/WILSON DAVID MULYA HUANG_SELF DEVELOPMENT.jpg", // Using placeholder images
           date: new Date(2025, 3, 12),
-          time: '12.30',
-          timeFormat: 'AM',
-          description: 'The voices that will shape The Infinite Maze are almost here. Who will take the stage? When will each session unfold? The answers are coming soon.'
+          time: "11:50-12:10",
+          timeFormat: "PM",
+          description: "Self Development",
         },
         {
-          name: 'Bertrand Kurniawan',
-          image: '/api/placeholder/120/120',
+          name: "Holly Natasha",
+          image: "src/assets/pembicara/Holly Natasha_Entrepreneurship.jpg",
           date: new Date(2025, 3, 12),
-          time: '1.45',
-          timeFormat: 'PM',
-          description: 'The voices that will shape The Infinite Maze are almost here. Who will take the stage? When will each session unfold? The answers are coming soon.'
+          time: "12:10-12:30",
+          timeFormat: "PM",
+          description: "Entrepreneurship",
         },
         {
-          name: 'Bertrand Kurniawan',
-          image: '/api/placeholder/120/120',
+          name: "Evelyn Saraswati Hutani",
+          image: "src/assets/pembicara/EVELYN HUTANI_COMEDY.png",
           date: new Date(2025, 3, 12),
-          time: '3.15',
-          timeFormat: 'PM',
-          description: 'The voices that will shape The Infinite Maze are almost here. Who will take the stage? When will each session unfold? The answers are coming soon.'
-        }
-      ]
+          time: "12:30-12:50",
+          timeFormat: "PM",
+          description: "Comedy",
+        },
+        {
+          name: "R. Kukuh Rahadiansyah",
+          image: "src/assets/pembicara/R Kukuh_Technology.png",
+          date: new Date(2025, 3, 12),
+          time: "14:27-14:45",
+          timeFormat: "PM",
+          description: "Technology",
+        },
+        {
+          name: "Maximilian John",
+          image: "src/assets/pembicara/maxi.jpeg",
+          date: new Date(2025, 3, 12),
+          time: "14:40-15:00",
+          timeFormat: "PM",
+          description: "Photography",
+        },
+        {
+          name: "Mario Oswin",
+          image: "src/assets/pembicara/Mario Oswin_Culinary.jpg",
+          date: new Date(2025, 3, 12),
+          time: "15:00-15:20",
+          timeFormat: "PM",
+          description: "Culinary",
+        },
+        {
+          name: "Danyannisa",
+          image: "src/assets/pembicara/Danyannisa_Music.jpg",
+          date: new Date(2025, 3, 12),
+          time: "15:20-15:40",
+          timeFormat: "PM",
+          description: "Music",
+        },
+      ],
     };
   },
   methods: {
     formatDate(date) {
-      // Format date as DD.MM.YYYY
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
       return `${day}.${month}.${year}`;
-    }
+    },
   },
   mounted() {
-    // Automatic cycling through speakers
-    this.intervalId = setInterval(() => {
-      this.activeIndex = (this.activeIndex + 1) % this.speakers.length;
-    }, 3000);
-  },
+  // Create the observer instance
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Add the fly-in class when the item is visible in the viewport
+          entry.target.classList.add("fly-in");
+        } else {
+          // Remove the fly-in class when the item is not visible in the viewport
+          entry.target.classList.remove("fly-in");
+        }
+      });
+    },
+    {
+      threshold: 0.2, // Trigger when 20% of the item is visible
+    }
+  );
+
+  // Select and observe all speaker items
+  const speakerItems = document.querySelectorAll(".speaker-item");
+  speakerItems.forEach((item) => {
+    observer.observe(item); // Start observing each speaker item
+  });
+
+  // Automatic cycling through speakers
+  this.intervalId = setInterval(() => {
+    this.activeIndex = (this.activeIndex + 1) % this.speakers.length;
+  }, 3000);
+},
+
+
   beforeUnmount() {
-    // Clear the interval when component is unmounted
-    clearInterval(this.intervalId);
-  }
-}
+    clearInterval(this.intervalId); // Clear the interval when the component is destroyed
+  },
+};
+
 </script>
 
 <style scoped>
@@ -121,6 +191,7 @@ export default {
   flex-direction: column;
   align-items: center;
   position: relative;
+  margin: 100px 0 0 0;
 }
 
 .tedx-logo {
@@ -189,7 +260,7 @@ export default {
   color: #ddd;
   /* Create the stencil-like look */
   text-shadow: none;
-  -webkit-text-stroke: 1px rgba(255,255,255,0.8);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.8);
 }
 
 /* Red triangle marker positioned similar to image 2 */
@@ -210,7 +281,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   color: #aaa;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -225,11 +296,12 @@ export default {
   position: relative;
 }
 
-.date-display::before, .date-display::after {
-  content: '';
+.date-display::before,
+.date-display::after {
+  content: "";
   position: absolute;
   height: 1px;
-  background-color: rgba(255,255,255,0.3);
+  background-color: rgba(255, 255, 255, 0.3);
   width: 25%;
   top: 50%;
 }
@@ -255,7 +327,7 @@ export default {
 
 /* Main vertical timeline line */
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   bottom: 0;
@@ -269,7 +341,7 @@ export default {
 .speaker-item {
   display: flex;
   width: 100%;
-  margin-bottom: 10rem; /* Even more space between items */
+  margin-bottom: 30rem; /* Even more space between items */
   position: relative;
   align-items: center;
   min-height: 180px; /* Taller to allow more vertical spacing */
@@ -277,8 +349,8 @@ export default {
 
 /* Individual vertical timeline segment for each speaker */
 .timeline-line {
-  position: absolute;
-  height: 200%; /* Make line extend well beyond the item */
+  position: relative; /* Changed to relative positioning */
+  height: 500%; /* Use the height of the parent item */
   left: 50%;
   width: 4px;
   background-color: #ff0000;
@@ -287,8 +359,8 @@ export default {
 }
 
 .speaker-circle {
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   background-color: transparent;
   border: 3px solid white;
@@ -299,12 +371,12 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 30px rgba(255,255,255,0.7);
+  box-shadow: 0 0 100px rgba(255, 255, 255, 0.7);
   overflow: hidden;
 }
 
 .speaker-circle.active {
-  box-shadow: 0 0 25px rgba(255,255,255,0.7);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
 }
 
 .speaker-image {
@@ -324,6 +396,8 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
+  filter: grayscale(100%);
 }
 
 .speaker-time {
@@ -333,7 +407,6 @@ export default {
   font-weight: bold;
   color: white;
   z-index: 3;
-  padding-left: 10%;
 }
 
 .content-wrapper {
@@ -341,7 +414,6 @@ export default {
   width: 100%;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 1rem;
   position: absolute;
   right: 0;
   padding-left: 70%;
@@ -359,9 +431,10 @@ export default {
 }
 
 .speaker-description {
-  font-size: 0.9rem;
+  font-size: 2rem;
   color: #aaa;
   line-height: 1.4;
+  text-align: right;
 }
 
 /* Fixed layout with time on left, content on right */
@@ -382,39 +455,23 @@ export default {
   .title {
     font-size: 3rem;
   }
-  
+
   .tedx-logo {
     position: static;
     margin-bottom: 1rem;
   }
-  
+
   .navigation {
     justify-content: center;
     flex-wrap: wrap;
   }
-  
+
   .nav-link {
     margin: 0.5rem;
   }
-  
-  .timeline::before {
-    left: 60px;
-  }
-  
-  .speaker-circle {
-    left: 60px;
-    width: 100px;
-    height: 100px;
-  }
-  
+
   .speaker-time {
-    left: 170px;
-    font-size: 2.5rem;
-  }
-  
-  .content-wrapper {
-    width: 60%;
-    right: 20px;
+    font-size: 2rem;
   }
 }
 
@@ -422,11 +479,11 @@ export default {
   .title {
     font-size: 2.5rem;
   }
-  
+
   .speaker-time {
     font-size: 2rem;
   }
-  
+
   .content-wrapper {
     width: 100%;
     position: relative;
@@ -435,40 +492,86 @@ export default {
     text-align: center;
     justify-content: center;
   }
-  
+
   .speaker-item {
-    margin-bottom: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
+    margin-bottom: 6rem;
   }
 }
 
 @media (max-width: 576px) {
-  .title {
-    font-size: 2rem;
-  }
-  
-  .navigation {
+  .speaker-item {
+    display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 4rem;
+    position: relative;
   }
-  
-  .date-display::before, .date-display::after {
-    width: 15%;
-  }
-  
-  .timeline::before {
-    left: 40px;
-  }
-  
+
   .speaker-circle {
-    left: 40px;
-    width: 80px;
-    height: 80px;
+    position: static; /* Remove absolute positioning */
+    margin-bottom: 1rem;
+    width: 150px;
+    height: 150px;
+    left: auto;
+    transform: none;
   }
-  
+
   .speaker-time {
-    left: 130px;
-    font-size: 1.8rem;
+    position: static; /* Remove absolute positioning */
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: white;
   }
+
+  .content-wrapper {
+    position: static;
+    width: 100%;
+    padding: 0 1.5rem;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 100px;
+  }
+
+  .speaker-description {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .speaker-name {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .time-format {
+    font-size: 1rem;
+  }
+}
+
+@keyframes fly-in {
+  0% {
+    transform: translateY(50%); /* Start from the left off-screen */
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0); /* End at its normal position */
+    opacity: 1;
+  }
+}
+
+.speaker-item {
+  transition: transform 0.7s ease-out, opacity 0.7s ease-out;
+  opacity: 0;
+  transform: translateY(50%);
+}
+
+.speaker-item.fly-in {
+  animation: fly-in 0.7s ease-out forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
