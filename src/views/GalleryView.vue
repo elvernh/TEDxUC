@@ -58,8 +58,17 @@
 <script>
 import GalleryItem from '../components/GalleryItem.vue'
 // Import your images here
- import abstract1 from '@/assets/images/abstract1.jpeg'
- import abstract2 from '@/assets/images/abstract2.jpeg'
+ import prevenetday1_1 from '@/assets/pre-event_day1/DSC01991.jpg'
+ import prevenetday1_2 from '@/assets/pre-event_day1/DSC01996.jpg'
+  import prevenetday1_3 from '@/assets/pre-event_day1/DSC09944.jpg'
+  import prevenetday2_1 from '@/assets/pre-event_day2/DSC00124.jpg'
+  import prevenetday2_2 from '@/assets/pre-event_day2/DSC00126.jpg'
+  import prevenetday2_3 from '@/assets/pre-event_day2/DSC00130.jpg'
+  import prevenetday3_1 from '@/assets/pre-event_day3/Copy of DSC03070.jpg'
+  import prevenetday3_2 from '@/assets/pre-event_day3/DSC02952.jpg'
+  import prevenetday3_3 from '@/assets/pre-event_day3/DSC02964.jpg'
+
+
 // Add more imports as needed
 
 export default {
@@ -77,34 +86,50 @@ export default {
       galleryImages: [
         { 
           // Replace with your actual image paths
-          src: abstract1, 
-          title: 'Abstract Colors', 
-          category: 'Abstract'
+          src: prevenetday1_2, 
+          title: 'Talkshow', 
+          category: 'Pre-event day 1'
         },
         { 
-          src: abstract2, 
-          title: 'Rainbow Spring', 
-          category: 'Abstract'
+          src: prevenetday1_3, 
+          title: 'Foto Juri', 
+          category: 'Pre-event day 1'
         },
         { 
-          src: 'https://via.placeholder.com/800x600/333/fff?text=Nature+1', 
-          title: 'Lavender Field', 
-          category: 'Nature'
+          src: prevenetday1_1, 
+          title: 'Sign up', 
+          category: 'Pre-event day 1'
         },
         { 
-          src: 'https://via.placeholder.com/800x600/ff3333/fff?text=Portrait+1', 
-          title: 'Blue Mystery', 
-          category: 'Portrait'
+          src: prevenetday2_1, 
+          title: 'pre-event marketing part 1', 
+          category: 'Pre-event day 2'
         },
         { 
-          src: 'https://via.placeholder.com/800x600/333/fff?text=Portrait+2', 
-          title: 'Dark Mood', 
-          category: 'Portrait'
-        }
-        // You would replace these with your actual images
-        // { src: abstract1, title: 'Abstract Colors', category: 'Abstract' },
-        // { src: abstract2, title: 'Rainbow Spring', category: 'Abstract' },
-        // Add more images as needed
+          src: prevenetday2_2, 
+          title: 'pre-event marketing part 2', 
+          category: 'Pre-event day 2'
+        },
+        { 
+          src: prevenetday2_3, 
+          title: 'pre-event marketing part 3', 
+          category: 'Pre-event day 2'
+        },
+        { 
+          src: prevenetday3_1, 
+          title: 'salam-E', 
+          category: 'Pre-event day 3'
+        },
+        { 
+          src: prevenetday3_3, 
+          title: 'talkshow', 
+          category: 'Pre-event day 3'
+        },
+        { 
+          src: prevenetday3_2, 
+          title: 'puzzle', 
+          category: 'Pre-event day 3'
+        },
       ]
     }
   },
