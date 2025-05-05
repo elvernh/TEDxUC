@@ -837,7 +837,7 @@ margin-top: 70px;
 
 .score {
   font-size: 50px;
-  margin-top: 50px;
+  margin-top: 20px;
   align-items: center;
 }
 .controls {
