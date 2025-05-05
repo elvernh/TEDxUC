@@ -675,11 +675,11 @@ onUnmounted(() => {
 </template>
 
       <div class="controls" v-if="showGame">
-        <button @click="nextDirection = 'up'">up</button>
+        <button @click="direction = 'up'">Up</button>
         <div>
-          <button @click="direction = 'left'">left</button>
-          <button @click="direction = 'down'">down</button>
-          <button @click="direction = 'right'">right</button>
+          <button @click="direction = 'left'">Left</button>
+          <button @click="direction = 'down'">Down</button>
+          <button @click="direction = 'right'">Right</button>
         </div>
       </div>
       <div class="overlay" v-if="gameOver"></div>
@@ -705,6 +705,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: black;
   color: rgb(255, 255, 255);
   padding: 0;
