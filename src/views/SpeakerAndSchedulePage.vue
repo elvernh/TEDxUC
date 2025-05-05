@@ -4,7 +4,7 @@
       <div class="tedx-logo"></div>
       <div class="title-container">
         <p class="title">SPEAKER<br />SCHEDULE</p>
-        <div class="triangle-marker"></div>
+        <div class="triangle-marker">&</div>
       </div>
       <p class="subtitle">
         The voices that will shape The Infinite Maze are almost here. Who will
@@ -47,6 +47,8 @@
         </div>
       </div>
     </div>
+    <div>
+    </div>
   </div>
 </template>
 
@@ -66,7 +68,7 @@ export default {
       currentDate: new Date(2025, 3, 12), // April 12, 2025
       activeIndex: 0,
       speakers: [
-      {
+        {
           name: "Wilson David Mulya H.",
           image: wilson, // Using placeholder images
           date: new Date(2025, 3, 12),
@@ -80,7 +82,8 @@ export default {
           date: new Date(2025, 3, 12),
           time: "12:10-12:30",
           timeFormat: "PM",
-          description: "Entrepreneur - How To Build a Business Without Knowing What You're Doing",
+          description:
+            "Entrepreneur - How To Build a Business Without Knowing What You're Doing",
         },
         {
           name: "Evelyn Hutani",
@@ -104,7 +107,8 @@ export default {
           date: new Date(2025, 3, 12),
           time: "14:40-15:00",
           timeFormat: "PM",
-          description: "Photography - Urban Kaleidoscope: Patterns & Perspective",
+          description:
+            "Photography - Urban Kaleidoscope: Patterns & Perspective",
         },
         {
           name: "Mario Oswin",
@@ -112,7 +116,8 @@ export default {
           date: new Date(2025, 3, 12),
           time: "15:00-15:20",
           timeFormat: "PM",
-          description: "Culinary - Culinary Journeys Food as a Map Through Cultural Labyrinths",
+          description:
+            "Culinary - Culinary Journeys Food as a Map Through Cultural Labyrinths",
         },
         {
           name: "Danyannisa",
@@ -120,7 +125,8 @@ export default {
           date: new Date(2025, 3, 12),
           time: "15:20-15:40",
           timeFormat: "PM",
-          description: "Music - The Art of Song Construction: Navigating the Technical Maze of Music Creation",
+          description:
+            "Music - The Art of Song Construction: Navigating the Technical Maze of Music Creation",
         },
       ],
     };
@@ -134,36 +140,35 @@ export default {
     },
   },
   mounted() {
-  // Create the observer instance
-  const observer = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Add the fly-in class when the item is visible in the viewport
-          entry.target.classList.add("fly-in");
-        } else {
-          // Remove the fly-in class when the item is not visible in the viewport
-          entry.target.classList.remove("fly-in");
-        }
-      });
-    },
-    {
-      threshold: 0.2, // Trigger when 20% of the item is visible
-    }
-  );
+    // Create the observer instance
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Add the fly-in class when the item is visible in the viewport
+            entry.target.classList.add("fly-in");
+          } else {
+            // Remove the fly-in class when the item is not visible in the viewport
+            entry.target.classList.remove("fly-in");
+          }
+        });
+      },
+      {
+        threshold: 0.2, // Trigger when 20% of the item is visible
+      }
+    );
 
-  // Select and observe all speaker items
-  const speakerItems = document.querySelectorAll(".speaker-item");
-  speakerItems.forEach((item) => {
-    observer.observe(item); // Start observing each speaker item
-  });
+    // Select and observe all speaker items
+    const speakerItems = document.querySelectorAll(".speaker-item");
+    speakerItems.forEach((item) => {
+      observer.observe(item); // Start observing each speaker item
+    });
 
-  // Automatic cycling through speakers
-  this.intervalId = setInterval(() => {
-    this.activeIndex = (this.activeIndex + 1) % this.speakers.length;
-  }, 3000);
-},
-
+    // Automatic cycling through speakers
+    this.intervalId = setInterval(() => {
+      this.activeIndex = (this.activeIndex + 1) % this.speakers.length;
+    }, 3000);
+  },
 
   beforeUnmount() {
     clearInterval(this.intervalId); // Clear the interval when the component is destroyed
@@ -262,7 +267,7 @@ export default {
   letter-spacing: 5px;
   line-height: 1.1;
   position: relative;
-  z-index: 1;
+  z-index: 10;
   color: #ddd;
   /* Create the stencil-like look */
   text-shadow: none;
@@ -272,15 +277,15 @@ export default {
 /* Red triangle marker positioned similar to image 2 */
 .triangle-marker {
   width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 25px solid #ff0000;
+  height: 0%;
   position: absolute;
-  left: 40%; /* Position more central */
-  top: 40%; /* Position it vertically slightly above the center */
+  color: #ff0000;
+  font-size: 4.5rem;
+  font-weight: bold;
+  left: 55%; /* Position more central */
+  top: 20%; /* Position it vertically slightly above the center */
   transform: rotate(45deg); /* Rotate to match orientation */
-  z-index: 10; /* Higher z-index to be above everything */
+  z-index: 8; /* Higher z-index to be above everything */
 }
 
 .subtitle {
@@ -506,6 +511,9 @@ export default {
     flex-direction: column;
     margin-bottom: 6rem;
   }
+  .triangle-marker {
+    font-size: 3.5rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -524,6 +532,9 @@ export default {
     height: 150px;
     left: auto;
     transform: none;
+  }
+  .triangle-marker {
+    font-size: 3rem;
   }
 
   .speaker-time {

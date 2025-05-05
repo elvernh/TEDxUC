@@ -35,8 +35,7 @@
     </div>
     
     <div class="gallery-title">
-      <h2>{{ activeCategory }}</h2>
-      <p>Photography</p>
+      
     </div>
     
     <!-- Lightbox Modal -->
@@ -87,48 +86,48 @@ export default {
         { 
           // Replace with your actual image paths
           src: prevenetday1_2, 
-          title: 'IFI Surabaya', 
-          category: 'Pre event 1'
+          title: 'Pre-Event 1', 
+          category: 'IFI Surabaya'
         },
         { 
           src: prevenetday1_3, 
-          title: 'IFI Surabaya', 
-          category: 'Pre event 1'
+          title: 'Pre-Event 1', 
+          category: 'IFI Surabaya'
         },
         { 
           src: prevenetday1_1, 
-          title: 'IFI Surabaya', 
-          category: 'Pre event 1'
+          title: 'Pre-Event 1', 
+          category: 'IFI Surabaya'
         },
         { 
           src: prevenetday2_1, 
-          title: 'Jl Tunjungan', 
-          category: 'Pre-event 2'
+          title: 'Pre-Event 2', 
+          category: 'Jl. Tunjungan'
         },
         { 
           src: prevenetday2_2, 
-          title: 'Jl Tunjungan', 
-          category: 'Pre-event 2'
+          title: 'Pre-Event 2', 
+          category: 'Jl. Tunjungan'
         },
         { 
           src: prevenetday2_3, 
-          title: 'Jl Tunjungan', 
-          category: 'Pre-event 2'
+          title: 'Pre-Event 2', 
+          category: 'Jl. Tunjungan'
         },
         { 
           src: prevenetday3_1, 
-          title: 'Talkshow “Professional Ethics in the Workplace”', 
-          category: 'Pre-event 3'
+          title: 'Pre-Event 3', 
+          category: 'Talkshow “Professional Ethics in the Workplace”'
         },
         { 
           src: prevenetday3_3, 
-          title: 'Talkshow “Professional Ethics in the Workplace”', 
-          category: 'Pre-event day 3'
+          title: 'Pre-Event 3', 
+          category: 'Talkshow “Professional Ethics in the Workplace”'
         },
         { 
           src: prevenetday3_2, 
-          title: 'Talkshow “Professional Ethics in the Workplace”', 
-          category: 'Pre-event day 3'
+          title: 'Pre-Event 3', 
+          category: 'Talkshow “Professional Ethics in the Workplace”'
         },
       ]
     }
