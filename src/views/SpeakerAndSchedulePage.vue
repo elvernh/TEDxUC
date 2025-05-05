@@ -72,7 +72,7 @@ export default {
           date: new Date(2025, 3, 12),
           time: "11:50-12:10",
           timeFormat: "PM",
-          description: "Self Development",
+          description: "Self Development - Passion is Overrated",
         },
         {
           name: "Holly Natasha",
@@ -80,15 +80,15 @@ export default {
           date: new Date(2025, 3, 12),
           time: "12:10-12:30",
           timeFormat: "PM",
-          description: "Entrepreneurship",
+          description: "Entrepreneur - How To Build a Business Without Knowing What You're Doing",
         },
         {
-          name: "Evelyn Saraswati Hutani",
+          name: "Evelyn Hutani",
           image: evy,
           date: new Date(2025, 3, 12),
           time: "12:30-12:50",
           timeFormat: "PM",
-          description: "Comedy",
+          description: "Comedy - I Failed, I Fell, and Then I Laughed",
         },
         {
           name: "R. Kukuh Rahadiansyah",
@@ -96,7 +96,7 @@ export default {
           date: new Date(2025, 3, 12),
           time: "14:27-14:45",
           timeFormat: "PM",
-          description: "Technology",
+          description: "Technology - Survival Guide to AI Wonderland",
         },
         {
           name: "Maximilian John",
@@ -104,7 +104,7 @@ export default {
           date: new Date(2025, 3, 12),
           time: "14:40-15:00",
           timeFormat: "PM",
-          description: "Photography",
+          description: "Photography - Urban Kaleidoscope: Patterns & Perspective",
         },
         {
           name: "Mario Oswin",
@@ -112,7 +112,7 @@ export default {
           date: new Date(2025, 3, 12),
           time: "15:00-15:20",
           timeFormat: "PM",
-          description: "Culinary",
+          description: "Culinary - Culinary Journeys Food as a Map Through Cultural Labyrinths",
         },
         {
           name: "Danyannisa",
@@ -120,7 +120,7 @@ export default {
           date: new Date(2025, 3, 12),
           time: "15:20-15:40",
           timeFormat: "PM",
-          description: "Music",
+          description: "Music - The Art of Song Construction: Navigating the Technical Maze of Music Creation",
         },
       ],
     };
@@ -169,7 +169,6 @@ export default {
     clearInterval(this.intervalId); // Clear the interval when the component is destroyed
   },
 };
-
 </script>
 
 <style scoped>
@@ -288,7 +287,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   color: #aaa;
-  font-size: 1rem;
+  font-size: 1.2rem;
   line-height: 1.5;
 }
 
@@ -432,13 +431,13 @@ export default {
 }
 
 .speaker-name {
-  font-size: 1.8rem; /* Larger font size as in image 3 */
+  font-size: 1.4rem; /* Larger font size as in image 3 */
   margin-bottom: 0.8rem;
   font-weight: bold;
 }
 
 .speaker-description {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #aaa;
   line-height: 1.4;
   text-align: right;
