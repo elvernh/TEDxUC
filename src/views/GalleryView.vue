@@ -87,47 +87,47 @@ export default {
         { 
           // Replace with your actual image paths
           src: prevenetday1_2, 
-          title: 'Talkshow', 
-          category: 'Pre-event day 1'
+          title: 'IFI Surabaya', 
+          category: 'Pre event 1'
         },
         { 
           src: prevenetday1_3, 
-          title: 'Foto Juri', 
-          category: 'Pre-event day 1'
+          title: 'IFI Surabaya', 
+          category: 'Pre event 1'
         },
         { 
           src: prevenetday1_1, 
-          title: 'Sign up', 
-          category: 'Pre-event day 1'
+          title: 'IFI Surabaya', 
+          category: 'Pre event 1'
         },
         { 
           src: prevenetday2_1, 
-          title: 'pre-event marketing part 1', 
-          category: 'Pre-event day 2'
+          title: 'Jl Tunjungan', 
+          category: 'Pre-event 2'
         },
         { 
           src: prevenetday2_2, 
-          title: 'pre-event marketing part 2', 
-          category: 'Pre-event day 2'
+          title: 'Jl Tunjungan', 
+          category: 'Pre-event 2'
         },
         { 
           src: prevenetday2_3, 
-          title: 'pre-event marketing part 3', 
-          category: 'Pre-event day 2'
+          title: 'Jl Tunjungan', 
+          category: 'Pre-event 2'
         },
         { 
           src: prevenetday3_1, 
-          title: 'salam-E', 
-          category: 'Pre-event day 3'
+          title: 'Talkshow “Professional Ethics in the Workplace”', 
+          category: 'Pre-event 3'
         },
         { 
           src: prevenetday3_3, 
-          title: 'talkshow', 
+          title: 'Talkshow “Professional Ethics in the Workplace”', 
           category: 'Pre-event day 3'
         },
         { 
           src: prevenetday3_2, 
-          title: 'puzzle', 
+          title: 'Talkshow “Professional Ethics in the Workplace”', 
           category: 'Pre-event day 3'
         },
       ]
