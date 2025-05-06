@@ -31,12 +31,12 @@ const BASE_SPEED = 250;
 const GAME_SIZE = { width: 800, height: 800 };
 const CHARACTER_SIZE = CELL_SIZE * 0.8;
 const MAX_HIGH_SCORES = 5;
-const GHOST_SPEED_INCREASE = 1; 
+const GHOST_SPEED_INCREASE = 1;
 
 const SPRITE_FRAMES = 4; // 4 frames per direction
 const FRAME_WIDTH = 48; // Each frame is 480px wide
 const FRAME_HEIGHT = 48; // Height of each frame in the sprite sheet
-const ANIMATION_SPEED = 150; 
+const ANIMATION_SPEED = 150;
 
 const currentFrame = ref(0);
 const lastFrameChange = ref(0);
@@ -44,7 +44,7 @@ const lastFrameChange = ref(0);
 const gridPosition = ref({ x: 7, y: 9 });
 const nextDirection = ref<Direction>("none");
 const isMoving = ref(false);
-const level = ref(1); 
+const level = ref(1);
 
 type Position = { x: number; y: number };
 type Direction = "up" | "down" | "left" | "right" | "none";
@@ -60,7 +60,8 @@ type Ghost = {
   nextDirection: Direction;
   isMoving: boolean;
   currentFrame: number;
-  lastFrameChange: number;  sprites: {
+  lastFrameChange: number;
+  sprites: {
     right: string;
     left: string;
     up: string;
@@ -76,12 +77,15 @@ const gameOver = ref(false);
 const ghosts = ref<Ghost[]>([]);
 const showGame = ref(false);
 
-
 const updateAnimation = (timestamp: number) => {
-  
   const isMobile = window.innerWidth <= 768;
-  
-  if (!isMobile && gameStarted.value && !gameOver.value && direction.value !== "none") {
+
+  if (
+    !isMobile &&
+    gameStarted.value &&
+    !gameOver.value &&
+    direction.value !== "none"
+  ) {
     if (timestamp - lastFrameChange.value > ANIMATION_SPEED) {
       currentFrame.value = (currentFrame.value + 1) % SPRITE_FRAMES;
       lastFrameChange.value = timestamp;
@@ -89,7 +93,7 @@ const updateAnimation = (timestamp: number) => {
   } else {
     currentFrame.value = 0;
   }
-  requestAnimationFrame(updateAnimation); 
+  requestAnimationFrame(updateAnimation);
 };
 
 const getSpritePosition = () => {
@@ -100,44 +104,38 @@ const COLLISION_PADDING = 5;
 let lastTime = 0;
 // Game layout (0 = empty, 1 = wall, 2 = food, 3 = power pellet, 4 = ghost lair)
 const gameLayout = ref([
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1,
-  1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1,
-  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-  1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1,
-  1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1,
-  1, 1, 1, 2, 1, 1, 4, 4, 4, 1, 1, 2, 1, 1, 1,
-  0, 0, 0, 2, 2, 2, 4, 4, 4, 2, 0, 2, 0, 0, 0,
-  1, 1, 1, 2, 1, 2, 4, 4, 4, 2, 1, 2, 1, 1, 1,
-  1, 2, 2, 2, 1, 2, 1, 1, 1, 2, 1, 2, 2, 2, 1,
-  1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1,
-  1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1,
-  1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1,
-  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
+  2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2,
+  2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 2,
+  2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 1, 1, 1, 2, 1, 1, 4, 4, 4, 1, 1, 2, 1, 1,
+  1, 0, 0, 0, 2, 2, 2, 4, 4, 4, 2, 0, 2, 0, 0, 0, 1, 1, 1, 2, 1, 2, 4, 4, 4, 2,
+  1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 1, 2, 1, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2,
+  2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 1, 2,
+  1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+  2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 ]);
 
 let animationId: number | null = null;
 const instructionText = computed(() => {
-    return "Use the arrow keys to move and avoid the ghosts!";
+  return "Use the arrow keys to move and avoid the ghosts!";
 });
 
 const gameLoop = (timestamp: number) => {
   if (lastTime === 0) {
     lastTime = timestamp;
   }
-  
+
   // Calculate delta time in milliseconds
   const deltaTime = timestamp - lastTime;
   lastTime = timestamp;
-  
+
   if (gameStarted.value && !gameOver.value) {
     movePacman(deltaTime);
     moveGhosts(deltaTime);
     checkGhostCollision();
     updateAnimation(timestamp); // Add animation update
   }
-  
+
   animationId = requestAnimationFrame(gameLoop);
 };
 
@@ -191,8 +189,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 const movePacman = (deltaTime: number) => {
   if (direction.value !== "none") {
-  lastValidDirection.value = direction.value;
-}
+    lastValidDirection.value = direction.value;
+  }
   if (direction.value === "none" && nextDirection.value === "none") return;
   if (!isMoving.value) {
     const canChangeDirection = canMove(
@@ -229,7 +227,7 @@ const movePacman = (deltaTime: number) => {
     const dx = targetX - position.value.x;
     const dy = targetY - position.value.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
+
     // Calculate speed based on delta time
     const frameSpeed = BASE_SPEED * (deltaTime / 1000);
 
@@ -274,10 +272,11 @@ const initGhosts = () => {
   const baseSpeed = 2 + (level.value - 1) * GHOST_SPEED_INCREASE;
   ghosts.value = [
     {
-      position: {  x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {
+        x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-     },
-      gridPosition: { x: 7, y: 7  },
+      },
+      gridPosition: { x: 7, y: 7 },
       character: "vip1",
       speed: baseSpeed,
       direction: "left",
@@ -289,14 +288,15 @@ const initGhosts = () => {
         right: vip1Right,
         left: vip1Left,
         up: vip1Up,
-        down: vip1Down
-      }
+        down: vip1Down,
+      },
     },
     {
-      position: { x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {
+        x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-     },
-      gridPosition: { x: 7, y: 8  },
+      },
+      gridPosition: { x: 7, y: 8 },
       character: "vip2",
       speed: baseSpeed,
       direction: "up",
@@ -308,13 +308,14 @@ const initGhosts = () => {
         right: vip2Right,
         left: vip2Left,
         up: vip2Up,
-        down: vip2Down
-      }
+        down: vip2Down,
+      },
     },
     {
-      position: {  x: 6 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {
+        x: 6 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-    },
+      },
       gridPosition: { x: 6, y: 7 },
       character: "vip3",
       speed: baseSpeed,
@@ -327,16 +328,17 @@ const initGhosts = () => {
         right: vip3Right,
         left: vip3Left,
         up: vip3Up,
-        down: vip3Down
-      }
+        down: vip3Down,
+      },
     },
     {
-      position: {   x: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
+      position: {
+        x: 8 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
         y: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
-    },
+      },
       gridPosition: { x: 8, y: 7 },
       character: "mib",
-      speed: baseSpeed * 1.3, 
+      speed: baseSpeed * 1.3,
       direction: "down",
       nextDirection: "none",
       isMoving: false,
@@ -346,19 +348,23 @@ const initGhosts = () => {
         right: mibRight,
         left: mibLeft,
         up: mibUp,
-        down: mibDown
-      }
+        down: mibDown,
+      },
     },
-
   ];
 };
 const getGhostSprite = (ghost: Ghost) => {
-  switch(ghost.direction) {
-    case "right": return ghost.sprites.right;
-    case "left": return ghost.sprites.left;
-    case "up": return ghost.sprites.up;
-    case "down": return ghost.sprites.down;
-    default: return ghost.sprites.right; 
+  switch (ghost.direction) {
+    case "right":
+      return ghost.sprites.right;
+    case "left":
+      return ghost.sprites.left;
+    case "up":
+      return ghost.sprites.up;
+    case "down":
+      return ghost.sprites.down;
+    default:
+      return ghost.sprites.right;
   }
 };
 
@@ -366,21 +372,25 @@ const getGhostSpritePosition = (ghost: Ghost) => {
   return `-${ghost.currentFrame * FRAME_WIDTH}px 0px`;
 };
 
-
 const lastValidDirection = ref<Direction>("right");
 
 const currentSpriteImage = computed(() => {
-  const displayDirection = direction.value !== "none" ? direction.value : lastValidDirection.value;
-  
-  switch(displayDirection) {
-    case "right": return pacmanRightImage;
-    case "left": return pacmanLeftImage;
-    case "up": return pacmanUpImage;
-    case "down": return pacmanDownImage;
-    default: return pacmanRightImage;
+  const displayDirection =
+    direction.value !== "none" ? direction.value : lastValidDirection.value;
+
+  switch (displayDirection) {
+    case "right":
+      return pacmanRightImage;
+    case "left":
+      return pacmanLeftImage;
+    case "up":
+      return pacmanUpImage;
+    case "down":
+      return pacmanDownImage;
+    default:
+      return pacmanRightImage;
   }
 });
-
 
 const getValidDirections = (ghost: Ghost): Direction[] => {
   const { x, y } = ghost.gridPosition;
@@ -427,7 +437,6 @@ const getValidDirections = (ghost: Ghost): Direction[] => {
 
   return validDirections.length > 0 ? validDirections : ["none"];
 };
-
 
 const moveGhosts = (deltaTime: number) => {
   ghosts.value.forEach((ghost) => {
@@ -514,8 +523,6 @@ const moveGhosts = (deltaTime: number) => {
   });
 };
 
-
-
 const checkFoodCollision = () => {
   const centerX = position.value.x + CHARACTER_SIZE / 2;
   const centerY = position.value.y + CHARACTER_SIZE / 2;
@@ -534,7 +541,8 @@ const checkFoodCollision = () => {
 
     // Check if all food is eaten
     if (!gameLayout.value.includes(2)) {
-      nextLevel();  }
+      nextLevel();
+    }
   }
 };
 const checkGhostCollision = () => {
@@ -556,28 +564,26 @@ const checkGhostCollision = () => {
   });
 };
 
-
 const nextLevel = () => {
-  level.value++; 
-  
+  level.value++;
+
   // Reset pacman position
   gridPosition.value = { x: 7, y: 13 };
   position.value = {
     x: 7 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
     y: 13 * CELL_SIZE + (CELL_SIZE - CHARACTER_SIZE) / 2,
   };
-  
+
   // Reset direction
   direction.value = "none";
   nextDirection.value = "none";
   isMoving.value = false;
-  
+
   // Reset the level layout
   gameLayout.value = [...originalLayout];
-  
+
   // Reinitialize ghosts with increased speed
   initGhosts();
-
 };
 
 const startGame = () => {
@@ -595,13 +601,15 @@ const startGame = () => {
   isMoving.value = false;
   gameLayout.value = [...originalLayout];
   initGhosts();
-  lastTime = 0; };
+  lastTime = 0;
+};
 
 const gameScale = computed(() => {
-  const gameArea = document.querySelector('.game-area');
+  const gameArea = document.querySelector(".game-area");
   if (!gameArea) return 1;
   return gameArea.clientWidth / 800;
-});const originalLayout = [...gameLayout.value];
+});
+const originalLayout = [...gameLayout.value];
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
@@ -617,7 +625,6 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    
     <div class="game-area">
       <button
         @click="startGame"
@@ -627,8 +634,8 @@ onUnmounted(() => {
         {{ gameOver ? "Play Again" : "Start Game" }}
       </button>
       <div class="instructions" v-if="!gameStarted && !gameOver">
-  {{ instructionText }}
-</div>
+        {{ instructionText }}
+      </div>
       <div class="grid" v-if="showGame">
         <div
           v-for="(cell, index) in gameLayout"
@@ -636,43 +643,48 @@ onUnmounted(() => {
           :class="{
             wall: cell === 1,
             food: cell === 2,
-             'ghost-lair': cell === 4,
+            'ghost-lair': cell === 4,
           }"
         ></div>
-        
       </div>
-     
-<div class="score" v-if="gameStarted && !gameOver">Score: {{ score }}</div>
-      <div
-  class="character"
-  v-if="showGame"
-  :style="{
-    left: `calc(${position.x / 800 * 100}%`,
-    top: `calc(${position.y / 800 * 100}%`,
-    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
-    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
-    backgroundImage: `url(${currentSpriteImage})`,
-    backgroundPosition: getSpritePosition(),
-    backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
-  }"
-></div>
 
-  <template v-if="showGame">
-    <div
-  v-for="(ghost, index) in ghosts"
-  :key="index"
-  class="ghost"
-  :style="{
-    left: `calc(${ghost.position.x / 800 * 100}%`,
-    top: `calc(${ghost.position.y / 800 * 100}%`,
-    width: `calc(${CHARACTER_SIZE / 800 * 100}%`,
-    height: `calc(${CHARACTER_SIZE / 800 * 100}%`,
-    backgroundImage: `url(${getGhostSprite(ghost)})`,
-    backgroundPosition: getGhostSpritePosition(ghost),
-    backgroundSize: `${FRAME_WIDTH * SPRITE_FRAMES / CHARACTER_SIZE * 100}% ${FRAME_HEIGHT / CHARACTER_SIZE * 100}%`
-  }"
-></div>
-</template>
+      <div class="score" v-if="gameStarted && !gameOver">
+        Score: {{ score }}
+      </div>
+      <div
+        class="character"
+        v-if="showGame"
+        :style="{
+          left: `calc(${(position.x / 800) * 100}%`,
+          top: `calc(${(position.y / 800) * 100}%`,
+          width: `calc(${(CHARACTER_SIZE / 800) * 100}%`,
+          height: `calc(${(CHARACTER_SIZE / 800) * 100}%`,
+          backgroundImage: `url(${currentSpriteImage})`,
+          backgroundPosition: getSpritePosition(),
+          backgroundSize: `${
+            ((FRAME_WIDTH * SPRITE_FRAMES) / CHARACTER_SIZE) * 100
+          }% ${(FRAME_HEIGHT / CHARACTER_SIZE) * 100}%`,
+        }"
+      ></div>
+
+      <template v-if="showGame">
+        <div
+          v-for="(ghost, index) in ghosts"
+          :key="index"
+          class="ghost"
+          :style="{
+            left: `calc(${(ghost.position.x / 800) * 100}%`,
+            top: `calc(${(ghost.position.y / 800) * 100}%`,
+            width: `calc(${(CHARACTER_SIZE / 800) * 100}%`,
+            height: `calc(${(CHARACTER_SIZE / 800) * 100}%`,
+            backgroundImage: `url(${getGhostSprite(ghost)})`,
+            backgroundPosition: getGhostSpritePosition(ghost),
+            backgroundSize: `${
+              ((FRAME_WIDTH * SPRITE_FRAMES) / CHARACTER_SIZE) * 100
+            }% ${(FRAME_HEIGHT / CHARACTER_SIZE) * 100}%`,
+          }"
+        ></div>
+      </template>
 
       <div class="controls" v-if="showGame">
         <button @click="direction = 'up'">Up</button>
@@ -687,18 +699,15 @@ onUnmounted(() => {
   </div>
 </template>
 
-
-
 <style scoped>
-:root, body {
+:root,
+body {
   overflow: hidden;
   height: 100%;
   position: fixed;
   width: 100%;
 }
 </style>
-
-
 
 <style scoped>
 .container {
@@ -722,8 +731,7 @@ onUnmounted(() => {
   height: 800px;
   background-color: #151515;
   border: 2px solid #1e1e1e;
-margin-top: 70px;
-
+  margin-top: 70px;
 }
 .instructions {
   position: absolute;
@@ -745,7 +753,6 @@ margin-top: 70px;
   grid-template-rows: repeat(15, 1fr);
   width: 100%;
   height: 100%;
-  
 }
 
 .wall {
@@ -754,7 +761,7 @@ margin-top: 70px;
   margin: 1px;
 }
 
-.food { 
+.food {
   width: 4px;
   height: 4px;
   position: relative;
@@ -762,21 +769,10 @@ margin-top: 70px;
   top: 40%;
   transform: translate(-50%, -50%);
   box-shadow:
-    /* Row 1 */
-    4px 0px 0 0 white,
-    8px 0px 0 0 white,
-    /* Row 2 */
-    0px 4px 0 0 white,
-    4px 4px 0 0 white,
-    8px 4px 0 0 white,
-    12px 4px 0 0 white,
-    /* Row 3 */
-    0px 8px 0 0 white,
-    4px 8px 0 0 white,
-    8px 8px 0 0 white,
-    12px 8px 0 0 white,
-    /* Row 4 */
-    4px 12px 0 0 white,
+    /* Row 1 */ 4px 0px 0 0 white, 8px 0px 0 0 white,
+    /* Row 2 */ 0px 4px 0 0 white, 4px 4px 0 0 white, 8px 4px 0 0 white,
+    12px 4px 0 0 white, /* Row 3 */ 0px 8px 0 0 white, 4px 8px 0 0 white,
+    8px 8px 0 0 white, 12px 8px 0 0 white, /* Row 4 */ 4px 12px 0 0 white,
     8px 12px 0 0 white;
   image-rendering: pixelated;
 }
@@ -788,7 +784,6 @@ margin-top: 70px;
   background-color: #fff;
   border-radius: 50%;
 }
-
 
 .character {
   position: absolute;
@@ -803,9 +798,7 @@ margin-top: 70px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   z-index: 100;
-  transition: 
-    background-position 0.1s ease,
-    transform 0.2s ease;
+  transition: background-position 0.1s ease, transform 0.2s ease;
 }
 
 .ghost::before {
@@ -854,39 +847,36 @@ margin-top: 70px;
   background-color: rgba(0, 0, 0, 0.4);
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
-  z-index: 105;  
+  z-index: 105;
 }
-
-
 
 @media (max-height: 1000px) {
   .game-area {
     transform: scale(0.8);
     margin-top: 30px;
   }
-  
-  .score{
-  margin-top: 20px;
-  align-items: center;
-}
+
+  .score {
+    margin-top: 20px;
+    align-items: center;
+  }
   .controls {
     top: 550px;
   }
 }
-
 
 @media (max-height: 900px) {
   .game-area {
     transform: scale(0.7);
     margin-top: 30px;
   }
-  
-  .score{
-  font-size: 40px;
-  margin-top: 20px;
-  align-items: center;
-}
-  
+
+  .score {
+    font-size: 40px;
+    margin-top: 20px;
+    align-items: center;
+  }
+
   .controls {
     top: 550px;
   }
@@ -895,20 +885,20 @@ margin-top: 70px;
 @media (max-height: 800px) {
   .game-area {
     transform: scale(0.6);
-    
-aspect-ratio: 1 / 1; 
+
+    aspect-ratio: 1 / 1;
   }
 
-  .score{
-  font-size: 40px;
-  margin-top: 20px;
-  align-items: center;
-}
-  
-.controls {
+  .score {
+    font-size: 40px;
+    margin-top: 20px;
+    align-items: center;
+  }
+
+  .controls {
     top: 300px;
   }
-  
+
   .controls button {
     width: 80px;
     height: 80px;
@@ -916,25 +906,25 @@ aspect-ratio: 1 / 1;
   }
 }
 
-
 @media (max-height: 720px) {
   .game-area {
     transform: scale(0.55);
-aspect-ratio: 1 / 1; 
+    aspect-ratio: 1 / 1;
   }
-  
-  .score{
-  font-size: 35px;
-  margin-top: 30px;
-  align-items: center;
-}
+
+  .score {
+    font-size: 35px;
+    margin-top: 30px;
+    align-items: center;
+  }
   .controls {
     top: 300px;
   }
-  
+
   .controls button {
     width: 80px;
     height: 80px;
+    touch-action: manipulation;
   }
 }
 
@@ -942,13 +932,11 @@ aspect-ratio: 1 / 1;
   .game-area {
     transform: scale(0.4);
   }
-  
+
   .controls {
     top: 350px;
   }
 }
-
-
 
 @media (max-width: 768px) {
   .container {
@@ -956,14 +944,13 @@ aspect-ratio: 1 / 1;
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .game-area {
     width: 100%;
     max-width: 100vmin;
     height: 100vmin;
     margin: 110px auto;
     position: relative;
-    
   }
   .instructions {
     font-size: 16px;
@@ -974,7 +961,7 @@ aspect-ratio: 1 / 1;
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 650px;
+    top: 500px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -984,12 +971,12 @@ aspect-ratio: 1 / 1;
     max-width: 400px;
     gap: 15px;
   }
-  
+
   .controls > div {
     display: flex;
     gap: 15px;
   }
-  
+
   .controls button {
     width: 100px;
     height: 100px;
@@ -1001,14 +988,14 @@ aspect-ratio: 1 / 1;
     align-items: center;
     justify-content: center;
     margin-top: 0px;
-    flex: 0 0 auto; 
+    flex: 0 0 auto;
   }
-  
+
   .controls button:active {
     background-color: rgba(255, 0, 0, 0.7);
     transform: scale(0.95);
   }
-  
+
   .score {
     font-size: 24px;
     position: fixed;
@@ -1016,12 +1003,11 @@ aspect-ratio: 1 / 1;
     padding: 5px;
     z-index: 100;
   }
-  
+
   .start-game {
     font-size: 25px;
     padding: 12px 24px;
     white-space: nowrap;
   }
-
 }
 </style>
