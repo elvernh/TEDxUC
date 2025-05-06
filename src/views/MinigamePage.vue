@@ -705,6 +705,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: black;
   color: rgb(255, 255, 255);
   padding: 0;
@@ -722,7 +723,6 @@ onUnmounted(() => {
   background-color: #151515;
   border: 2px solid #1e1e1e;
 margin-top: 70px;
-transform: scale(0.8);
 
 }
 .instructions {
@@ -837,7 +837,7 @@ transform: scale(0.8);
 
 .score {
   font-size: 50px;
-  margin-top: 50px;
+  margin-top: 20px;
   align-items: center;
 }
 .controls {
@@ -859,11 +859,33 @@ transform: scale(0.8);
 
 
 
+@media (max-height: 1000px) {
+  .game-area {
+    transform: scale(0.8);
+    margin-top: 30px;
+  }
+  
+  .score{
+  margin-top: 20px;
+  align-items: center;
+}
+  .controls {
+    top: 550px;
+  }
+}
+
+
 @media (max-height: 900px) {
   .game-area {
     transform: scale(0.7);
     margin-top: 30px;
   }
+  
+  .score{
+  font-size: 40px;
+  margin-top: 20px;
+  align-items: center;
+}
   
   .controls {
     top: 550px;
@@ -879,7 +901,7 @@ aspect-ratio: 1 / 1;
 
   .score{
   font-size: 40px;
-  margin-top: 50px;
+  margin-top: 20px;
   align-items: center;
 }
   
@@ -890,6 +912,7 @@ aspect-ratio: 1 / 1;
   .controls button {
     width: 80px;
     height: 80px;
+    margin-bottom: 10px;
   }
 }
 
